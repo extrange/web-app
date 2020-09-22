@@ -1,0 +1,15 @@
+html {
+    box-sizing: border-box;
+    font-family: "Source Sans Pro", sans-serif;
+    /*background-color: #121212;*/
+    /*color: rgba(255,255,255,0.6);*/
+    /*
+    High-emphasis text should have an opacity of 87%
+    Medium emphasis text is applied at 60%
+    Disabled text uses an opacity of 38%.
+    */
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}

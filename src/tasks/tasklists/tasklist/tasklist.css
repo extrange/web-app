@@ -1,0 +1,28 @@
+.tasklist {
+    list-style: none;
+    transition: 0.2s;
+    border-bottom: 1px solid rgba(132, 132, 132, 0.5);
+    display: flex;
+    justify-content: space-between;
+}
+
+.tasklist__title {
+    display: flex;
+    flex-grow: 1;
+    padding: 5px;
+}
+
+.tasklist:hover {
+    background-color: #999999;
+    transition: 0.2s;
+}
+
+.tasklist__delete{
+    visibility: hidden;
+}
+
+.tasklist:hover .tasklist__delete{
+    text-align: right;
+    visibility: visible;
+    border-left: 1px solid black;
+}
