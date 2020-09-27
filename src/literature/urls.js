@@ -1,5 +1,5 @@
 // Convenience URL-related methods for Literature app
-import {API_URL} from "../constants";
+import {API_URL} from "../urls";
 import {Networking} from "../util";
 
 // Schema Mapping
@@ -34,22 +34,23 @@ export const [getTypes, addType, updateType, deleteType] = Networking.crudMethod
 //Submission
 export const submit = values => Networking.send(BOOKS, {
     method: Networking.POST,
-    body: {
+    headers: {'Content-Type': 'application/json',},
+    body: JSON.stringify({
         'authors': values['authors'],
         'genre': values['genre'],
-        'type': values['type'],
+        'type': values['types'],
         'title': values['title'],
         'description': values['description'],
         'read_next': values['readNext'],
         'date_read': values['dateRead'],
         'image_url': values['imageUrl'],
         'published': values['published'],
-        'google_id': values['googleId'],
-        'goodreads_id': values['goodreadsId'],
+        'google_id': values['googleId'] || null,
+        'goodreads_id': values['goodreadsId'] || null,
         'series': values['series'],
         'series_position': values['seriesPosition'],
         'rating': values['rating'],
         'my_review': values['myReview'],
         'notes': values['notes'],
-    }
+    })
 });

@@ -5,7 +5,7 @@
 /*All URLs to end with slashes*/
 
 // Base API URL
-export const API_URL = 'https://api.nicleong.com';
+export const API_URL = 'https://api.nicholaslyz.com';
 
 // Login/Logout
 export const LOGIN_URL = `${API_URL}/login/`;

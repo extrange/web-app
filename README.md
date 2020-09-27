@@ -1,3 +1,3 @@
-## My Web app
+## Personal Dashboard
 
-Test text
+I'm making a dashboard of my tasks, investments and booklists using ReactJS and Django.

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {Networking, NotAuthenticated, useInput} from "./util";
-import {LOGIN_URL, LOGOUT_URL} from "./constants";
+import {LOGIN_URL, LOGOUT_URL} from "./urls";
 import {MainApp} from "./mainApp";
 import styled from "styled-components";
 import {StyledTextField} from "./components/common";
@@ -50,7 +50,7 @@ export const Login = props => {
         });
     };
 
-    let loginForm = () =>
+    const loginForm =
         <StyledLogin className='login'>
             <p>{loginState.message}</p>
             <StyledCentralContainer>
@@ -107,6 +107,6 @@ export const Login = props => {
     if (loginState === LOGIN_STATES.AUTHENTICATED) {
         return <MainApp logout={logout}/>;
     } else {
-        return loginForm();
+        return loginForm;
     }
 };

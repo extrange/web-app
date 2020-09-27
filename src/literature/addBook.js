@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Networking, urlRegex, useInput} from "../util";
+import {Networking} from "../util";
 import {
     StyledAutocompleteMultiSort,
     StyledButton,
@@ -23,6 +23,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {Controller, useForm} from 'react-hook-form'
+import {submit} from "./urls";
+import {object, struct} from 'superstruct'
+import {superstructResolver} from "@hookform/resolvers";
+import is from 'is_js'
 
 const CardContainer = styled.div`
     display: flex;
@@ -50,29 +54,16 @@ const BigContainer = styled.div`
     justify-content: space-between;
 `;
 
+const schema = object({
 
-export const AddBooks = props => {
-    const {values, setValue: setValue_, onChange, bind} = useInput({
-        authors: [],
-        genres: [],
-        types: null, //only one type allowed per book
-        title: '',
-        description: '',
-        readNext: false,
-        dateRead: null,
-        imageUrl: '',
-        published: '',
-        googleId: '',
-        goodreadsId: '',
-        series: '',
-        seriesPosition: '',
-        rating: null,
-        myReview: '',
-        notes: '',
-    });
+});
+
+
+export const AddBooks = (refreshBooks, ...props) => {
 
     const {register, handleSubmit, control, getValues, reset, setValue, errors} = useForm({
         mode: "onTouched",
+        resolvers: superstructResolver(schema),
         defaultValues: {
             authors: [],
             genres: [],
@@ -122,13 +113,10 @@ export const AddBooks = props => {
         getTypes();
     }, []);
 
-    const submit = () => {
-    };
-
     const search = event => {
-        if (event.key !== 'Enter' || !values.search) return;
+        if (event.key !== 'Enter' || !getValues('search')) return;
         setLoadingSearch(true);
-        Networking.send(`${Url.SEARCH}?q=${values.search}`, {method: 'GET',})
+        Networking.send(`${Url.SEARCH}?q=${getValues('search')}`, {method: 'GET',})
             .then(resp => resp.json())
             .then(json => {
                 setResults(json['results']);
@@ -152,31 +140,25 @@ export const AddBooks = props => {
         <BigContainer>
             <FieldContainer>
                 <StyledButton
-                    onClick={handleSubmit(values => console.log(values))}
-                    variant={'contained'}
                     color={'primary'}
+                    variant={'contained'}
+                    onClick={() => submit(getValues()).then(refreshBooks).catch(e => console.log(e))}
                 >Submit
                 </StyledButton>
 
-                <Controller
+                <StyledTextFieldClearable
+                    inputRef={register}
                     name={'title'}
-                    control={control}
-                    rules={{required: true, minLength: 5}}
-                    as={<StyledTextFieldClearable
-                        label={'Title'}
-                        size={'small'}
-                        error={errors.title}
-                        multiline
-                        fullWidth
-                        onClear={() => setValue('title', '')}
-                    />}
+                    label={'Title'}
+                    size={'small'}
+                    multiline
+                    fullWidth
+                    onClear={() => setValue('title', '')}
                 />
-                {errors.title && 'hi'}
 
                 <Controller
                     name={'authors'}
                     control={control}
-                    rules={{required: true, minLength: 2}}
                     render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
                         getValues={() => getValues('authors')}
                         name={name}
@@ -188,135 +170,163 @@ export const AddBooks = props => {
                         options={authors}
                         refreshOptions={getAuthors}
                         callback={Url.addAuthor}
-                    />
-                    }
+                    />}
                 />
-                {errors.authors && 'hi'}
 
-                <StyledAutocompleteMultiSort
-                    label={'Genres'}
-                    required
-                    size={'small'}
-                    value={values['genres']}
-                    setValue={val => setValue_({name: 'genres', value: val})}
-                    options={genres}
-                    refreshOptions={getGenres}
-                    callback={Url.addGenre}
+                <Controller
+                    name={'genres'}
+                    control={control}
+                    render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
+                        name={name}
+                        label={'Genres'}
+                        required
+                        size={'small'}
+                        value={value}
+                        setValue={val => onChange(val)}
+                        onBlur={onBlur}
+                        options={genres}
+                        refreshOptions={getGenres}
+                        callback={Url.addGenre}
+                    />}
                 />
-                <StyledAutocompleteMultiSort
-                    label={'Types'}
-                    size={'small'}
-                    required
-                    value={values['types']}
-                    multiple={false}
-                    setValue={val => setValue_({name: 'types', value: val})}
-                    options={types}
-                    refreshOptions={getTypes}
-                    callback={Url.addType}
+
+                <Controller
+                    name={'types'}
+                    control={control}
+                    render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
+                        name={name}
+                        onBlur={onBlur}
+                        label={'Types'}
+                        size={'small'}
+                        required
+                        value={value}
+                        multiple={false}
+                        setValue={val => onChange(val)}
+                        options={types}
+                        refreshOptions={getTypes}
+                        callback={Url.addType}
+                    />}
                 />
+
                 <StyledTextField
+                    inputRef={register()}
+                    name={'description'}
                     label={'Description'}
                     required
                     size={'small'}
                     multiline
                     fullWidth
-                    {...bind('description')}
                 />
+
                 <FormControlLabel
                     control={<Checkbox
-                        checked={values['readNext']}
                         name={'readNext'}
-                        onChange={e => setValue_({name: 'readNext', value: e.target.checked})}
+                        inputRef={register}
                     />}
                     label={'Read next?'}
                     labelPlacement={'start'}
                 />
 
-                <MuiPickersUtilsProvider utils={DateFns}>
-                    <KeyboardDatePicker
-                        autoOk
-                        disableFuture
-                        size={'small'}
-                        label={'Date Read'}
-                        format={'dd/MM/yyyy'}
-                        placeholder={'dd/mm/yyyy'}
-                        onChange={(date, invalidValue) => setValue_({name: 'dateRead', value: date})}
-                        value={values['dateRead']}
-                        inputVariant={'outlined'}
-                        variant={'inline'}
-                    />
-                </MuiPickersUtilsProvider>
-                <StyledTextFieldClearable
-                    label={'Image URL'}
+                <Controller
+                    name={'dateRead'}
+                    control={control}
+                    render={({onChange, onBlur, value, name}) => <MuiPickersUtilsProvider
+                        utils={DateFns}>
+                        <KeyboardDatePicker
+                            name={name}
+                            autoOk
+                            disableFuture
+                            size={'small'}
+                            label={'Date Read'}
+                            format={'dd/MM/yyyy'}
+                            onBlur={onBlur}
+                            placeholder={'dd/mm/yyyy'}
+                            onChange={onChange} //todo do something with the invalid date
+                            value={value}
+                            inputVariant={'outlined'}
+                            variant={'inline'}
+                        />
+                    </MuiPickersUtilsProvider>
+                    }
+                />
 
+
+                <StyledTextFieldClearable
+                    name={'imageUrl'}
+                    inputRef={register}
+                    label={'Image URL'}
                     required
                     size={'small'}
                     fullWidth
                     type={'url'}
-                    error={values['imageUrl'] === '' ? false : !urlRegex.exec(values['imageUrl'])}
-                    onClear={e => setValue_({name: 'imageUrl', value: ''})}
-                    {...bind('imageUrl')}
+                    onClear={e => setValue('imageUrl', '')}
                 />
                 <StyledTextFieldClearable
+                    name={'published'}
+                    inputRef={register}
                     label={'Year published'}
                     size={'small'}
                     required
                     fullWidth
                     type={'tel'}
-                    error={values['published'] === '' ? false : !/^\s*\d+\s*$/.exec(values['published'])}
-                    onClear={e => setValue_({name: 'published', value: ''})}
-                    {...bind('published')}
+                    onClear={e => setValue('published', '')}
                 />
                 <StyledTextFieldClearable
+                    name={'googleId'}
+                    inputRef={register}
                     label={'Google ID'}
                     size={'small'}
                     fullWidth
-                    onClear={e => setValue_({name: 'googleId', value: ''})}
-                    {...bind('googleId')}
+                    onClear={e => setValue('googleId', '')}
                 />
                 <StyledTextFieldClearable
+                    name={'goodreadsId'}
+                    inputRef={register}
                     label={'Goodreads ID'}
                     size={'small'}
                     fullWidth
-                    onClear={e => setValue_({name: 'goodreadsId', value: ''})}
-                    {...bind('goodreadsId')}
+                    onClear={e => setValue('goodreadsId', '')}
                 />
                 <StyledTextFieldClearable
+                    name={'series'}
+                    inputRef={register}
                     label={'Series Name'}
                     size={'small'}
                     fullWidth
-                    onClear={e => setValue_({name: 'series', value: ''})}
-                    {...bind('series')}
+                    onClear={e => setValue('series', '')}
                 />
                 <StyledTextFieldClearable
+                    name={'seriesPosition'}
                     label={'Series Position'}
                     size={'small'}
                     fullWidth
-                    onClear={e => setValue_({name: 'seriesPosition', value: ''})}
-                    {...bind('seriesPosition')}
+                    onClear={e => setValue('seriesPosition', '')}
                 />
                 <StyledTextFieldClearable
+                    name={'rating'}
+                    inputRef={register}
                     label={'Rating'}
                     size={'small'}
                     fullWidth
-                    onClear={e => setValue_({name: 'rating', value: ''})}
-                    {...bind('rating')}
+                    onClear={e => setValue('rating', '')}
                 />
                 <StyledTextField
+                    name={'myReview'}
+                    inputRef={register}
                     label={'My Review'}
                     size={'small'}
                     helperText={'Not good, read others, highlight specific chapters, etc'}
                     fullWidth
                     multiline
-                    {...bind('myReview')}
                 />
                 <StyledTextField
+                    name={'notes'}
+                    inputRef={register}
                     label={'Notes'}
                     size={'small'}
                     helperText={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}
                     fullWidth
                     multiline
-                    {...bind('notes')}
                 />
 
             </FieldContainer>
@@ -329,6 +339,7 @@ export const AddBooks = props => {
                     onClick={() => setDebugValues(getValues())}
                 >Get Values
                 </StyledButton>
+
                 <Table style={{maxWidth: '500px', flex: '1'}} size={'small'}>
                     <TableHead>
                         <TableRow>
@@ -352,8 +363,9 @@ export const AddBooks = props => {
         <FieldContainer>
             <StyledTextFieldClearable //todo pullup into a separate component
                 placeholder={'Search books'}
-                {...bind('search')}
-                onClear={() => setValue_({name: 'search', value: ''})}
+                name={'search'}
+                inputRef={register}
+                onClear={() => setValue('search', '')}
                 onKeyPress={search}
                 fullWidth
                 InputProps={{

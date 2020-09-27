@@ -1,7 +1,5 @@
 //Books in a series should be collapsible
 import React, {useEffect} from 'react'
-import {Networking} from "../util";
-import * as Url from "./urls";
 import styled from "styled-components";
 
 const StyledTh = styled.th`
@@ -25,16 +23,9 @@ const StyledTable = styled.table`
 `;
 
 
-export const ViewBooks = ({setBooks, ...props}) => {
+export const ViewBooks = ({refreshBooks, ...props}) => {
 
-    useEffect(() => {
-        Networking.send(Url.BOOKS, {method: 'GET'})
-            .then(resp => resp.json())
-            .then(json => {
-                setBooks(json);
-            })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    useEffect(refreshBooks, []);
 
     return <>
         <StyledTable>
