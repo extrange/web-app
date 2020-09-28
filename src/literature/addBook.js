@@ -24,7 +24,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {Controller, useForm} from 'react-hook-form'
 import {submit} from "./urls";
-import {object, struct} from 'superstruct'
+import * as s from 'superstruct'
 import {superstructResolver} from "@hookform/resolvers";
 import is from 'is_js'
 
@@ -54,7 +54,7 @@ const BigContainer = styled.div`
     justify-content: space-between;
 `;
 
-const schema = object({
+const schema = s.object({
 
 });
 
@@ -63,7 +63,7 @@ export const AddBooks = (refreshBooks, ...props) => {
 
     const {register, handleSubmit, control, getValues, reset, setValue, errors} = useForm({
         mode: "onTouched",
-        resolvers: superstructResolver(schema),
+        resolver: superstructResolver(schema),
         defaultValues: {
             authors: [],
             genres: [],
