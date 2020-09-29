@@ -38,7 +38,7 @@ export const submit = values => Networking.send(BOOKS, {
     body: JSON.stringify({
         'authors': values['authors'],
         'genre': values['genre'],
-        'type': values['types'],
+        'type': values['type'],
         'title': values['title'],
         'description': values['description'],
         'read_next': values['readNext'],

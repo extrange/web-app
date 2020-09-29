@@ -54,10 +54,25 @@ const BigContainer = styled.div`
     justify-content: space-between;
 `;
 
+const extractIds = s.coercion(
+    s.array(s.object({id: s.number()})),
+    val => val.authors.map(e => e.id)
+)
+
 const schema = s.object({
+    authors: s.array(s.number()),
 
 });
 
+const testData = {
+    authors: [{id: 1}, {id: 2}]
+}
+
+console.log(s.validate(s.coerce(testData, extractIds), schema))
+
+// make struct
+// make button to print out validated struct
+// coerce before validation
 
 export const AddBooks = (refreshBooks, ...props) => {
 
@@ -66,8 +81,8 @@ export const AddBooks = (refreshBooks, ...props) => {
         resolver: superstructResolver(schema),
         defaultValues: {
             authors: [],
-            genres: [],
-            types: null, //only one type allowed per book
+            genre: [],
+            type: null, //only one type allowed per book
             title: '',
             description: '',
             readNext: false,
@@ -174,7 +189,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                 />
 
                 <Controller
-                    name={'genres'}
+                    name={'genre'}
                     control={control}
                     render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
                         name={name}
@@ -191,12 +206,12 @@ export const AddBooks = (refreshBooks, ...props) => {
                 />
 
                 <Controller
-                    name={'types'}
+                    name={'type'}
                     control={control}
                     render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
                         name={name}
                         onBlur={onBlur}
-                        label={'Types'}
+                        label={'Type'}
                         size={'small'}
                         required
                         value={value}
