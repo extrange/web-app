@@ -26,8 +26,8 @@
     "remove-accents": "^0.4.2",
     "source-map-explorer": "^2.5.0",
     "styled-components": "^5.2.0",
-    "superstruct": "^0.10.12",
-    "worker-loader": "^2.0.0"
+    "worker-loader": "^2.0.0",
+    "yup": "^0.29.3"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",

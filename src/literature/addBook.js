@@ -54,31 +54,11 @@ const BigContainer = styled.div`
     justify-content: space-between;
 `;
 
-const extractIds = s.coercion(
-    s.array(s.object({id: s.number()})),
-    val => val.authors.map(e => e.id)
-)
-
-const schema = s.object({
-    authors: s.array(s.number()),
-
-});
-
-const testData = {
-    authors: [{id: 1}, {id: 2}]
-}
-
-console.log(s.validate(s.coerce(testData, extractIds), schema))
-
-// make struct
-// make button to print out validated struct
-// coerce before validation
 
 export const AddBooks = (refreshBooks, ...props) => {
 
     const {register, handleSubmit, control, getValues, reset, setValue, errors} = useForm({
         mode: "onTouched",
-        resolver: superstructResolver(schema),
         defaultValues: {
             authors: [],
             genre: [],
@@ -121,6 +101,8 @@ export const AddBooks = (refreshBooks, ...props) => {
         Url.getTypes().then(result => setTypes(result))
     };
 
+    const onSubmit = (data, e) => console.log('submitted data:', data)
+
     // Load authors, genre, types
     useEffect(() => {
         getAuthors();
@@ -157,7 +139,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                 <StyledButton
                     color={'primary'}
                     variant={'contained'}
-                    onClick={() => submit(getValues()).then(refreshBooks).catch(e => console.log(e))}
+                    onClick={handleSubmit(onSubmit)}
                 >Submit
                 </StyledButton>
 
