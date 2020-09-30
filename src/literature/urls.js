@@ -1,4 +1,6 @@
-// Convenience URL-related methods for Literature app
+/**
+ * Convenience URL-related methods for Literature app
+ */
 import {API_URL} from "../urls";
 import {Networking} from "../util";
 

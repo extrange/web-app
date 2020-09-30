@@ -24,9 +24,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {Controller, useForm} from 'react-hook-form'
 import {submit} from "./urls";
-import * as s from 'superstruct'
-import {superstructResolver} from "@hookform/resolvers";
-import is from 'is_js'
+import {yupResolver} from "@hookform/resolvers";
+import * as yup from "yup"
 
 const CardContainer = styled.div`
     display: flex;
@@ -54,11 +53,44 @@ const BigContainer = styled.div`
     justify-content: space-between;
 `;
 
+// .required() ensures that all objects *must* contain an 'id' field with an integer
+// which is later extracted and mapped into the final array for submission
+const arrayWithId = yup.array(yup.number().integer().required()).ensure().transform(val => val.map(v => v.id));
+
+// This field will be null if omitted or a falsey value ('', undefined or null)
+const blankStringToNull = yup.string().defined().transform(val => !val ? null : val).default(null);
+
+// Schema, after coercion and validation, should be ready for submission
+const bookSchema = yup.object({
+    authors: arrayWithId,
+    genre: arrayWithId,
+    type: yup.number().integer().transform(val => val.id),
+    title: yup.string().required(),
+    description: yup.string().uppercase(),
+    readNext: yup.bool(),
+    dateRead: yup.date(),
+    imageUrl: yup.string().url(),
+    published: yup.number().integer(),
+    googleId: blankStringToNull,
+    goodreadsId: blankStringToNull,
+    series: yup.string(),
+    seriesPosition: yup.string(),
+    rating: yup.number().transform(v => Math.round(v*10)/10).min(0).max(5),
+    myReview: yup.string(),
+    notes: yup.string(),
+
+}).noUnknown();
+
+bookSchema.validate({
+    type: {id:3}
+}).then(r => console.log(r));
+
 
 export const AddBooks = (refreshBooks, ...props) => {
 
     const {register, handleSubmit, control, getValues, reset, setValue, errors} = useForm({
         mode: "onTouched",
+        resolver: yupResolver(bookSchema),
         defaultValues: {
             authors: [],
             genre: [],
@@ -101,7 +133,8 @@ export const AddBooks = (refreshBooks, ...props) => {
         Url.getTypes().then(result => setTypes(result))
     };
 
-    const onSubmit = (data, e) => console.log('submitted data:', data)
+    const onSubmit = (data, e) => console.log('submitted data:', data);
+    const onError = data => console.log('errors:', data);
 
     // Load authors, genre, types
     useEffect(() => {
@@ -139,7 +172,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                 <StyledButton
                     color={'primary'}
                     variant={'contained'}
-                    onClick={handleSubmit(onSubmit)}
+                    onClick={handleSubmit(onSubmit, onError)}
                 >Submit
                 </StyledButton>
 
@@ -152,6 +185,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                     fullWidth
                     onClear={() => setValue('title', '')}
                 />
+                {errors.title?.message}
 
                 <Controller
                     name={'authors'}
@@ -169,6 +203,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                         callback={Url.addAuthor}
                     />}
                 />
+                {errors.authors?.message}
 
                 <Controller
                     name={'genre'}
@@ -186,6 +221,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                         callback={Url.addGenre}
                     />}
                 />
+                {errors.genre?.message}
 
                 <Controller
                     name={'type'}
@@ -204,6 +240,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                         callback={Url.addType}
                     />}
                 />
+                {errors.type?.message}
 
                 <StyledTextField
                     inputRef={register()}
@@ -214,6 +251,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                     multiline
                     fullWidth
                 />
+                {errors.description?.message}
 
                 <FormControlLabel
                     control={<Checkbox
@@ -223,6 +261,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                     label={'Read next?'}
                     labelPlacement={'start'}
                 />
+                {errors.readNext?.message}
 
                 <Controller
                     name={'dateRead'}
@@ -246,6 +285,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                     </MuiPickersUtilsProvider>
                     }
                 />
+                {errors.dateRead?.message}
 
 
                 <StyledTextFieldClearable
@@ -258,6 +298,8 @@ export const AddBooks = (refreshBooks, ...props) => {
                     type={'url'}
                     onClear={e => setValue('imageUrl', '')}
                 />
+                {errors.imageUrl?.message}
+
                 <StyledTextFieldClearable
                     name={'published'}
                     inputRef={register}
@@ -268,6 +310,8 @@ export const AddBooks = (refreshBooks, ...props) => {
                     type={'tel'}
                     onClear={e => setValue('published', '')}
                 />
+                {errors.published?.message}
+
                 <StyledTextFieldClearable
                     name={'googleId'}
                     inputRef={register}
@@ -276,6 +320,8 @@ export const AddBooks = (refreshBooks, ...props) => {
                     fullWidth
                     onClear={e => setValue('googleId', '')}
                 />
+                {errors.googleId?.message}
+
                 <StyledTextFieldClearable
                     name={'goodreadsId'}
                     inputRef={register}
@@ -284,6 +330,8 @@ export const AddBooks = (refreshBooks, ...props) => {
                     fullWidth
                     onClear={e => setValue('goodreadsId', '')}
                 />
+                {errors.goodreadsId?.message}
+
                 <StyledTextFieldClearable
                     name={'series'}
                     inputRef={register}
@@ -292,6 +340,8 @@ export const AddBooks = (refreshBooks, ...props) => {
                     fullWidth
                     onClear={e => setValue('series', '')}
                 />
+                {errors.series?.message}
+
                 <StyledTextFieldClearable
                     name={'seriesPosition'}
                     label={'Series Position'}
@@ -299,6 +349,8 @@ export const AddBooks = (refreshBooks, ...props) => {
                     fullWidth
                     onClear={e => setValue('seriesPosition', '')}
                 />
+                {errors.seriesPosition?.message}
+
                 <StyledTextFieldClearable
                     name={'rating'}
                     inputRef={register}
@@ -307,6 +359,8 @@ export const AddBooks = (refreshBooks, ...props) => {
                     fullWidth
                     onClear={e => setValue('rating', '')}
                 />
+                {errors.rating?.message}
+
                 <StyledTextField
                     name={'myReview'}
                     inputRef={register}
@@ -316,6 +370,8 @@ export const AddBooks = (refreshBooks, ...props) => {
                     fullWidth
                     multiline
                 />
+                {errors.myReview?.message}
+
                 <StyledTextField
                     name={'notes'}
                     inputRef={register}
@@ -325,6 +381,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                     fullWidth
                     multiline
                 />
+                {errors.notes?.message}
 
             </FieldContainer>
 
@@ -348,7 +405,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                         {Object.entries(debugValues).map(([k, v]) =>
                             <TableRow key={String(k)}>
                                 <TableCell>{String(k)}</TableCell>
-                                <TableCell>{String(v)}</TableCell>
+                                <TableCell>{JSON.stringify(v)}</TableCell>
                             </TableRow>
                         )}
                     </TableBody>
