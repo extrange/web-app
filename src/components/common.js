@@ -62,13 +62,15 @@ const MuiStyledAutocompleteMultiSort = muiStyled(Autocomplete)({
  * @returns {JSX.Element}
  * @constructor
  */
-export const StyledAutocompleteMultiSort = ({displayKey = 'name', searchKeys = ['name'], multiple = true, value, setValue, label, callback, options, refreshOptions, getValues, ...props}) => {
+export const StyledAutocompleteMultiSort = ({displayKey = 'name', searchKeys = ['name'], multiple = true, value, setValue, label, callback, options, refreshOptions, getValues, renderProps, ...props}) => {
 
     let [loading, setLoading] = useState(true);
     useEffect(() => setLoading(options.length < 1), [options]);
 
     return <MuiStyledAutocompleteMultiSort
         {...props}
+        autoComplete
+        autoHighlight
         multiple={multiple}
         filterSelectedOptions
         loading={loading}
@@ -166,6 +168,7 @@ export const StyledAutocompleteMultiSort = ({displayKey = 'name', searchKeys = [
         renderInput={params =>
             <TextField
                 {...params}
+                {...renderProps}
                 variant={'outlined'}
                 label={label}
                 InputProps={{

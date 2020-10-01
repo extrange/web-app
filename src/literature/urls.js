@@ -33,26 +33,29 @@ export const [getAuthors, addAuthor, updateAuthor, deleteAuthor] = Networking.cr
 export const [getGenres, addGenre, updateGenre, deleteGenre] = Networking.crudMethods(GENRES, getGenreDetail);
 export const [getTypes, addType, updateType, deleteType] = Networking.crudMethods(TYPES, getTypeDetail);
 
+//Mapping of names from JS to Python
+export const bookFields = {
+    authors: 'authors',
+    genre: 'genre',
+    type: 'type',
+    title: 'title',
+    description: 'description',
+    readNext: 'read_next',
+    dateRead: 'date_read',
+    imageUrl: 'image_url',
+    published: 'published',
+    googleId: 'google_id',
+    goodreadsId: 'goodreads_id',
+    series: 'series',
+    seriesPosition: 'series_position',
+    rating: 'rating',
+    myReview: 'my_review',
+    notes: 'notes',
+}
+
 //Submission
 export const submit = values => Networking.send(BOOKS, {
     method: Networking.POST,
     headers: {'Content-Type': 'application/json',},
-    body: JSON.stringify({
-        'authors': values['authors'],
-        'genre': values['genre'],
-        'type': values['type'],
-        'title': values['title'],
-        'description': values['description'],
-        'read_next': values['readNext'],
-        'date_read': values['dateRead'],
-        'image_url': values['imageUrl'],
-        'published': values['published'],
-        'google_id': values['googleId'] || null,
-        'goodreads_id': values['goodreadsId'] || null,
-        'series': values['series'],
-        'series_position': values['seriesPosition'],
-        'rating': values['rating'],
-        'my_review': values['myReview'],
-        'notes': values['notes'],
-    })
+    body: JSON.stringify(values)
 });

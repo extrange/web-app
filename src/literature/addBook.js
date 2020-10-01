@@ -23,7 +23,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {Controller, useForm} from 'react-hook-form'
-import {submit} from "./urls";
+import {bookFields, bookFieldsMap, submit} from "./urls";
 import {yupResolver} from "@hookform/resolvers";
 import * as yup from "yup"
 
@@ -53,37 +53,32 @@ const BigContainer = styled.div`
     justify-content: space-between;
 `;
 
-// .required() ensures that all objects *must* contain an 'id' field with an integer
+// .required() ensures that objects (if any) in the array *must* contain an 'id' field with an integer
 // which is later extracted and mapped into the final array for submission
 const arrayWithId = yup.array(yup.number().integer().required()).ensure().transform(val => val.map(v => v.id));
 
 // This field will be null if omitted or a falsey value ('', undefined or null)
-const blankStringToNull = yup.string().defined().transform(val => !val ? null : val).default(null);
+const blankStringToNull = yup.string().defined().transform(val => val ? val : null).default(null);
 
 // Schema, after coercion and validation, should be ready for submission
 const bookSchema = yup.object({
-    authors: arrayWithId,
-    genre: arrayWithId,
-    type: yup.number().integer().transform(val => val.id),
-    title: yup.string().required(),
-    description: yup.string().uppercase(),
-    readNext: yup.bool(),
-    dateRead: yup.date(),
-    imageUrl: yup.string().url(),
-    published: yup.number().integer(),
-    googleId: blankStringToNull,
-    goodreadsId: blankStringToNull,
-    series: yup.string(),
-    seriesPosition: yup.string(),
-    rating: yup.number().transform(v => Math.round(v*10)/10).min(0).max(5),
-    myReview: yup.string(),
-    notes: yup.string(),
-
+    [bookFields.authors]: arrayWithId,
+    [bookFields.genre]: arrayWithId,
+    [bookFields.type]: yup.number().transform((val, origVal) => origVal?.id).required(),
+    [bookFields.title]: yup.string().required(),
+    [bookFields.description]: yup.string().uppercase(),
+    [bookFields.readNext]: yup.bool(),
+    [bookFields.dateRead]: yup.date().nullable(),
+    [bookFields.imageUrl]: yup.string().url(), //todo validate as url without http instead
+    [bookFields.published]: yup.number().integer(),
+    [bookFields.googleId]: blankStringToNull,
+    [bookFields.goodreadsId]: blankStringToNull,
+    [bookFields.series]: yup.string(),
+    [bookFields.seriesPosition]: yup.string(),
+    [bookFields.rating]: yup.number().transform(v => Math.round(v * 10) / 10).min(0).max(5),
+    [bookFields.myReview]: yup.string(),
+    [bookFields.notes]: yup.string(),
 }).noUnknown();
-
-bookSchema.validate({
-    type: {id:3}
-}).then(r => console.log(r));
 
 
 export const AddBooks = (refreshBooks, ...props) => {
@@ -92,22 +87,22 @@ export const AddBooks = (refreshBooks, ...props) => {
         mode: "onTouched",
         resolver: yupResolver(bookSchema),
         defaultValues: {
-            authors: [],
-            genre: [],
-            type: null, //only one type allowed per book
-            title: '',
-            description: '',
-            readNext: false,
-            dateRead: null,
-            imageUrl: '',
-            published: '',
-            googleId: '',
-            goodreadsId: '',
-            series: '',
-            seriesPosition: '',
-            rating: null,
-            myReview: '',
-            notes: '',
+            [bookFields.authors]: [],
+            [bookFields.genre]: [],
+            [bookFields.type]: null, //only one type allowed per book
+            [bookFields.title]: '',
+            [bookFields.description]: '',
+            [bookFields.readNext]: false,
+            [bookFields.dateRead]: null,
+            [bookFields.imageUrl]: '',
+            [bookFields.published]: '',
+            [bookFields.googleId]: '',
+            [bookFields.goodreadsId]: '',
+            [bookFields.series]: '',
+            [bookFields.seriesPosition]: '',
+            [bookFields.rating]: null,
+            [bookFields.myReview]: '',
+            [bookFields.notes]: '',
         }
     });
 
@@ -178,22 +173,27 @@ export const AddBooks = (refreshBooks, ...props) => {
 
                 <StyledTextFieldClearable
                     inputRef={register}
-                    name={'title'}
+                    name={bookFields.title}
                     label={'Title'}
                     size={'small'}
+                    error={errors[bookFields.title]}
+                    helperText={errors[bookFields.title]?.message}
                     multiline
                     fullWidth
                     onClear={() => setValue('title', '')}
                 />
-                {errors.title?.message}
 
                 <Controller
-                    name={'authors'}
+                    name={bookFields.authors}
                     control={control}
                     render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
-                        getValues={() => getValues('authors')}
+                        getValues={() => getValues(bookFields.authors)}
                         name={name}
                         label={'Authors'}
+                        renderProps={{
+                            error: errors[bookFields.authors],
+                            helperText: errors[bookFields.authors]?.message
+                        }}
                         size={'small'}
                         value={value}
                         setValue={val => onChange(val)}
@@ -203,15 +203,18 @@ export const AddBooks = (refreshBooks, ...props) => {
                         callback={Url.addAuthor}
                     />}
                 />
-                {errors.authors?.message}
 
                 <Controller
-                    name={'genre'}
+                    name={bookFields.genre}
                     control={control}
                     render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
                         name={name}
                         label={'Genres'}
                         required
+                        renderProps={{
+                            error: errors[bookFields.genre],
+                            helperText: errors[bookFields.genre]?.message
+                        }}
                         size={'small'}
                         value={value}
                         setValue={val => onChange(val)}
@@ -221,15 +224,18 @@ export const AddBooks = (refreshBooks, ...props) => {
                         callback={Url.addGenre}
                     />}
                 />
-                {errors.genre?.message}
 
                 <Controller
-                    name={'type'}
+                    name={bookFields.type}
                     control={control}
                     render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
                         name={name}
                         onBlur={onBlur}
                         label={'Type'}
+                        renderProps={{
+                            error: errors[bookFields.type],
+                            helperText: errors[bookFields.type]?.message
+                        }}
                         size={'small'}
                         required
                         value={value}
@@ -240,18 +246,18 @@ export const AddBooks = (refreshBooks, ...props) => {
                         callback={Url.addType}
                     />}
                 />
-                {errors.type?.message}
 
                 <StyledTextField
                     inputRef={register()}
                     name={'description'}
                     label={'Description'}
+                    error={errors[bookFields.description]}
+                    helperText={errors[bookFields.description]?.message}
                     required
                     size={'small'}
                     multiline
                     fullWidth
                 />
-                {errors.description?.message}
 
                 <FormControlLabel
                     control={<Checkbox
@@ -264,7 +270,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                 {errors.readNext?.message}
 
                 <Controller
-                    name={'dateRead'}
+                    name={bookFields.dateRead}
                     control={control}
                     render={({onChange, onBlur, value, name}) => <MuiPickersUtilsProvider
                         utils={DateFns}>
@@ -275,9 +281,11 @@ export const AddBooks = (refreshBooks, ...props) => {
                             size={'small'}
                             label={'Date Read'}
                             format={'dd/MM/yyyy'}
+                            error={errors[bookFields.dateRead]}
+                            helperText={errors[bookFields.dateRead]?.message}
                             onBlur={onBlur}
                             placeholder={'dd/mm/yyyy'}
-                            onChange={onChange} //todo do something with the invalid date
+                            onChange={(date, invalidStr) => invalidStr ? onChange(invalidStr) : onChange(date)}
                             value={value}
                             inputVariant={'outlined'}
                             variant={'inline'}
@@ -285,11 +293,11 @@ export const AddBooks = (refreshBooks, ...props) => {
                     </MuiPickersUtilsProvider>
                     }
                 />
-                {errors.dateRead?.message}
-
 
                 <StyledTextFieldClearable
-                    name={'imageUrl'}
+                    name={bookFields.imageUrl}
+                    error={Boolean(errors[bookFields.imageUrl])}
+                    helperText={errors[bookFields.imageUrl]?.message}
                     inputRef={register}
                     label={'Image URL'}
                     required
@@ -298,10 +306,9 @@ export const AddBooks = (refreshBooks, ...props) => {
                     type={'url'}
                     onClear={e => setValue('imageUrl', '')}
                 />
-                {errors.imageUrl?.message}
 
                 <StyledTextFieldClearable
-                    name={'published'}
+                    name={bookFields.published}
                     inputRef={register}
                     label={'Year published'}
                     size={'small'}
