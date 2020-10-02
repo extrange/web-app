@@ -180,7 +180,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                     helperText={errors[bookFields.title]?.message}
                     multiline
                     fullWidth
-                    onClear={() => setValue('title', '')}
+                    onClear={() => setValue(bookFields.title, '')}
                 />
 
                 <Controller
@@ -191,7 +191,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                         name={name}
                         label={'Authors'}
                         renderProps={{
-                            error: errors[bookFields.authors],
+                            error: Boolean(errors[bookFields.authors]),
                             helperText: errors[bookFields.authors]?.message
                         }}
                         size={'small'}
@@ -212,7 +212,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                         label={'Genres'}
                         required
                         renderProps={{
-                            error: errors[bookFields.genre],
+                            error: Boolean(errors[bookFields.genre]),
                             helperText: errors[bookFields.genre]?.message
                         }}
                         size={'small'}
@@ -233,7 +233,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                         onBlur={onBlur}
                         label={'Type'}
                         renderProps={{
-                            error: errors[bookFields.type],
+                            error: Boolean(errors[bookFields.type]),
                             helperText: errors[bookFields.type]?.message
                         }}
                         size={'small'}
@@ -251,7 +251,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                     inputRef={register()}
                     name={'description'}
                     label={'Description'}
-                    error={errors[bookFields.description]}
+                    error={Boolean(errors[bookFields.description])}
                     helperText={errors[bookFields.description]?.message}
                     required
                     size={'small'}
@@ -304,91 +304,99 @@ export const AddBooks = (refreshBooks, ...props) => {
                     size={'small'}
                     fullWidth
                     type={'url'}
-                    onClear={e => setValue('imageUrl', '')}
+                    onClear={e => setValue(bookFields.imageUrl, '')}
                 />
 
                 <StyledTextFieldClearable
                     name={bookFields.published}
                     inputRef={register}
                     label={'Year published'}
+                    error={Boolean(errors[bookFields.published])}
+                    helperText={errors[bookFields.published]?.message}
                     size={'small'}
-                    required
                     fullWidth
                     type={'tel'}
-                    onClear={e => setValue('published', '')}
+                    onClear={e => setValue(bookFields.published, '')}
                 />
-                {errors.published?.message}
 
                 <StyledTextFieldClearable
-                    name={'googleId'}
+                    name={bookFields.googleId}
                     inputRef={register}
+                    error={Boolean(errors[bookFields.googleId])}
+                    helperText={errors[bookFields.googleId]?.message}
                     label={'Google ID'}
                     size={'small'}
                     fullWidth
-                    onClear={e => setValue('googleId', '')}
+                    onClear={e => setValue(bookFields.googleId, '')}
                 />
-                {errors.googleId?.message}
 
                 <StyledTextFieldClearable
-                    name={'goodreadsId'}
+                    name={bookFields.goodreadsId}
                     inputRef={register}
+                    error={Boolean(errors[bookFields.goodreadsId])}
+                    helperText={errors[bookFields.goodreadsId]?.message}
                     label={'Goodreads ID'}
                     size={'small'}
                     fullWidth
-                    onClear={e => setValue('goodreadsId', '')}
+                    onClear={e => setValue(bookFields.goodreadsId, '')}
                 />
-                {errors.goodreadsId?.message}
 
                 <StyledTextFieldClearable
-                    name={'series'}
+                    name={bookFields.series}
                     inputRef={register}
+                    error={Boolean(errors[bookFields.series])}
+                    helperText={errors[bookFields.series]?.message}
                     label={'Series Name'}
                     size={'small'}
                     fullWidth
-                    onClear={e => setValue('series', '')}
+                    onClear={e => setValue(bookFields.series, '')}
                 />
-                {errors.series?.message}
 
                 <StyledTextFieldClearable
-                    name={'seriesPosition'}
+                    name={bookFields.seriesPosition}
+                    error={Boolean(errors[bookFields.seriesPosition])}
+                    helperText={errors[bookFields.seriesPosition]?.message}
                     label={'Series Position'}
                     size={'small'}
                     fullWidth
-                    onClear={e => setValue('seriesPosition', '')}
+                    onClear={e => setValue(bookFields.seriesPosition, '')}
                 />
-                {errors.seriesPosition?.message}
 
                 <StyledTextFieldClearable
-                    name={'rating'}
+                    name={bookFields.rating}
+                    error={Boolean(errors[bookFields.rating])}
+                    helperText={errors[bookFields.rating]?.message}
                     inputRef={register}
                     label={'Rating'}
                     size={'small'}
                     fullWidth
-                    onClear={e => setValue('rating', '')}
+                    onClear={e => setValue(bookFields.rating, '')}
                 />
-                {errors.rating?.message}
 
                 <StyledTextField
-                    name={'myReview'}
+                    name={bookFields.myReview}
                     inputRef={register}
+                    error={Boolean(errors[bookFields.myReview])}
+                    helperText={errors[bookFields.myReview]?.message}
                     label={'My Review'}
                     size={'small'}
-                    helperText={'Not good, read others, highlight specific chapters, etc'}
+                    placeholder={'Not good, read others, highlight specific chapters, etc'}
                     fullWidth
                     multiline
                 />
                 {errors.myReview?.message}
 
                 <StyledTextField
-                    name={'notes'}
+                    name={bookFields.notes}
                     inputRef={register}
+                    error={Boolean(errors[bookFields.notes])}
+                    helperText={errors[bookFields.notes]?.message}
                     label={'Notes'}
                     size={'small'}
-                    helperText={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}
+                    placeholder={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}
                     fullWidth
                     multiline
                 />
-                {errors.notes?.message}
 
             </FieldContainer>
 
