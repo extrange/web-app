@@ -157,7 +157,8 @@ export const useInput = (initialValues = {}) => {
 
 /**
  * Strip accents, empty spaces and lowercase a string (for comparison purposes)
- * @param string
+ * undefined/null returns an empty string
+ * @param {String} string
  */
 export const sanitizeString = string =>
     string ? removeAccents(string).trim().toLowerCase() : ''

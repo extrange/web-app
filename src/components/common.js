@@ -201,17 +201,17 @@ export const StyledTextField = props =>
     />
 ;
 
-export const StyledTextFieldClearable = ({onClear, InputProps = {}, ...props}) =>
+export const StyledTextFieldClearable = ({onClear, ...props}) =>
     <MuiStyledTextField
         {...props}
         variant={'outlined'}
         InputProps={{
-            ...InputProps,
+            ...props.InputProps,
             endAdornment:
                 <InputAdornment position={'end'}>
                     {props.value &&
                     <ClearIcon style={{cursor: 'pointer'}} onClick={onClear}/>}
-                    {InputProps.endAdornment}
+                    {props.InputProps?.endAdornment}
                 </InputAdornment>
         }}
     />

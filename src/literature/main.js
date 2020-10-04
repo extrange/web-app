@@ -12,9 +12,7 @@ export const LitApp = (props) => {
     const refreshBooks = () => {
         Networking.send(Url.BOOKS, {method: 'GET'})
             .then(resp => resp.json())
-            .then(json => {
-                setBooks(json);
-            })
+            .then(json => setBooks(json));
     };
 
 

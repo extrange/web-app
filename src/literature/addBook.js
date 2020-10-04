@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {Networking} from "../util";
 import {
     StyledAutocompleteMultiSort,
     StyledButton,
@@ -7,35 +6,31 @@ import {
     StyledTextFieldClearable
 } from "../components/common";
 import * as Url from "./urls";
-import {GoodreadsBookResult, GoogleBookResult} from "./BookResult";
+import {getGoodreadsBookInfo, getGoogleBookInfo} from "./urls";
 import styled from "styled-components";
-import {InputAdornment} from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
-import CircularProgress from "@material-ui/core/CircularProgress";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import {KeyboardDatePicker} from "@material-ui/pickers/DatePicker";
 import {MuiPickersUtilsProvider} from "@material-ui/pickers/MuiPickersUtilsProvider"
 import DateFns from '@date-io/date-fns'
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import {Controller, useForm} from 'react-hook-form'
-import {bookFields, bookFieldsMap, submit} from "./urls";
 import {yupResolver} from "@hookform/resolvers";
-import * as yup from "yup"
-
-const CardContainer = styled.div`
-    display: flex;
-    max-width: 1000px;
-    flex-flow: row wrap;
-`;
-
-const BookInfoContainer = styled.div`
-
-`;
+import {format, isValid} from "date-fns"
+import {bookFields, bookSchema, defaultBookValues, resultType} from "./schema";
+import {SearchBooks} from "./searchBooks";
+import {Networking, sanitizeString} from "../util";
+import {
+    Checkbox,
+    CircularProgress,
+    FormControlLabel,
+    InputAdornment,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Typography
+} from "@material-ui/core";
+import {mergeWith} from "lodash";
 
 const FieldContainer = styled.div`
     flex: 1;
@@ -44,6 +39,7 @@ const FieldContainer = styled.div`
     justify-content: flex-start;
     max-width: 500px;
     margin: 10px;
+    overflow: auto;
 `;
 
 const BigContainer = styled.div`
@@ -53,70 +49,22 @@ const BigContainer = styled.div`
     justify-content: space-between;
 `;
 
-// .required() ensures that objects (if any) in the array *must* contain an 'id' field with an integer
-// which is later extracted and mapped into the final array for submission
-const arrayWithId = yup.array(yup.number().integer().required()).ensure().transform(val => val.map(v => v.id));
-
-// This field will be null if omitted or a falsey value ('', undefined or null)
-const blankStringToNull = yup.string().defined().transform(val => val ? val : null).default(null);
-
-// Schema, after coercion and validation, should be ready for submission
-const bookSchema = yup.object({
-    [bookFields.authors]: arrayWithId,
-    [bookFields.genre]: arrayWithId,
-    [bookFields.type]: yup.number().transform((val, origVal) => origVal?.id).required(),
-    [bookFields.title]: yup.string().required(),
-    [bookFields.description]: yup.string().uppercase(),
-    [bookFields.readNext]: yup.bool(),
-    [bookFields.dateRead]: yup.date().nullable(),
-    [bookFields.imageUrl]: yup.string().url(), //todo validate as url without http instead
-    [bookFields.published]: yup.number().integer(),
-    [bookFields.googleId]: blankStringToNull,
-    [bookFields.goodreadsId]: blankStringToNull,
-    [bookFields.series]: yup.string(),
-    [bookFields.seriesPosition]: yup.string(),
-    [bookFields.rating]: yup.number().transform(v => Math.round(v * 10) / 10).min(0).max(5),
-    [bookFields.myReview]: yup.string(),
-    [bookFields.notes]: yup.string(),
-}).noUnknown();
-
-
-export const AddBooks = (refreshBooks, ...props) => {
+export const AddBooks = ({refreshBooks, ...props}) => {
 
     const {register, handleSubmit, control, getValues, reset, setValue, errors} = useForm({
-        mode: "onTouched",
         resolver: yupResolver(bookSchema),
-        defaultValues: {
-            [bookFields.authors]: [],
-            [bookFields.genre]: [],
-            [bookFields.type]: null, //only one type allowed per book
-            [bookFields.title]: '',
-            [bookFields.description]: '',
-            [bookFields.readNext]: false,
-            [bookFields.dateRead]: null,
-            [bookFields.imageUrl]: '',
-            [bookFields.published]: '',
-            [bookFields.googleId]: '',
-            [bookFields.goodreadsId]: '',
-            [bookFields.series]: '',
-            [bookFields.seriesPosition]: '',
-            [bookFields.rating]: null,
-            [bookFields.myReview]: '',
-            [bookFields.notes]: '',
-        }
+        defaultValues: defaultBookValues,
     });
 
     const [authors, setAuthors] = useState([]);
     const [genres, setGenres] = useState([]);
     const [types, setTypes] = useState([]);
+    const [debugValues, setDebugValues] = useState({});
+    const [searchOpen, setSearchOpen] = useState(false);
 
-    const [results, setResults] = useState({'google': [], 'goodreads': []});
-    const [bookInfo, setBookInfo] = useState({});
+    const [results, setResults] = useState([]);
 
     const [loadingSearch, setLoadingSearch] = useState(false);
-
-    const [debugValues, setDebugValues] = useState({});
-
 
     const getAuthors = () => {
         Url.getAuthors().then(result => setAuthors(result))
@@ -128,9 +76,6 @@ export const AddBooks = (refreshBooks, ...props) => {
         Url.getTypes().then(result => setTypes(result))
     };
 
-    const onSubmit = (data, e) => console.log('submitted data:', data);
-    const onError = data => console.log('errors:', data);
-
     // Load authors, genre, types
     useEffect(() => {
         getAuthors();
@@ -138,30 +83,90 @@ export const AddBooks = (refreshBooks, ...props) => {
         getTypes();
     }, []);
 
-    const search = event => {
-        if (event.key !== 'Enter' || !getValues('search')) return;
+    const onSubmit = (data, e) => {
+        // Modify data before submission
+        data[bookFields.authors] = data[bookFields.authors].map(v => v.id);
+        data[bookFields.genre] = data[bookFields.genre].map(v => v.id);
+        data[bookFields.type] = data[bookFields.type] ? data[bookFields.type].id : null;
+        data[bookFields.dateRead] = isValid(data[bookFields.dateRead]) ? format(data[bookFields.dateRead], 'yyyy-MM-dd') : null;
+
+        setDebugValues(data);
+        Url.submit(data).then(refreshBooks);
+        reset()
+    };
+
+    const onError = data => setDebugValues(data); //todo make snackbar with dialog to view JSON response of error
+
+    const onSearch = event => {
+        if (event.key !== 'Enter' || !getValues(bookFields.title)) return;
         setLoadingSearch(true);
-        Networking.send(`${Url.SEARCH}?q=${getValues('search')}`, {method: 'GET',})
+        Networking.send(`${Url.SEARCH}?q=${getValues(bookFields.title)}`, {method: 'GET',})
             .then(resp => resp.json())
             .then(json => {
                 setResults(json['results']);
                 setLoadingSearch(false);
+                setSearchOpen(true)
             });
     };
 
-    const getGoogleBookInfo = isbn => {
-        Networking.send(`${Url.BOOK_INFO}?isbn=${isbn}`, {method: 'GET'})
-            .then(resp => resp.json())
-            .then(json => setBookInfo(json))
+    // Handle book result click
+    const handleClick = result => {
+        setLoadingSearch(true);
+        let type = result.from === resultType.GOOGLE ? resultType.GOOGLE : resultType.GOODREADS;
+        let request;
+        if (type === resultType.GOOGLE) {
+            // Use ISBN_13 if available, otherwise ISBN_10
+            request = getGoogleBookInfo(result.ISBN_13 || result.ISBN_10)
+        } else {
+            request = getGoodreadsBookInfo(result.goodreads_work_id, result.goodreads_book_id)
+        }
+        setSearchOpen(false);
+        request.then(r => {
+            console.log('result', result);
+            console.log('info', r);
+            let mergedResult = mergeWith({}, result, r,
+                //preferentially choose srcVal over existing values if both present
+                (objVal, srcVal) => srcVal || objVal);
+
+            /*For the 'authors' autocomplete field: TODO
+            * - check if exists (case insensitive)
+            * - add to queue to await replacement
+            * - otherwise add, await ID + eventual add
+            * - update form in the meantime
+            * */
+
+            let authorsToAdd = [];
+
+            let authorsToCreate = [];
+
+            mergedResult.authors.forEach(e => {
+                //todo EXTREMELY INEFFICIENT
+                let val = authors.find(author => sanitizeString(author.name)===sanitizeString(e));
+                console.log('val', val);
+                if (val) {
+                    // Author already exists
+                    authorsToAdd.push(val)
+                } else {
+                    // Author doesn't exist, to create
+                    authorsToCreate.push(e)
+                }
+            });
+
+            console.log(authorsToAdd, authorsToCreate);
+
+            setDebugValues(mergedResult);
+            setLoadingSearch(false);
+        });
     };
 
-    const getGoodreadsBookInfo = (work_id, book_id) => {
-        Networking.send(`${Url.BOOK_INFO}?work_id=${work_id}&book_id=${book_id}`, {method: 'GET'})
-            .then(resp => resp.json())
-            .then(json => setBookInfo(json))
-    };
-
+    // Todo Move all these fields to a parameterizable class instead
     return <>
+        <SearchBooks
+            open={searchOpen}
+            close={() => setSearchOpen(false)}
+            results={results}
+            handleClick={handleClick}
+        />
         <BigContainer>
             <FieldContainer>
                 <StyledButton
@@ -175,10 +180,21 @@ export const AddBooks = (refreshBooks, ...props) => {
                     inputRef={register}
                     name={bookFields.title}
                     label={'Title'}
+                    placeholder={'Search for a book'}
+                    onKeyPress={onSearch}
                     size={'small'}
-                    error={errors[bookFields.title]}
+                    error={Boolean(errors[bookFields.title])}
                     helperText={errors[bookFields.title]?.message}
-                    multiline
+                    InputProps={{
+                        startAdornment:
+                            <InputAdornment position={"start"}>
+                                <SearchIcon/>
+                            </InputAdornment>,
+                        endAdornment:
+                            <InputAdornment position={'end'}>
+                                {loadingSearch && <CircularProgress size={20}/>}
+                            </InputAdornment>
+                    }}
                     fullWidth
                     onClear={() => setValue(bookFields.title, '')}
                 />
@@ -208,6 +224,7 @@ export const AddBooks = (refreshBooks, ...props) => {
                     name={bookFields.genre}
                     control={control}
                     render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
+                        getValues={() => getValues(bookFields.genre)}
                         name={name}
                         label={'Genres'}
                         required
@@ -281,11 +298,11 @@ export const AddBooks = (refreshBooks, ...props) => {
                             size={'small'}
                             label={'Date Read'}
                             format={'dd/MM/yyyy'}
-                            error={errors[bookFields.dateRead]}
-                            helperText={errors[bookFields.dateRead]?.message}
                             onBlur={onBlur}
                             placeholder={'dd/mm/yyyy'}
-                            onChange={(date, invalidStr) => invalidStr ? onChange(invalidStr) : onChange(date)}
+                            error={Boolean(errors[bookFields.dateRead])}
+                            helperText={errors[bookFields.dateRead]?.message}
+                            onChange={onChange}
                             value={value}
                             inputVariant={'outlined'}
                             variant={'inline'}
@@ -354,6 +371,7 @@ export const AddBooks = (refreshBooks, ...props) => {
 
                 <StyledTextFieldClearable
                     name={bookFields.seriesPosition}
+                    inputRef={register}
                     error={Boolean(errors[bookFields.seriesPosition])}
                     helperText={errors[bookFields.seriesPosition]?.message}
                     label={'Series Position'}
@@ -384,7 +402,6 @@ export const AddBooks = (refreshBooks, ...props) => {
                     fullWidth
                     multiline
                 />
-                {errors.myReview?.message}
 
                 <StyledTextField
                     name={bookFields.notes}
@@ -420,7 +437,9 @@ export const AddBooks = (refreshBooks, ...props) => {
                         {Object.entries(debugValues).map(([k, v]) =>
                             <TableRow key={String(k)}>
                                 <TableCell>{String(k)}</TableCell>
-                                <TableCell>{JSON.stringify(v)}</TableCell>
+                                <TableCell>
+                                    <Typography>{JSON.stringify(v, null, 4)}</Typography>
+                                </TableCell>
                             </TableRow>
                         )}
                     </TableBody>
@@ -428,43 +447,6 @@ export const AddBooks = (refreshBooks, ...props) => {
             </FieldContainer>
 
         </BigContainer>
-
-        <FieldContainer>
-            <StyledTextFieldClearable //todo pullup into a separate component
-                placeholder={'Search books'}
-                name={'search'}
-                inputRef={register}
-                onClear={() => setValue('search', '')}
-                onKeyPress={search}
-                fullWidth
-                InputProps={{
-                    startAdornment:
-                        <InputAdornment position={"start"}>
-                            <SearchIcon/>
-                        </InputAdornment>,
-                    endAdornment:
-                        <InputAdornment position={'end'}>
-                            {loadingSearch && <CircularProgress size={20}/>}
-                        </InputAdornment>
-                }}
-            />
-        </FieldContainer>
-
-
-        <CardContainer>
-            {results['google'].map((result, index) => {
-                return <GoogleBookResult {...result} onClick={e => getGoogleBookInfo(result['ISBN_13'])}/>
-            })}
-            {results['goodreads'].map((result, index) => {
-                return <GoodreadsBookResult {...result}
-                                            onClick={e => getGoodreadsBookInfo(result['goodreads_work_id'], result['goodreads_book_id'])}/>
-            })}
-        </CardContainer>
-        <BookInfoContainer>
-            {Object.entries(bookInfo).map(kv => {
-                return <>{kv[0]}: {kv[1]}<br/></>
-            })}
-        </BookInfoContainer>
 
     </>;
 };

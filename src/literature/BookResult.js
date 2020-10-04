@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
+import {capitalize} from "lodash"
 
 const Card = styled.div`
     display: flex;
@@ -46,22 +47,13 @@ const Description = styled.div`
     text-justify: auto;
 `;
 
-export const GoogleBookResult = props => {
+export const BookResult = ({handleClick, result}) => {
 
-    return <Card onClick={props.onClick}>
-        <Header>Google</Header>
-        <Image><img src={props.image_url} alt='Loading...'/></Image>
-        <Title>{props.title} ({props.published})</Title>
-        <Authors>by {props.authors.map(e => `${e}, `)}</Authors>
-        <Description>{props.description}</Description>
-    </Card>;
-};
-
-export const GoodreadsBookResult = props => {
-    return <Card onClick={props.onClick}>
-        <Header>Goodreads</Header>
-        <Image><img src={props.image_url} alt='Loading...'/></Image>
-        <Title>{props.title} {props.published && `(${props.published})`}</Title>
-        <Authors>by {props.authors.map(e => `${e}, `)}</Authors>
+    return <Card onClick={handleClick}>
+        <Header>{capitalize(result.from)}</Header>
+        <Image><img src={result.image_url} alt={'Loading'}/></Image>
+        <Title>{result.title} {result.published ? `(${result.published})`: null}</Title>
+        <Authors>by {result.authors?.map(e => `${e},`)}</Authors>
+        <Description>{result.description}</Description>
     </Card>
 };
