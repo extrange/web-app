@@ -51,7 +51,7 @@ const BigContainer = styled.div`
 
 export const AddBooks = ({refreshBooks, ...props}) => {
 
-    const {register, handleSubmit, control, getValues, reset, setValue, errors} = useForm({
+    const {register, handleSubmit, control, getValues, reset, setValue, errors, trigger} = useForm({
         resolver: yupResolver(bookSchema),
         defaultValues: defaultBookValues,
     });
@@ -130,18 +130,17 @@ export const AddBooks = ({refreshBooks, ...props}) => {
 
             /*For the 'authors' autocomplete field: TODO
             * - check if exists (case insensitive)
-            * - add to queue to await replacement
-            * - otherwise add, await ID + eventual add
+            * - add existing authors, then async create and add new authors
             * - update form in the meantime
             * */
 
-            let authorsToAdd = [];
+            let authorsToAdd = []; // [] of {id, name, notes}
 
-            let authorsToCreate = [];
+            let authorsToCreate = []; // [] of String
 
             mergedResult.authors.forEach(e => {
                 //todo EXTREMELY INEFFICIENT
-                let val = authors.find(author => sanitizeString(author.name)===sanitizeString(e));
+                let val = authors.find(author => sanitizeString(author.name) === sanitizeString(e));
                 console.log('val', val);
                 if (val) {
                     // Author already exists
@@ -152,10 +151,34 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                 }
             });
 
-            console.log(authorsToAdd, authorsToCreate);
+            console.log('Authors to add: ', authorsToAdd);
+            console.log('Authors to create: ', authorsToCreate)
+
+            // Add all current values first
+
+            /*
+            * authors: Array [ "Doug Walsh", "BradyGames" ]
+            * description: "Presents step-by-step walkthroughs for the game, along with information on strategies, characters, and tactics."
+            * from: "google"
+            * google_id: "N6zXSAAACAAJ"
+            * image_url: "http://books.google.com/books/content?id=N6zXSAAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            * published: 2010
+            * title: "Halo Reach: Signature Series Guide"*/
+            // series name, position also (from bookinfo)
+//todo fix label shrink state..
+            setValue(bookFields.authors, authorsToAdd);
+            [
+                bookFields.description,
+                bookFields.googleId,
+                bookFields.goodreadsId, //todo use book_id or work_id??
+                bookFields.imageUrl,
+                bookFields.published,
+                bookFields.title
+            ].forEach(e => setValue(e, mergedResult[e] || getValues(e)), {shouldDirty: true})
 
             setDebugValues(mergedResult);
             setLoadingSearch(false);
+            trigger()
         });
     };
 
