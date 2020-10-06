@@ -65,7 +65,7 @@ const MuiStyledAutocompleteMultiSort = muiStyled(Autocomplete)({
 export const StyledAutocompleteMultiSort = ({displayKey = 'name', searchKeys = ['name'], multiple = true, value, setValue, label, callback, options, refreshOptions, getValues, renderProps, ...props}) => {
 
     let [loading, setLoading] = useState(true);
-    useEffect(() => setLoading(options.length < 1), [options]);
+    useEffect(() => setLoading(options.length < 1), [options]); //todo this will display a loading sign when there are no options, even if loaded
 
     return <MuiStyledAutocompleteMultiSort
         {...props}

@@ -152,7 +152,7 @@ export const AddBooks = ({refreshBooks, ...props}) => {
             });
 
             console.log('Authors to add: ', authorsToAdd);
-            console.log('Authors to create: ', authorsToCreate)
+            console.log('Authors to create: ', authorsToCreate);
 
             // Add all current values first
 
@@ -174,7 +174,10 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                 bookFields.imageUrl,
                 bookFields.published,
                 bookFields.title
-            ].forEach(e => setValue(e, mergedResult[e] || getValues(e)), {shouldDirty: true})
+            ].forEach(e => setValue(e, mergedResult[e] || getValues(e)), {shouldDirty: true});
+
+            Promise.all(authorsToCreate.map(name => Url.addAuthor({name: name})))
+                .then(r => setValue(bookFields.authors, [...authorsToAdd, ...r]));
 
             setDebugValues(mergedResult);
             setLoadingSearch(false);
