@@ -22,6 +22,7 @@ import {
     Checkbox,
     CircularProgress,
     FormControlLabel,
+    FormHelperText,
     InputAdornment,
     Table,
     TableBody,
@@ -31,7 +32,6 @@ import {
     Typography
 } from "@material-ui/core";
 import {mergeWith} from "lodash";
-import {TextFields} from "@material-ui/icons";
 
 const FieldContainer = styled.div`
     flex: 1;
@@ -49,6 +49,19 @@ const BigContainer = styled.div`
     flex-direction: row;
     justify-content: space-between;
 `;
+
+const ControlHelper = ({control, errors, name, as, label, ...props}) =>
+    <Controller
+        {...props}
+        name={name}
+        control={control}
+        label={label}
+        error={Boolean(errors[name])}
+        helperText={errors[name]?.message}
+        size={'small'}
+        fullWidth
+        as={as}
+    />;
 
 export const AddBooks = ({refreshBooks, ...props}) => {
 
@@ -83,6 +96,8 @@ export const AddBooks = ({refreshBooks, ...props}) => {
         getGenres();
         getTypes();
     }, []);
+
+    const onClear = name => () => setValue(name, defaultBookValues[name]);
 
     const onSubmit = (data, e) => {
         // Modify data before submission
@@ -166,12 +181,12 @@ export const AddBooks = ({refreshBooks, ...props}) => {
             * published: 2010
             * title: "Halo Reach: Signature Series Guide"*/
             // series name, position also (from bookinfo)
-//todo fix label shrink state..
+
             setValue(bookFields.authors, authorsToAdd);
             [
                 bookFields.description,
                 bookFields.googleId,
-                bookFields.goodreadsId, //todo use book_id or work_id??
+                bookFields.goodreadsBookId,
                 bookFields.imageUrl,
                 bookFields.published,
                 bookFields.title
@@ -186,7 +201,6 @@ export const AddBooks = ({refreshBooks, ...props}) => {
         });
     };
 
-    // Todo Move all these fields to a parameterizable class instead
     return <>
         <SearchBooks
             open={searchOpen}
@@ -203,15 +217,15 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                 >Submit
                 </StyledButton>
 
-                <StyledTextFieldClearable
-                    inputRef={register}
+                <ControlHelper
                     name={bookFields.title}
                     label={'Title'}
-                    placeholder={'Search for a book'}
+                    control={control}
+                    as={StyledTextFieldClearable}
+                    errors={errors}
+
+                    placeholder={'Search or enter book title'}
                     onKeyPress={onSearch}
-                    size={'small'}
-                    error={Boolean(errors[bookFields.title])}
-                    helperText={errors[bookFields.title]?.message}
                     InputProps={{
                         startAdornment:
                             <InputAdornment position={"start"}>
@@ -222,8 +236,7 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                                 {loadingSearch && <CircularProgress size={20}/>}
                             </InputAdornment>
                     }}
-                    fullWidth
-                    onClear={() => setValue(bookFields.title, '')}
+                    onClear={onClear(bookFields.title)}
                 />
 
                 <Controller
@@ -291,29 +304,15 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                     />}
                 />
 
-                <StyledTextField
-                    inputRef={register()}
-                    name={'description'}
-                    label={'Description'}
-                    error={Boolean(errors[bookFields.description])}
-                    helperText={errors[bookFields.description]?.message}
-                    required
-                    size={'small'}
-                    multiline
-                    fullWidth
-                />
 
-                <Controller
-                    control={control}
+                <ControlHelper
                     name={bookFields.description}
-                    render={({onChange, onBlur, value, name}) => <StyledTextField
-                        name={name}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                        value={value}
-                        error={Bool}
-                    />
-                    }
+                    label={'Description'}
+                    errors={errors}
+                    as={StyledTextField}
+                    control={control}
+
+                    multiline
                 />
 
                 <FormControlLabel
@@ -322,136 +321,119 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                         inputRef={register}
                     />}
                     label={'Read next?'}
-                    labelPlacement={'start'}
-                />
-                {errors.readNext?.message}
+                    labelPlacement={'end'}
 
-                <Controller
-                    name={bookFields.dateRead}
-                    control={control}
-                    render={({onChange, onBlur, value, name}) => <MuiPickersUtilsProvider
-                        utils={DateFns}>
-                        <KeyboardDatePicker
-                            name={name}
-                            autoOk
-                            disableFuture
-                            size={'small'}
-                            label={'Date Read'}
-                            format={'dd/MM/yyyy'}
-                            onBlur={onBlur}
-                            placeholder={'dd/mm/yyyy'}
-                            error={Boolean(errors[bookFields.dateRead])}
-                            helperText={errors[bookFields.dateRead]?.message}
-                            onChange={onChange}
-                            value={value}
-                            inputVariant={'outlined'}
-                            variant={'inline'}
-                        />
-                    </MuiPickersUtilsProvider>
-                    }
                 />
+                <FormHelperText
+                    error={Boolean(errors[bookFields.readNext])}
+                >
+                    {errors[bookFields.readNext]?.message}
+                </FormHelperText>
 
-                <StyledTextFieldClearable
+
+                <MuiPickersUtilsProvider utils={DateFns}>
+                    <ControlHelper
+                        name={bookFields.dateRead}
+                        label={'Date Read'}
+                        control={control}
+                        errors={errors}
+                        as={KeyboardDatePicker}
+
+                        autoOk
+                        disableFuture
+                        format={'dd/MM/yyyy'}
+                        placeholder={'dd/mm/yyyy'}
+                        inputVariant={'outlined'}
+                        variant={'inline'}
+                    />
+                </MuiPickersUtilsProvider>
+
+                <ControlHelper
                     name={bookFields.imageUrl}
-                    error={Boolean(errors[bookFields.imageUrl])}
-                    helperText={errors[bookFields.imageUrl]?.message}
-                    inputRef={register}
+                    errors={errors}
                     label={'Image URL'}
-                    required
-                    size={'small'}
-                    fullWidth
-                    type={'url'}
-                    onClear={e => setValue(bookFields.imageUrl, '')}
+                    as={StyledTextFieldClearable}
+                    control={control}
+                    onClear={onClear(bookFields.imageUrl)}
+
+                    type={'url'} // More for browser input purposes than validation, as Yup handles that
                 />
 
-                <StyledTextFieldClearable
+                <ControlHelper
                     name={bookFields.published}
-                    inputRef={register}
-                    label={'Year published'}
-                    error={Boolean(errors[bookFields.published])}
-                    helperText={errors[bookFields.published]?.message}
-                    size={'small'}
-                    fullWidth
+                    label={'Year Published'}
+                    control={control}
+                    as={StyledTextFieldClearable}
+                    errors={errors}
+
                     type={'tel'}
-                    onClear={e => setValue(bookFields.published, '')}
+                    onClear={onClear(bookFields.published)}
                 />
 
-                <StyledTextFieldClearable
+                <ControlHelper
                     name={bookFields.googleId}
-                    inputRef={register}
-                    error={Boolean(errors[bookFields.googleId])}
-                    helperText={errors[bookFields.googleId]?.message}
                     label={'Google ID'}
-                    size={'small'}
-                    fullWidth
-                    onClear={e => setValue(bookFields.googleId, '')}
+                    control={control}
+                    as={StyledTextFieldClearable}
+                    errors={errors}
+                    onClear={onClear(bookFields.googleId)}
                 />
 
-                <StyledTextFieldClearable
-                    name={bookFields.goodreadsId}
-                    inputRef={register}
-                    error={Boolean(errors[bookFields.goodreadsId])}
-                    helperText={errors[bookFields.goodreadsId]?.message}
+                <ControlHelper
+                    name={bookFields.goodreadsBookId}
                     label={'Goodreads ID'}
-                    size={'small'}
-                    fullWidth
-                    onClear={e => setValue(bookFields.goodreadsId, '')}
+                    control={control}
+                    as={StyledTextFieldClearable}
+                    errors={errors}
+                    onClear={onClear(bookFields.goodreadsBookId)}
                 />
 
-                <StyledTextFieldClearable
+                <ControlHelper
                     name={bookFields.series}
-                    inputRef={register}
-                    error={Boolean(errors[bookFields.series])}
-                    helperText={errors[bookFields.series]?.message}
                     label={'Series Name'}
-                    size={'small'}
-                    fullWidth
-                    onClear={e => setValue(bookFields.series, '')}
+                    control={control}
+                    as={StyledTextFieldClearable}
+                    errors={errors}
+                    onClear={onClear(bookFields.series)}
                 />
 
-                <StyledTextFieldClearable
+                <ControlHelper
                     name={bookFields.seriesPosition}
-                    inputRef={register}
-                    error={Boolean(errors[bookFields.seriesPosition])}
-                    helperText={errors[bookFields.seriesPosition]?.message}
                     label={'Series Position'}
-                    size={'small'}
-                    fullWidth
-                    onClear={e => setValue(bookFields.seriesPosition, '')}
+                    control={control}
+                    as={StyledTextFieldClearable}
+                    errors={errors}
+                    onClear={onClear(bookFields.seriesPosition)}
                 />
 
-                <StyledTextFieldClearable
+                <ControlHelper
                     name={bookFields.rating}
-                    error={Boolean(errors[bookFields.rating])}
-                    helperText={errors[bookFields.rating]?.message}
-                    inputRef={register}
                     label={'Rating'}
-                    size={'small'}
-                    fullWidth
-                    onClear={e => setValue(bookFields.rating, '')}
+                    control={control}
+                    as={StyledTextFieldClearable}
+                    errors={errors}
+                    onClear={onClear(bookFields.rating)}
                 />
 
-                <StyledTextField
+                <ControlHelper
                     name={bookFields.myReview}
-                    inputRef={register}
-                    error={Boolean(errors[bookFields.myReview])}
-                    helperText={errors[bookFields.myReview]?.message}
                     label={'My Review'}
-                    size={'small'}
+                    control={control}
+                    as={StyledTextField}
+                    errors={errors}
+
                     placeholder={'Not good, read others, highlight specific chapters, etc'}
-                    fullWidth
                     multiline
                 />
 
-                <StyledTextField
+                <ControlHelper
                     name={bookFields.notes}
-                    inputRef={register}
-                    error={Boolean(errors[bookFields.notes])}
-                    helperText={errors[bookFields.notes]?.message}
                     label={'Notes'}
-                    size={'small'}
+                    control={control}
+                    as={StyledTextField}
+                    errors={errors}
+
                     placeholder={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}
-                    fullWidth
                     multiline
                 />
 

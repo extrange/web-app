@@ -16,9 +16,6 @@ export const resultType = {
     GOOGLE: 'google',
 };
 
-export const bookInfoFields = {
-
-};
 
 //Mapping of names from JS to Python TODO squeeze all these fields together instead of separately
 export const bookFields = {
@@ -32,7 +29,7 @@ export const bookFields = {
     imageUrl: 'image_url',
     published: 'published',
     googleId: 'google_id',
-    goodreadsId: 'goodreads_id',
+    goodreadsBookId: 'goodreads_book_id',
     series: 'series',
     seriesPosition: 'series_position',
     rating: 'rating',
@@ -42,6 +39,7 @@ export const bookFields = {
 
 // Coercion and validation done here.
 // Further modification prior to submission is in 'onSubmit'.
+// todo merge bookSchema and defaultBookValues into one object so I don't duplicate
 export const bookSchema = yup.object({
     [bookFields.authors]: yup.array(yup.object({id: yup.string().required()})), //modified later
     [bookFields.genre]: yup.array(yup.object({id: yup.string().required()})), //modified later
@@ -53,7 +51,7 @@ export const bookSchema = yup.object({
     [bookFields.imageUrl]: yup.string().url(),
     [bookFields.published]: yup.number().integer().nullable().transform(emptyStringToNull),
     [bookFields.googleId]: blankStringToNull,
-    [bookFields.goodreadsId]: blankStringToNull,
+    [bookFields.goodreadsBookId]: blankStringToNull,
     [bookFields.series]: yup.string(),
     [bookFields.seriesPosition]: yup.string(),
     [bookFields.rating]: yup.number().nullable().transform(v => Math.round(v * 10) / 10).transform(emptyStringToNull).min(0).max(5),
@@ -72,7 +70,7 @@ export const defaultBookValues = {
     [bookFields.imageUrl]: '',
     [bookFields.published]: '',
     [bookFields.googleId]: '',
-    [bookFields.goodreadsId]: '',
+    [bookFields.goodreadsBookId]: '',
     [bookFields.series]: '',
     [bookFields.seriesPosition]: '',
     [bookFields.rating]: null,
