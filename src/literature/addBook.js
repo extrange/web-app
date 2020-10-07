@@ -31,6 +31,7 @@ import {
     Typography
 } from "@material-ui/core";
 import {mergeWith} from "lodash";
+import {TextFields} from "@material-ui/icons";
 
 const FieldContainer = styled.div`
     flex: 1;
@@ -174,7 +175,7 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                 bookFields.imageUrl,
                 bookFields.published,
                 bookFields.title
-            ].forEach(e => setValue(e, mergedResult[e] || getValues(e)), {shouldDirty: true});
+            ].forEach(e => setValue(e, mergedResult[e] || getValues(e)));
 
             Promise.all(authorsToCreate.map(name => Url.addAuthor({name: name})))
                 .then(r => setValue(bookFields.authors, [...authorsToAdd, ...r]));
@@ -300,6 +301,19 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                     size={'small'}
                     multiline
                     fullWidth
+                />
+
+                <Controller
+                    control={control}
+                    name={bookFields.description}
+                    render={({onChange, onBlur, value, name}) => <StyledTextField
+                        name={name}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        value={value}
+                        error={Bool}
+                    />
+                    }
                 />
 
                 <FormControlLabel
