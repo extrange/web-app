@@ -3,24 +3,20 @@
  */
 
 import * as yup from "yup";
-import {isEmpty} from "lodash"
 
-// This field will be null if omitted or a falsey value ('', undefined or null)
-const blankStringToNull = yup.string().defined().transform(val => val ? val : null).default(null);
-
-// Coerce empty strings to null, and force numbers otherwise
-const emptyStringToNull = (val, origVal) => isEmpty(origVal) ? null : val;
+// Coerce empty strings to null, else return base coercion attempt
+const emptyStringToNull = (val, origVal) => typeof origVal === 'string' && origVal === '' ? null : val;
 
 export const resultType = {
     GOODREADS: 'goodreads',
     GOOGLE: 'google',
 };
 
-
-//Mapping of names from JS to Python TODO squeeze all these fields together instead of separately
+// todo merge bookSchema, defaultBookValues, bookFields, and maybe modifications into one object so I don't duplicate
+//Mapping of names from JS to Python
 export const bookFields = {
     authors: 'authors',
-    genre: 'genre',
+    genres: 'genres',
     type: 'type',
     title: 'title',
     description: 'description',
@@ -39,10 +35,9 @@ export const bookFields = {
 
 // Coercion and validation done here.
 // Further modification prior to submission is in 'onSubmit'.
-// todo merge bookSchema and defaultBookValues into one object so I don't duplicate
 export const bookSchema = yup.object({
     [bookFields.authors]: yup.array(yup.object({id: yup.string().required()})), //modified later
-    [bookFields.genre]: yup.array(yup.object({id: yup.string().required()})), //modified later
+    [bookFields.genres]: yup.array(yup.object({id: yup.string().required()})), //modified later
     [bookFields.type]: yup.object({id: yup.string().required()}).typeError('Required').required(), //modified later
     [bookFields.title]: yup.string().required(),
     [bookFields.description]: yup.string(),
@@ -50,8 +45,8 @@ export const bookSchema = yup.object({
     [bookFields.dateRead]: yup.date().typeError('Invalid date').nullable(), //modified later
     [bookFields.imageUrl]: yup.string().url(),
     [bookFields.published]: yup.number().integer().nullable().transform(emptyStringToNull),
-    [bookFields.googleId]: blankStringToNull,
-    [bookFields.goodreadsBookId]: blankStringToNull,
+    [bookFields.googleId]: yup.string().nullable().defined().transform(emptyStringToNull),
+    [bookFields.goodreadsBookId]: yup.string().nullable().defined().transform(emptyStringToNull),
     [bookFields.series]: yup.string(),
     [bookFields.seriesPosition]: yup.string(),
     [bookFields.rating]: yup.number().nullable().transform(v => Math.round(v * 10) / 10).transform(emptyStringToNull).min(0).max(5),
@@ -61,7 +56,7 @@ export const bookSchema = yup.object({
 
 export const defaultBookValues = {
     [bookFields.authors]: [],
-    [bookFields.genre]: [],
+    [bookFields.genres]: [],
     [bookFields.type]: null, //only one type allowed per book
     [bookFields.title]: '',
     [bookFields.description]: '',
@@ -73,7 +68,7 @@ export const defaultBookValues = {
     [bookFields.goodreadsBookId]: '',
     [bookFields.series]: '',
     [bookFields.seriesPosition]: '',
-    [bookFields.rating]: null,
+    [bookFields.rating]: '',
     [bookFields.myReview]: '',
     [bookFields.notes]: '',
 };

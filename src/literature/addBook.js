@@ -100,9 +100,10 @@ export const AddBooks = ({refreshBooks, ...props}) => {
     const onClear = name => () => setValue(name, defaultBookValues[name]);
 
     const onSubmit = (data, e) => {
+
         // Modify data before submission
         data[bookFields.authors] = data[bookFields.authors].map(v => v.id);
-        data[bookFields.genre] = data[bookFields.genre].map(v => v.id);
+        data[bookFields.genres] = data[bookFields.genres].map(v => v.id);
         data[bookFields.type] = data[bookFields.type] ? data[bookFields.type].id : null;
         data[bookFields.dateRead] = isValid(data[bookFields.dateRead]) ? format(data[bookFields.dateRead], 'yyyy-MM-dd') : null;
 
@@ -138,26 +139,16 @@ export const AddBooks = ({refreshBooks, ...props}) => {
         }
         setSearchOpen(false);
         request.then(r => {
-            console.log('result', result);
-            console.log('info', r);
             let mergedResult = mergeWith({}, result, r,
                 //preferentially choose srcVal over existing values if both present
                 (objVal, srcVal) => srcVal || objVal);
 
-            /*For the 'authors' autocomplete field: TODO
-            * - check if exists (case insensitive)
-            * - add existing authors, then async create and add new authors
-            * - update form in the meantime
-            * */
-
             let authorsToAdd = []; // [] of {id, name, notes}
-
             let authorsToCreate = []; // [] of String
 
             mergedResult.authors.forEach(e => {
                 //todo EXTREMELY INEFFICIENT
                 let val = authors.find(author => sanitizeString(author.name) === sanitizeString(e));
-                console.log('val', val);
                 if (val) {
                     // Author already exists
                     authorsToAdd.push(val)
@@ -166,9 +157,6 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                     authorsToCreate.push(e)
                 }
             });
-
-            console.log('Authors to add: ', authorsToAdd);
-            console.log('Authors to create: ', authorsToCreate);
 
             // Add all current values first
 
@@ -261,16 +249,15 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                 />
 
                 <Controller
-                    name={bookFields.genre}
+                    name={bookFields.genres}
                     control={control}
                     render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
-                        getValues={() => getValues(bookFields.genre)}
+                        getValues={() => getValues(bookFields.genres)}
                         name={name}
                         label={'Genres'}
-                        required
                         renderProps={{
-                            error: Boolean(errors[bookFields.genre]),
-                            helperText: errors[bookFields.genre]?.message
+                            error: Boolean(errors[bookFields.genres]),
+                            helperText: errors[bookFields.genres]?.message
                         }}
                         size={'small'}
                         value={value}
@@ -294,7 +281,6 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                             helperText: errors[bookFields.type]?.message
                         }}
                         size={'small'}
-                        required
                         value={value}
                         multiple={false}
                         setValue={val => onChange(val)}

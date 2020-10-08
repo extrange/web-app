@@ -5,6 +5,7 @@ import './index.css';
 import 'fontsource-source-sans-pro'
 import {Login} from "./login";
 import {MuiThemeProvider, createMuiTheme} from "@material-ui/core/styles";
+import * as serviceWorker from "./serviceWorker";
 
 const theme = createMuiTheme({
         typography: {
@@ -21,4 +22,9 @@ const App = () => (
     </MuiThemeProvider>
 );
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+ReactDOM.render(
+    <React.StrictMode>
+        <App/>
+    </React.StrictMode>
+    , document.getElementById('root'));
+serviceWorker.register();
