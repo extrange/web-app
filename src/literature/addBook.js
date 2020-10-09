@@ -50,6 +50,7 @@ const BigContainer = styled.div`
     justify-content: space-between;
 `;
 
+// Inject error, helperText into control
 const ControlHelper = ({control, errors, name, as, label, ...props}) =>
     <Controller
         {...props}
@@ -68,6 +69,7 @@ export const AddBooks = ({refreshBooks, ...props}) => {
     const {register, handleSubmit, control, getValues, reset, setValue, errors, trigger} = useForm({
         resolver: yupResolver(bookSchema),
         defaultValues: defaultBookValues,
+        mode: 'onTouched',
     });
 
     const [authors, setAuthors] = useState([]);
@@ -160,15 +162,6 @@ export const AddBooks = ({refreshBooks, ...props}) => {
 
             // Add all current values first
 
-            /*
-            * authors: Array [ "Doug Walsh", "BradyGames" ]
-            * description: "Presents step-by-step walkthroughs for the game, along with information on strategies, characters, and tactics."
-            * from: "google"
-            * google_id: "N6zXSAAACAAJ"
-            * image_url: "http://books.google.com/books/content?id=N6zXSAAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-            * published: 2010
-            * title: "Halo Reach: Signature Series Guide"*/
-            // series name, position also (from bookinfo)
 
             setValue(bookFields.authors, authorsToAdd);
             [
@@ -177,11 +170,16 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                 bookFields.goodreadsBookId,
                 bookFields.imageUrl,
                 bookFields.published,
-                bookFields.title
+                bookFields.title,
+                bookFields.series, //todo fix after renaming series_name => series
+                bookFields.seriesPosition,
             ].forEach(e => setValue(e, mergedResult[e] || getValues(e)));
 
             Promise.all(authorsToCreate.map(name => Url.addAuthor({name: name})))
-                .then(r => setValue(bookFields.authors, [...authorsToAdd, ...r]));
+                .then(r => {
+                    setValue(bookFields.authors, [...authorsToAdd, ...r])
+                    getAuthors();
+                });
 
             setDebugValues(mergedResult);
             setLoadingSearch(false);
