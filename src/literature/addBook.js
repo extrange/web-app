@@ -171,13 +171,13 @@ export const AddBooks = ({refreshBooks, ...props}) => {
                 bookFields.imageUrl,
                 bookFields.published,
                 bookFields.title,
-                bookFields.series, //todo fix after renaming series_name => series
+                bookFields.series,
                 bookFields.seriesPosition,
             ].forEach(e => setValue(e, mergedResult[e] || getValues(e)));
 
             Promise.all(authorsToCreate.map(name => Url.addAuthor({name: name})))
                 .then(r => {
-                    setValue(bookFields.authors, [...authorsToAdd, ...r])
+                    setValue(bookFields.authors, [...authorsToAdd, ...r]);
                     getAuthors();
                 });
 
