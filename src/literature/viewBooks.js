@@ -23,7 +23,7 @@ const StyledTable = styled.table`
 `;
 
 
-export const ViewBooks = ({refreshBooks, ...props}) => {
+export const ViewBooks = ({refreshBooks, books, ...props}) => {
 
     useEffect(refreshBooks, []);
 
@@ -56,7 +56,7 @@ export const ViewBooks = ({refreshBooks, ...props}) => {
             </StyledTr>
             </thead>
             <tbody>
-            {props.books.map((val, idx) => {
+            {books.map((val, idx) => {
                 return <StyledTr key={idx}>
                     <StyledTd>{val.id}</StyledTd>
                     <StyledTd>{val.title}</StyledTd>
