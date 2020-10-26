@@ -70,7 +70,7 @@ export const AddBooks = ({refreshBooks, ...props}) => {
         resolver: yupResolver(bookSchema),
         defaultValues: defaultBookValues,
         mode: 'onTouched',
-    });
+    }); 
 
     const [authors, setAuthors] = useState([]);
     const [genres, setGenres] = useState([]);

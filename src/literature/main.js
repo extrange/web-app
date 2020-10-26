@@ -1,10 +1,11 @@
 import React, {useState} from 'react'
-import {StyledButton} from "../components/common";
+import {HideOnScroll, StyledButton} from "../components/common";
 import {AddBooks} from "./addBook";
 import {ViewBooks} from "./viewBooks";
 import {Networking} from "../util";
 import * as Url from "./urls";
-import {Paper, Tab, Tabs} from "@material-ui/core";
+import {Paper, Tab, Tabs, AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemText, ListItemIcon} from "@material-ui/core";
+import MenuIcon from '@material-ui/icons/Menu'
 
 const LIT_APP_SECTIONS = {
     addBooks: 'addBooks',
@@ -14,6 +15,7 @@ const LIT_APP_SECTIONS = {
 export const LitApp = (props) => {
     const [books, setBooks] = useState([]);
     const [tabValue, setTabValue] = useState(LIT_APP_SECTIONS.addBooks);
+    const [drawerState, setDrawerState] = useState(false)
 
     const refreshBooks = () => {
         Networking.send(Url.BOOKS, {method: 'GET'})
@@ -27,7 +29,7 @@ export const LitApp = (props) => {
 
     let currentApp;
 
-    switch (tabValue){
+    switch (tabValue) {
         case LIT_APP_SECTIONS.addBooks:
             currentApp = <AddBooks refreshBooks={refreshBooks}/>;
             break;
@@ -39,6 +41,30 @@ export const LitApp = (props) => {
     }
 
     return <>
+        <HideOnScroll>
+            <AppBar position={'sticky'}>
+                <Toolbar variant={'dense'}>
+                    <IconButton color={"inherit"} onClick={() => setDrawerState(true)}>
+                        <MenuIcon/>
+                    </IconButton>
+                    <Typography variant={'h6'}>
+                        Literature
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+        </HideOnScroll>
+        <Drawer
+            open={drawerState}
+            onClose={() => setDrawerState(false)}
+        >
+            <List>
+                <ListItem>
+                    <ListItemText primary={'Logout'}/>
+                    <ListItemIcon><MenuIcon/> </ListItemIcon>
+                </ListItem>
+            </List>
+        </Drawer>
+
         <Paper>
             <Tabs
                 value={tabValue}
@@ -54,5 +80,5 @@ export const LitApp = (props) => {
             App</StyledButton>
         <StyledButton variant={'contained'} color={'primary'} onClick={props.logout}>Logout</StyledButton>
         {currentApp}
-    </>
+    </>;
 };
