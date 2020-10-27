@@ -4,13 +4,33 @@ import {AddBooks} from "./addBook";
 import {ViewBooks} from "./viewBooks";
 import {Networking} from "../util";
 import * as Url from "./urls";
-import {Paper, Tab, Tabs, AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemText, ListItemIcon} from "@material-ui/core";
+import {
+    Paper,
+    Tab,
+    Tabs,
+    AppBar,
+    Toolbar,
+    Typography,
+    IconButton,
+    Drawer,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemIcon
+} from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp'
+import styled from 'styled-components'
 
 const LIT_APP_SECTIONS = {
     addBooks: 'addBooks',
     viewBooks: 'viewBooks'
 };
+
+const FlexDiv = styled.div`
+    display: flex;
+    flex-direction: row;
+`
 
 export const LitApp = (props) => {
     const [books, setBooks] = useState([]);
@@ -57,12 +77,20 @@ export const LitApp = (props) => {
             open={drawerState}
             onClose={() => setDrawerState(false)}
         >
-            <List>
-                <ListItem>
-                    <ListItemText primary={'Logout'}/>
-                    <ListItemIcon><MenuIcon/> </ListItemIcon>
-                </ListItem>
-            </List>
+            <Paper>
+                <List>
+                    <FlexDiv>
+                        <ListItem button onClick={props.returnToMainApp}>
+                            <ListItemIcon><ExitToAppIcon/></ListItemIcon>
+                            <ListItemText primary={'Back to Apps'}/>
+                        </ListItem>
+                        <ListItem>
+                            <StyledButton variant={'contained'} color={'primary'}
+                                          onClick={props.logout}>Logout</StyledButton>
+                        </ListItem>
+                    </FlexDiv>
+                </List>
+            </Paper>
         </Drawer>
 
         <Paper>
@@ -76,9 +104,6 @@ export const LitApp = (props) => {
                 <Tab label={'Book List'} value={LIT_APP_SECTIONS.viewBooks}/>
             </Tabs>
         </Paper>
-        <StyledButton variant={'outlined'} color={'primary'} onClick={props.returnToMainApp}>Return to Main
-            App</StyledButton>
-        <StyledButton variant={'contained'} color={'primary'} onClick={props.logout}>Logout</StyledButton>
         {currentApp}
     </>;
 };
