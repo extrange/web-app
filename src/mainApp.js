@@ -1,22 +1,13 @@
 import React, {useState} from "react";
-import {Tasklists} from "./tasks/tasklists/tasklists";
-import {Tasks} from "./tasks/tasks/tasks";
 import styled from "styled-components";
 import {LitApp} from "./literature/main";
 import {StyledButton} from "./components/common";
+import {TaskApp} from "./tasks/main";
 
 //App constants
 const CURRENT_APP = 'current_app';
 const TASKS_APP = 'tasks_app';
 const LITERATURE_APP = 'literature_app';
-
-//todo Move this into another class 'TaskApp' which should be the actual wrapper
-const StyledTasks = styled.div`
-    margin: 0 auto;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-`;
 
 const SelectContainer = styled.div`
     display: flex;
@@ -29,9 +20,8 @@ const SelectContainer = styled.div`
  * Allows the user to switch between apps, remembering state in localStorage.
  * Loads immediately after successful login.
  */
-export const MainApp = props => {
+export const MainApp = ({logout}) => {
 
-    const [currentTasklist, setCurrentTasklist] = useState(null);
     const [currentApp, setCurrentApp] = useState(null);
 
     const returnToMainApp = () => {
@@ -40,22 +30,15 @@ export const MainApp = props => {
     };
 
     const tasksApp =
-        <StyledTasks>
-            <Tasklists
-                currentTasklist={currentTasklist}
-                setCurrentTasklist={setCurrentTasklist}
-                returnToMainApp={returnToMainApp}
-                {...props}
-            />
-            <Tasks
-                currentTasklist={currentTasklist}
-            />
-        </StyledTasks>;
+        <TaskApp
+            returnToMainApp={returnToMainApp}
+            logout={logout}
+        />;
 
     const literatureApp =
         <LitApp
             returnToMainApp={returnToMainApp}
-            {...props}
+            logout={logout}
         />
     ;
 
@@ -92,7 +75,7 @@ export const MainApp = props => {
             <StyledButton
                 variant={'contained'}
                 color={'primary'}
-                onClick={props.logout}
+                onClick={logout}
             >Logout
             </StyledButton>
 

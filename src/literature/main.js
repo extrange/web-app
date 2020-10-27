@@ -1,41 +1,21 @@
 import React, {useState} from 'react'
-import {HideOnScroll, StyledButton} from "../components/common";
 import {AddBooks} from "./addBook";
 import {ViewBooks} from "./viewBooks";
 import {Networking} from "../util";
 import * as Url from "./urls";
-import {
-    Paper,
-    Tab,
-    Tabs,
-    AppBar,
-    Toolbar,
-    Typography,
-    IconButton,
-    Drawer,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemIcon
-} from "@material-ui/core";
-import MenuIcon from '@material-ui/icons/Menu'
-import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import styled from 'styled-components'
+import {Paper, Tab, Tabs} from "@material-ui/core";
+import {Navbar} from "../components/navbar";
 
 const LIT_APP_SECTIONS = {
     addBooks: 'addBooks',
     viewBooks: 'viewBooks'
 };
 
-const FlexDiv = styled.div`
-    display: flex;
-    flex-direction: row;
-`
-
-export const LitApp = (props) => {
+export const LitApp = ({returnToMainApp, logout, ...props}) => {
     const [books, setBooks] = useState([]);
     const [tabValue, setTabValue] = useState(LIT_APP_SECTIONS.addBooks);
-    const [drawerState, setDrawerState] = useState(false)
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
 
     const refreshBooks = () => {
         Networking.send(Url.BOOKS, {method: 'GET'})
@@ -61,37 +41,13 @@ export const LitApp = (props) => {
     }
 
     return <>
-        <HideOnScroll>
-            <AppBar position={'sticky'}>
-                <Toolbar variant={'dense'}>
-                    <IconButton color={"inherit"} onClick={() => setDrawerState(true)}>
-                        <MenuIcon/>
-                    </IconButton>
-                    <Typography variant={'h6'}>
-                        Literature
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-        </HideOnScroll>
-        <Drawer
-            open={drawerState}
-            onClose={() => setDrawerState(false)}
-        >
-            <Paper>
-                <List>
-                    <FlexDiv>
-                        <ListItem button onClick={props.returnToMainApp}>
-                            <ListItemIcon><ExitToAppIcon/></ListItemIcon>
-                            <ListItemText primary={'Back to Apps'}/>
-                        </ListItem>
-                        <ListItem>
-                            <StyledButton variant={'contained'} color={'primary'}
-                                          onClick={props.logout}>Logout</StyledButton>
-                        </ListItem>
-                    </FlexDiv>
-                </List>
-            </Paper>
-        </Drawer>
+        <Navbar
+            title={'Literature'}
+            logout={logout}
+            drawerOpen={drawerOpen}
+            setDrawerOpen={setDrawerOpen}
+            returnToMainApp={returnToMainApp}
+        />
 
         <Paper>
             <Tabs
