@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {Task} from "./task/task";
-import './tasks.css'
 import {CreateTask} from "./task/createTask";
 import {EditTask} from "./task/editTask";
 import {Search} from './search'
@@ -8,8 +7,16 @@ import {Networking} from "../../util";
 import {getTasksUrl, getTaskUrl} from "../urls";
 import {Virtuoso} from 'react-virtuoso/dist'
 import matchSorter from 'match-sorter'
+import styled from 'styled-components'
 
-export const Tasks = ({currentTasklist, ...props}) => {
+const TasksDiv = styled.div`
+    margin: 0 auto;
+    height: inherit;
+    overflow: hidden;
+    display: flex;
+`
+
+export const Tasks = React.forwardRef(({currentTasklist}, ref) => {
 
     const [editingTask, setEditingTask] = useState(null);
     const [filteredTasks, setFilteredTasks] = useState([]);
@@ -126,12 +133,10 @@ export const Tasks = ({currentTasklist, ...props}) => {
 
         //todo: Consider using React-window with getBoundingBox to measure row heights instead (smaller lib size)
         content = <Virtuoso
-            style={{padding: 0, margin: 0}}
             totalCount={items.length}
             item={index => items[index]}
         />
-
     }
-    return <div className='tasks'>{content}</div>
+    return content
 
-};
+});

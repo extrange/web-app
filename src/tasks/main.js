@@ -6,19 +6,18 @@ import styled from "styled-components";
 import {Networking} from "../util";
 import {TASKLISTS_URL} from "./urls";
 
-const StyledTasks = styled.div`
-    margin: 0 auto;
-    height: 100vh;
-    overflow: hidden;
+const TaskDiv = styled.div`
     display: flex;
-`;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0 auto;
+`
 
 export const TaskApp = ({returnToMainApp, logout}) => {
 
     const [currentTasklist, setCurrentTasklist] = useState(null);
     const [tasklists, setTasklists] = useState(null);
-        const [drawerOpen, setDrawerOpen] = useState(false);
-
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const listTasklists = () => {
         Networking.send(TASKLISTS_URL, {
@@ -33,7 +32,7 @@ export const TaskApp = ({returnToMainApp, logout}) => {
         listTasklists()
     }, []);
 
-    return <>
+    return <TaskDiv>
         <Navbar
             returnToMainApp={returnToMainApp}
             logout={logout}
@@ -43,18 +42,13 @@ export const TaskApp = ({returnToMainApp, logout}) => {
             <Tasklists
                 currentTasklist={currentTasklist}
                 setCurrentTasklist={setCurrentTasklist}
-                returnToMainApp={returnToMainApp}
                 setDrawerOpen={setDrawerOpen}
-                logout={logout}
                 tasklists={tasklists}
                 listTasklists={listTasklists}
             />
         </Navbar>
-        <StyledTasks>
-
-            <Tasks
-                currentTasklist={currentTasklist}
-            />
-        </StyledTasks>
-    </>;
+        <Tasks
+            currentTasklist={currentTasklist}
+        />
+    </TaskDiv>;
 };

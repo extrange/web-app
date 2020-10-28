@@ -2,7 +2,7 @@ import styled from "styled-components";
 import muiStyled from "@material-ui/core/styles/styled"
 import React, {useEffect, useState} from 'react'
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {Button, InputAdornment, useScrollTrigger, Slide} from "@material-ui/core";
+import {Button, InputAdornment} from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Chip from "@material-ui/core/Chip";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -23,13 +23,6 @@ export const PlainButton = styled.button`
         background: cornflowerblue;
     }
 `;
-
-export const HideOnScroll = ({children, ...props}) => {
-    const trigger = useScrollTrigger({threshold: 50})
-    return <Slide appear={false} direction={'down'} in={!trigger}>
-        {children}
-    </Slide>
-}
 
 const MuiStyledButton = muiStyled(Button)({
     margin: '10px'

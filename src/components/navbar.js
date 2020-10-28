@@ -1,20 +1,28 @@
-import {HideOnScroll} from "./common";
 import {
     AppBar,
-    Drawer,
+    SwipeableDrawer,
     IconButton,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
     Paper,
+    Slide,
     Toolbar,
-    Typography
+    Typography,
+    useScrollTrigger
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import React from "react";
 
+export const HideOnScroll = ({children, ...props}) => {
+    const trigger = useScrollTrigger({threshold: 50})
+    return <Slide direction={'down'} in={!trigger}>
+        {children}
+    </Slide>
+}
 export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout, ...props}) => {
 
     return <>
@@ -30,8 +38,9 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                 </Toolbar>
             </AppBar>
         </HideOnScroll>
-        <Drawer
+        <SwipeableDrawer
             open={drawerOpen}
+            onOpen={() => setDrawerOpen(true)}
             onClose={() => setDrawerOpen(false)}
         >
             <Paper>
@@ -44,10 +53,13 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                     </ListItem>
                     {children}
                     <ListItem button onClick={logout}>
-                        <ListItemText inset={true} primary={'Logout'}/>
+                        <ListItemIcon>
+                            <MeetingRoomIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary={'Logout'}/>
                     </ListItem>
                 </List>
             </Paper>
-        </Drawer>
+        </SwipeableDrawer>
     </>
 };
