@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Navbar} from "../components/navbar";
 import {Tasklists} from "./tasklists/tasklists";
 import {Tasks} from "./tasks/tasks";
@@ -16,8 +16,9 @@ const TaskDiv = styled.div`
 export const TaskApp = ({returnToMainApp, logout}) => {
 
     const [currentTasklist, setCurrentTasklist] = useState(null);
-    const [tasklists, setTasklists] = useState(null);
+    const [tasklists, setTasklists] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const listRef = useRef()
 
     const listTasklists = () => {
         Networking.send(TASKLISTS_URL, {
@@ -27,6 +28,12 @@ export const TaskApp = ({returnToMainApp, logout}) => {
             .then(json => setTasklists(json))
         ;
     };
+
+    const getTasklistTitle = id => {
+        if (id && tasklists)
+            return tasklists.filter(e => e?.id === id)[0]?.title
+        else return 'Tasks'
+    }
 
     useEffect(() => {
         listTasklists()
@@ -38,7 +45,8 @@ export const TaskApp = ({returnToMainApp, logout}) => {
             logout={logout}
             drawerOpen={drawerOpen}
             setDrawerOpen={setDrawerOpen}
-            title={'Tasks'}>
+            target={listRef}
+            title={getTasklistTitle(currentTasklist)}>
             <Tasklists
                 currentTasklist={currentTasklist}
                 setCurrentTasklist={setCurrentTasklist}
