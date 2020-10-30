@@ -7,16 +7,8 @@ import {Networking} from "../../util";
 import {getTasksUrl, getTaskUrl} from "../urls";
 import {Virtuoso} from 'react-virtuoso/dist'
 import matchSorter from 'match-sorter'
-import styled from 'styled-components'
 
-const TasksDiv = styled.div`
-    margin: 0 auto;
-    height: inherit;
-    overflow: hidden;
-    display: flex;
-`
-
-export const Tasks = React.forwardRef(({currentTasklist}, ref) => {
+export const Tasks = ({currentTasklist}) => {
 
     const [editingTask, setEditingTask] = useState(null);
     const [filteredTasks, setFilteredTasks] = useState([]);
@@ -139,4 +131,4 @@ export const Tasks = React.forwardRef(({currentTasklist}, ref) => {
     }
     return content
 
-});
+};
