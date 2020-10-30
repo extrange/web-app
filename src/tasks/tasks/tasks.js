@@ -8,7 +8,7 @@ import {getTasksUrl, getTaskUrl} from "../urls";
 import {Virtuoso} from 'react-virtuoso/dist'
 import matchSorter from 'match-sorter'
 
-export const Tasks = ({currentTasklist}) => {
+export const Tasks = React.forwardRef(({currentTasklist}, ref) => {
 
     const [editingTask, setEditingTask] = useState(null);
     const [filteredTasks, setFilteredTasks] = useState([]);
@@ -131,4 +131,4 @@ export const Tasks = ({currentTasklist}) => {
     }
     return content
 
-};
+});
