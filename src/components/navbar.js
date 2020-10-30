@@ -17,16 +17,16 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import React from "react";
 
-export const HideOnScroll = ({children}) => {
-    const trigger = useScrollTrigger({threshold: 50})
+export const HideOnScroll = ({children, target}) => {
+    const trigger = useScrollTrigger({target: target, threshold: 50})
     return <Slide direction={'down'} in={!trigger}>
         {children}
     </Slide>
 }
-export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout}) => {
-
+export const Navbar = ({title, listRef, drawerOpen, setDrawerOpen, children, returnToMainApp, logout}) => {
+    const target = listRef?.current ? listRef.current : window;
     return <>
-        <HideOnScroll>
+        <HideOnScroll target={target}>
             <AppBar position={'sticky'}>
                 <Toolbar variant={'dense'}>
                     <IconButton color={"inherit"} onClick={() => setDrawerOpen(true)}>

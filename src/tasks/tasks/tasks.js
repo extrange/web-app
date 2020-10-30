@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Task} from "./task/task";
 import {CreateTask} from "./task/createTask";
 import {EditTask} from "./task/editTask";
@@ -7,8 +7,10 @@ import {Networking} from "../../util";
 import {getTasksUrl, getTaskUrl} from "../urls";
 import {Virtuoso} from 'react-virtuoso/dist'
 import matchSorter from 'match-sorter'
+import {FixedSizeList as List} from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 
-export const Tasks = ({currentTasklist}) => {
+export const Tasks = React.forwardRef(({currentTasklist}, ref) => {
 
     const [editingTask, setEditingTask] = useState(null);
     const [filteredTasks, setFilteredTasks] = useState([]);
@@ -86,11 +88,12 @@ export const Tasks = ({currentTasklist}) => {
         });
     };
 
+
     let content;
 
     // User has not selected a tasklist/tasklists are loading
     if (currentTasklist === null) {
-        content = <Task task={{title: 'Select a tasklist'}}/>;
+        content = <Task task={{title: 'Select a tasklist'}}/>
 
     } else if (editingTask) {
         // User is either editing/creating a task (relevant parameters in editingTask)
@@ -121,14 +124,23 @@ export const Tasks = ({currentTasklist}) => {
                 task={e}/>
         ));
 
-        let items = [createTask, search, ...taskslist];
-
+        let items = [createTask, search, ...taskslist]
         //todo: Consider using React-window with getBoundingBox to measure row heights instead (smaller lib size)
-        content = <Virtuoso
-            totalCount={items.length}
-            item={index => items[index]}
-        />
-    }
-    return content
 
-};
+        const Row = ({index, style}) => items[index]
+
+        content = <AutoSizer>
+            {({height, width}) => (
+                <List
+                    height={height}
+                    itemCount={items.length}
+                    itemSize={50}
+                    width={width}
+                    innerRef={ref}
+                >{Row}</List>
+            )}
+        </AutoSizer>
+    }
+
+    return content
+});
