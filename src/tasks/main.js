@@ -11,7 +11,7 @@ const TaskDiv = styled.div`
     flex-direction: column;
     height: 100vh;
     margin: 0 auto;
-`
+`;
 
 export const TaskApp = ({returnToMainApp, logout}) => {
 

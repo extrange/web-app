@@ -18,11 +18,12 @@ import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import React from "react";
 
 export const HideOnScroll = ({children, ...props}) => {
-    const trigger = useScrollTrigger({threshold: 50})
+    const trigger = useScrollTrigger({threshold: 50});
     return <Slide direction={'down'} in={!trigger}>
         {children}
     </Slide>
-}
+};
+
 export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout, ...props}) => {
 
     return <>
