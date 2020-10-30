@@ -3,9 +3,8 @@ import {AddBooks} from "./addBook";
 import {ViewBooks} from "./viewBooks";
 import {Networking} from "../util";
 import * as Url from "./urls";
+import {Paper, Tab, Tabs} from "@material-ui/core";
 import {Navbar} from "../components/navbar";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 
 const LIT_APP_SECTIONS = {
     addBooks: 'addBooks',
@@ -14,7 +13,7 @@ const LIT_APP_SECTIONS = {
 
 export const LitApp = ({returnToMainApp, logout, ...props}) => {
     const [books, setBooks] = useState([]);
-    const [currentSection, setCurrentSection] = useState(LIT_APP_SECTIONS.addBooks);
+    const [tabValue, setTabValue] = useState(LIT_APP_SECTIONS.addBooks);
     const [drawerOpen, setDrawerOpen] = useState(false);
 
 
@@ -24,14 +23,13 @@ export const LitApp = ({returnToMainApp, logout, ...props}) => {
             .then(json => setBooks(json));
     };
 
-    const handleChange = value => {
-        setCurrentSection(value);
-        setDrawerOpen(false)
+    const handleChange = (event, newValue) => {
+        setTabValue(newValue);
     };
 
     let currentApp;
 
-    switch (currentSection) {
+    switch (tabValue) {
         case LIT_APP_SECTIONS.addBooks:
             currentApp = <AddBooks refreshBooks={refreshBooks}/>;
             break;
@@ -39,7 +37,7 @@ export const LitApp = ({returnToMainApp, logout, ...props}) => {
             currentApp = <ViewBooks books={books} refreshBooks={refreshBooks}/>;
             break;
         default:
-            currentApp = 'Select an option from the menu...'
+            currentApp = 'Select a tab'
     }
 
     return <>
@@ -48,15 +46,20 @@ export const LitApp = ({returnToMainApp, logout, ...props}) => {
             logout={logout}
             drawerOpen={drawerOpen}
             setDrawerOpen={setDrawerOpen}
-            returnToMainApp={returnToMainApp}>
+            returnToMainApp={returnToMainApp}
+        />
 
-            <ListItem button onClick={() => handleChange(LIT_APP_SECTIONS.addBooks)}>
-                <ListItemText primary={'Add Books'}/>
-            </ListItem>
-            <ListItem button onClick={() => handleChange(LIT_APP_SECTIONS.viewBooks)}>
-                <ListItemText primary={'View Books'}/>
-            </ListItem>
-        </Navbar>
+        <Paper>
+            <Tabs
+                value={tabValue}
+                onChange={handleChange}
+                indicatorColor={'primary'}
+                textColor={'primary'}
+            >
+                <Tab label={'Add Books'} value={LIT_APP_SECTIONS.addBooks}/>
+                <Tab label={'Book List'} value={LIT_APP_SECTIONS.viewBooks}/>
+            </Tabs>
+        </Paper>
         {currentApp}
     </>;
 };

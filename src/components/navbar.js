@@ -1,33 +1,24 @@
+import {HideOnScroll} from "./common";
 import {
     AppBar,
-    SwipeableDrawer,
+    Drawer,
     IconButton,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
     Paper,
-    Slide,
     Toolbar,
-    Typography,
-    useScrollTrigger
+    Typography
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import React from "react";
 
-export const HideOnScroll = ({children, target}) => {
-    const trigger = useScrollTrigger({target: target, threshold: 50});
-    return <Slide direction={'down'} in={!trigger}>
-        {children}
-    </Slide>
-};
+export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout, ...props}) => {
 
-export const Navbar = ({title, listRef, drawerOpen, setDrawerOpen, children, returnToMainApp, logout}) => {
-    const target = listRef?.current ? listRef.current : window;
     return <>
-        <HideOnScroll target={target}>
+        <HideOnScroll>
             <AppBar position={'sticky'}>
                 <Toolbar variant={'dense'}>
                     <IconButton color={"inherit"} onClick={() => setDrawerOpen(true)}>
@@ -39,9 +30,8 @@ export const Navbar = ({title, listRef, drawerOpen, setDrawerOpen, children, ret
                 </Toolbar>
             </AppBar>
         </HideOnScroll>
-        <SwipeableDrawer
+        <Drawer
             open={drawerOpen}
-            onOpen={() => setDrawerOpen(true)}
             onClose={() => setDrawerOpen(false)}
         >
             <Paper>
@@ -54,13 +44,10 @@ export const Navbar = ({title, listRef, drawerOpen, setDrawerOpen, children, ret
                     </ListItem>
                     {children}
                     <ListItem button onClick={logout}>
-                        <ListItemIcon>
-                            <MeetingRoomIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary={'Logout'}/>
+                        <ListItemText inset={true} primary={'Logout'}/>
                     </ListItem>
                 </List>
             </Paper>
-        </SwipeableDrawer>
+        </Drawer>
     </>
 };
