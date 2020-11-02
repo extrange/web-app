@@ -25,11 +25,11 @@ export const PlainButton = styled.button`
 `;
 
 export const HideOnScroll = ({children, ...props}) => {
-    const trigger = useScrollTrigger({threshold: 50})
+    const trigger = useScrollTrigger({threshold: 50});
     return <Slide appear={false} direction={'down'} in={!trigger}>
         {children}
     </Slide>
-}
+};
 
 const MuiStyledButton = muiStyled(Button)({
     margin: '10px'

@@ -18,19 +18,7 @@ import {format, isValid} from "date-fns"
 import {bookFields, bookSchema, defaultBookValues, resultType} from "./schema";
 import {SearchBooks} from "./searchBooks";
 import {Networking, sanitizeString} from "../util";
-import {
-    Checkbox,
-    CircularProgress,
-    FormControlLabel,
-    FormHelperText,
-    InputAdornment,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
-    Typography
-} from "@material-ui/core";
+import {Checkbox, CircularProgress, FormControlLabel, FormHelperText, InputAdornment} from "@material-ui/core";
 import {mergeWith} from "lodash";
 
 const FieldContainer = styled.div`
@@ -101,12 +89,11 @@ export const AddBooks = ({refreshBooks, ...props}) => {
         data[bookFields.type] = data[bookFields.type] ? data[bookFields.type].id : null;
         data[bookFields.dateRead] = isValid(data[bookFields.dateRead]) ? format(data[bookFields.dateRead], 'yyyy-MM-dd') : null;
 
-        setDebugValues(data);
         Url.submit(data).then(refreshBooks);
         reset()
     };
 
-    const onError = data => setDebugValues(data); //todo make snackbar with dialog to view JSON response of error
+    //todo make snackbar with dialog to view JSON response of error
 
     const onSearch = event => {
         if (event.key !== 'Enter' || !getValues(bookFields.title)) return;
@@ -188,7 +175,7 @@ export const AddBooks = ({refreshBooks, ...props}) => {
         <StyledButton
             color={'primary'}
             variant={'contained'}
-            onClick={handleSubmit(onSubmit, onError)}
+            onClick={handleSubmit(onSubmit)}
         >Submit
         </StyledButton>
 

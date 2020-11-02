@@ -2,22 +2,22 @@ import React, {useEffect, useState} from "react";
 import {Navbar} from "../components/navbar";
 import {Tasklists} from "./tasklists/tasklists";
 import {Tasks} from "./tasks/tasks";
-import styled from "styled-components";
 import {Networking} from "../util";
 import {TASKLISTS_URL} from "./urls";
+import styled from 'styled-components'
 
-const StyledTasks = styled.div`
-    margin: 0 auto;
-    height: 100vh;
-    overflow: hidden;
+const Container = styled.div`
     display: flex;
+    height: 100vh;
+    flex-direction: column;
+    align-items: center;
 `;
 
 export const TaskApp = ({returnToMainApp, logout}) => {
 
     const [currentTasklist, setCurrentTasklist] = useState(null);
     const [tasklists, setTasklists] = useState(null);
-        const [drawerOpen, setDrawerOpen] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
 
     const listTasklists = () => {
@@ -29,17 +29,23 @@ export const TaskApp = ({returnToMainApp, logout}) => {
         ;
     };
 
+    const getTasklistTitle = id => {
+        if (id && tasklists)
+            return tasklists.filter(e => e?.id === id)[0]?.title;
+        else return 'Tasks'
+    };
+
     useEffect(() => {
         listTasklists()
     }, []);
 
-    return <>
+    return <Container>
         <Navbar
             returnToMainApp={returnToMainApp}
             logout={logout}
             drawerOpen={drawerOpen}
             setDrawerOpen={setDrawerOpen}
-            title={'Tasks'}>
+            title={getTasklistTitle(currentTasklist)}>
             <Tasklists
                 currentTasklist={currentTasklist}
                 setCurrentTasklist={setCurrentTasklist}
@@ -50,11 +56,8 @@ export const TaskApp = ({returnToMainApp, logout}) => {
                 listTasklists={listTasklists}
             />
         </Navbar>
-        <StyledTasks>
-
-            <Tasks
-                currentTasklist={currentTasklist}
-            />
-        </StyledTasks>
-    </>;
+        <Tasks
+            currentTasklist={currentTasklist}
+        />
+    </Container>;
 };

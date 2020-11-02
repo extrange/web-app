@@ -1,21 +1,28 @@
 import {HideOnScroll} from "./common";
 import {
     AppBar,
-    Drawer,
     IconButton,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
     Paper,
+    SwipeableDrawer,
     Toolbar,
     Typography
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import React from "react";
+import muiStyled from "@material-ui/core/styles/styled"
 
-export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout, ...props}) => {
+
+const StyledPaper = muiStyled(Paper)({
+    'max-width': '80vw'
+});
+
+export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout}) => {
 
     return <>
         <HideOnScroll>
@@ -30,11 +37,12 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                 </Toolbar>
             </AppBar>
         </HideOnScroll>
-        <Drawer
+        <SwipeableDrawer
             open={drawerOpen}
             onClose={() => setDrawerOpen(false)}
+            onOpen={() => setDrawerOpen(true)}
         >
-            <Paper>
+            <StyledPaper>
                 <List>
                     <ListItem button onClick={returnToMainApp}>
                         <ListItemIcon>
@@ -44,10 +52,13 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                     </ListItem>
                     {children}
                     <ListItem button onClick={logout}>
-                        <ListItemText inset={true} primary={'Logout'}/>
+                        <ListItemIcon>
+                            <MeetingRoomIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary={'Logout'}/>
                     </ListItem>
                 </List>
-            </Paper>
-        </Drawer>
+            </StyledPaper>
+        </SwipeableDrawer>
     </>
 };
