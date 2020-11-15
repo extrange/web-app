@@ -5,6 +5,7 @@ import styled from "styled-components";
 import Button from "@material-ui/core/Button";
 import {useInput} from "../../../util";
 import muiStyled from "@material-ui/core/styles/styled"
+import {MarkdownEditor} from "../../../components/markdownEditor";
 
 const ButtonContainer = styled.div`
     display: flex;
@@ -19,24 +20,30 @@ const StyledButton = muiStyled(Button)({
     margin: '10px'
 });
 
-export const EditTask = props => {
-    const initialTitle = props.editingTask['title'];
-    const initialNotes = props.editingTask['notes'];
+export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) => {
+    const initialTitle = editingTask['title'];
+    const initialNotes = editingTask['notes'];
 
-    const {values, bind} = useInput({
+    const {values, setValue, bind} = useInput({
         title: initialTitle,
         notes: initialNotes,
     });
 
+    let isMarkdownDocument = false;
+
+    // If [MD] is present anywhere, identify as a markdown document
+    if (values.title?.includes('[MD]'))
+        isMarkdownDocument = true;
+
 
     const handleSubmit = event => {
-        let id = props.editingTask['id'];
-        let tasklist = props.editingTask['tasklist'];
+        let id = editingTask['id'];
+        let tasklist = editingTask['tasklist'];
 
         if (id === null)
-            props.createTask(tasklist, values.title, values.notes);
+            createTask(tasklist, values.title, values.notes);
         else
-            props.updateTask(id, tasklist, values.title, values.notes);
+            updateTask(id, tasklist, values.title, values.notes);
 
         event.preventDefault();
     };
@@ -47,9 +54,8 @@ export const EditTask = props => {
                 return
             }
         }
-        props.onCancelEdit()
+        onCancelEdit()
     };
-
 
     return (
         <InputContainer>
@@ -60,14 +66,18 @@ export const EditTask = props => {
                 autoFocus
                 {...bind('title')}
             />
-
+            {isMarkdownDocument ?
+            <MarkdownEditor
+                value={values.notes}
+                setValue={value => setValue({name: 'notes', value})}
+            />:
             <StyledTextField
-                name='notes'
-                label='Notes'
+                label={'Notes'}
                 multiline
                 fullWidth
                 {...bind('notes')}
-            />
+            />}
+
             <ButtonContainer>
 
                 <StyledButton

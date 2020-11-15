@@ -20,6 +20,7 @@ import {SearchBooks} from "./searchBooks";
 import {Networking, sanitizeString} from "../util";
 import {Checkbox, CircularProgress, FormControlLabel, FormHelperText, InputAdornment} from "@material-ui/core";
 import {mergeWith} from "lodash";
+import Editor from "rich-markdown-editor";
 
 const FieldContainer = styled.div`
     flex: 1;
@@ -44,6 +45,7 @@ const ControlHelper = ({control, errors, name, as, label, ...props}) =>
         fullWidth
         as={as}
     />;
+
 
 export const AddBooks = ({refreshBooks, ...props}) => {
 
@@ -165,7 +167,14 @@ export const AddBooks = ({refreshBooks, ...props}) => {
         });
     };
 
+
     return <FieldContainer>
+        <Editor
+            dark={true}
+            readOnly={false}
+            defaultValue="Hello world!"
+        />
+
         <SearchBooks
             open={searchOpen}
             close={() => setSearchOpen(false)}

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import 'normalize.css'
 import './index.css';
 import 'fontsource-source-sans-pro'
+import 'fontsource-jetbrains-mono'
 import {Login} from "./login";
 import {MuiThemeProvider, createMuiTheme} from "@material-ui/core/styles";
 import * as serviceWorker from "./serviceWorker";

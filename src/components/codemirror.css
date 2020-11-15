@@ -1,0 +1,12 @@
+/*Autoresize, font change*/
+
+.cm-s-codemirror {
+    font-family: "JetBrains Mono", Consolas, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif;
+    font-size: smaller;
+}
+
+.CodeMirror {
+    border: 1px solid #eee;
+    height: auto;
+    min-height: 50px;
+}
