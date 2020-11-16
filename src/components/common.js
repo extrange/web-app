@@ -1,28 +1,13 @@
-import styled from "styled-components";
 import muiStyled from "@material-ui/core/styles/styled"
 import React, {useEffect, useState} from 'react'
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {Button, InputAdornment, useScrollTrigger, Slide} from "@material-ui/core";
+import {Button, InputAdornment, Slide, useScrollTrigger} from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Chip from "@material-ui/core/Chip";
 import ClearIcon from "@material-ui/icons/Clear";
 import {sanitizeString} from "../util";
 import TextField from "@material-ui/core/TextField";
 import matchSorter from "match-sorter";
-
-//Will inherit width from parent, maximum 300px
-export const PlainButton = styled.button`
-    margin: 5px auto;
-    padding: 10px;
-    text-align: center;
-    border: 2px green solid;
-    border-radius: 20px;
-    cursor: pointer;
-    width: min(300px, 100%);
-    :hover, :active, :focus {
-        background: cornflowerblue;
-    }
-`;
 
 export const HideOnScroll = ({children, ...props}) => {
     const trigger = useScrollTrigger({threshold: 50});
@@ -39,7 +24,7 @@ const MuiStyledButton = muiStyled(Button)({
  * Plain button with 10px margin
  * @type {function(JSX.Element): *}
  */
-export const StyledButton = ({variant, color, onClick,...props}) => <MuiStyledButton
+export const StyledButton = ({variant, color, onClick, ...props}) => <MuiStyledButton
     variant={variant}
     color={color}
     onClick={onClick}

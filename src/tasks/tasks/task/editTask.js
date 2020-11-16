@@ -1,5 +1,4 @@
 import React from 'react'
-import './editTask.css'
 import {StyledTextField} from "../../../components/common";
 import styled from "styled-components";
 import Button from "@material-ui/core/Button";
@@ -13,7 +12,8 @@ const ButtonContainer = styled.div`
 `;
 
 const InputContainer = styled.div`
-    max-width: 500px;
+    margin: 0 auto;
+    max-width: 800px;
 `;
 
 const StyledButton = muiStyled(Button)({
