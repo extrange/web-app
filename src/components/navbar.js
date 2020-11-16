@@ -7,7 +7,7 @@ import {
     ListItemIcon,
     ListItemText,
     Paper,
-    SwipeableDrawer,
+    Drawer,
     Toolbar,
     Typography
 } from "@material-ui/core";
@@ -37,10 +37,9 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                 </Toolbar>
             </AppBar>
         </HideOnScroll>
-        <SwipeableDrawer
+        <Drawer
             open={drawerOpen}
             onClose={() => setDrawerOpen(false)}
-            onOpen={() => setDrawerOpen(true)}
         >
             <StyledPaper>
                 <List>
@@ -59,6 +58,6 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                     </ListItem>
                 </List>
             </StyledPaper>
-        </SwipeableDrawer>
+        </Drawer>
     </>
 };
