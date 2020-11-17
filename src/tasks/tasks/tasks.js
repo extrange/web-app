@@ -13,6 +13,7 @@ import styled from 'styled-components'
 const TasksContainer = styled.div`
     flex: 1;
     width: 100%;
+    height: 100%;
 `;
 
 
@@ -131,7 +132,6 @@ export const Tasks = ({currentTasklist}) => {
 
         let items = [createTask, search, ...taskslist];
 
-        //todo: Consider using React-window with getBoundingBox to measure row heights instead (smaller lib size)
         content = <Virtuoso
             totalCount={items.length}
             item={index => items[index]}

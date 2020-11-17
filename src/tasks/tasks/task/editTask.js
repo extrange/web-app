@@ -4,7 +4,7 @@ import styled from "styled-components";
 import {useInput} from "../../../util";
 import muiStyled from "@material-ui/core/styles/styled"
 import {MarkdownEditor} from "../../../components/markdownEditor";
-import {Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from "@material-ui/core";
+import {Button, Dialog, DialogActions, DialogTitle} from "@material-ui/core";
 
 const ButtonContainer = styled.div`
     display: flex;
@@ -23,7 +23,7 @@ const StyledButton = muiStyled(Button)({
 export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) => {
     const initialTitle = editingTask['title'];
     const initialNotes = editingTask['notes'];
-    const [dialogOpen, setDialogOpen] = useState(false)
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const {values, setValue, bind} = useInput({
         title: initialTitle,
@@ -51,9 +51,9 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
     };
 
     const handleDiscard = () => {
-        setDialogOpen(false)
+        setDialogOpen(false);
         onCancelEdit()
-    }
+    };
 
     return <>
         <Dialog
@@ -83,7 +83,6 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
                 label='Title'
                 multiline
                 fullWidth
-                autoFocus
                 {...bind('title')}
             />
 

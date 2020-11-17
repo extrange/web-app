@@ -5,30 +5,52 @@
 }
 
 .cm-s-codemirror.CodeMirror {
-    border: 1px solid #eee;
     height: auto;
-    min-height: 50px;
-    /*background: #2B2B2B;*/
-    /*color: #A9B7C6;*/
+    background: rgba(41, 41, 35, 0.6);
+    color: #f8f8f2;
 }
 
-/*.cm-s-codemirror .CodeMirror-matchingbracket {
-    background-color: #3B514D;
-    color: #FFEF28 !important;
-    font-weight: bold;
-}*/
+.cm-s-codemirror .CodeMirror-matchingbracket {
+    background-color: #7f7f7f;
+    color: inherit !important;
+}
 
-
-/*.cm-s-codemirror .CodeMirror-gutters {
-    background: #313335;
+.cm-s-codemirror .CodeMirror-gutters {
+    background: rgba(0, 0, 0, 0);
     border-right: 1px solid #313335;
-}*/
-
-/*
-.cm-s-codemirror div.CodeMirror-selected {
-    background: #214283;
 }
 
+
+/*Styles for unfocused selections*/
+.cm-s-codemirror div.CodeMirror-selected {
+    background: #7f7f7f;
+}
+
+.cm-s-codemirror .CodeMirror-selectedtext {
+}
+
+/*Styles for focused selections*/
+.cm-s-codemirror.CodeMirror-focused div.CodeMirror-selected {
+    background: #929292;
+}
+
+.cm-s-codemirror.CodeMirror-focused .CodeMirror-selectedtext {
+}
+
+/*Cursor*/
 .cm-s-codemirror .CodeMirror-cursor {
     border-left: 1px solid #A9B7C6;
-}*/
+}
+
+/*Gutter styling on focus*/
+.cm-s-codemirror .CodeMirror-activeline {
+
+}
+
+.cm-s-codemirror .CodeMirror-activeline-background {
+    background: #323232;
+}
+
+.cm-s-codemirror .CodeMirror-activeline-gutter {
+    background: #45443a;
+}

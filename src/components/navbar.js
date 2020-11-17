@@ -1,13 +1,13 @@
 import {HideOnScroll} from "./common";
 import {
     AppBar,
+    Drawer,
     IconButton,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
     Paper,
-    Drawer,
     Toolbar,
     Typography
 } from "@material-ui/core";
@@ -23,6 +23,23 @@ const StyledPaper = muiStyled(Paper)({
 });
 
 export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout}) => {
+    const drawer = <StyledPaper>
+        <List>
+            <ListItem button onClick={returnToMainApp}>
+                <ListItemIcon>
+                    <ExitToAppIcon/>
+                </ListItemIcon>
+                <ListItemText primary={'Back to Apps'}/>
+            </ListItem>
+            {children}
+            <ListItem button onClick={logout}>
+                <ListItemIcon>
+                    <MeetingRoomIcon/>
+                </ListItemIcon>
+                <ListItemText primary={'Logout'}/>
+            </ListItem>
+        </List>
+    </StyledPaper>;
 
     return <>
         <HideOnScroll>
@@ -37,27 +54,13 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                 </Toolbar>
             </AppBar>
         </HideOnScroll>
+
+
         <Drawer
             open={drawerOpen}
             onClose={() => setDrawerOpen(false)}
-        >
-            <StyledPaper>
-                <List>
-                    <ListItem button onClick={returnToMainApp}>
-                        <ListItemIcon>
-                            <ExitToAppIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary={'Back to Apps'}/>
-                    </ListItem>
-                    {children}
-                    <ListItem button onClick={logout}>
-                        <ListItemIcon>
-                            <MeetingRoomIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary={'Logout'}/>
-                    </ListItem>
-                </List>
-            </StyledPaper>
+        >{drawer}
         </Drawer>
+
     </>
 };
