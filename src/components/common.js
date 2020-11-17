@@ -17,7 +17,7 @@ export const HideOnScroll = ({children, ...props}) => {
 };
 
 const MuiStyledButton = muiStyled(Button)({
-    margin: '10px'
+    margin: '10px',
 });
 
 /**

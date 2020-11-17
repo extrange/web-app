@@ -1,10 +1,10 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {StyledTextField} from "../../../components/common";
 import styled from "styled-components";
-import Button from "@material-ui/core/Button";
 import {useInput} from "../../../util";
 import muiStyled from "@material-ui/core/styles/styled"
 import {MarkdownEditor} from "../../../components/markdownEditor";
+import {Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from "@material-ui/core";
 
 const ButtonContainer = styled.div`
     display: flex;
@@ -23,17 +23,12 @@ const StyledButton = muiStyled(Button)({
 export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) => {
     const initialTitle = editingTask['title'];
     const initialNotes = editingTask['notes'];
+    const [dialogOpen, setDialogOpen] = useState(false)
 
     const {values, setValue, bind} = useInput({
         title: initialTitle,
         notes: initialNotes,
     });
-
-    let isMarkdownDocument = false;
-
-    // If [MD] is present anywhere, identify as a markdown document
-    if (values.title?.includes('[MD]'))
-        isMarkdownDocument = true;
 
 
     const handleSubmit = event => {
@@ -48,16 +43,41 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
         event.preventDefault();
     };
 
-    const handleCancelEdit = event => {
+    const handleCancelEdit = () => {
         if (values.title !== initialTitle || values.notes !== initialNotes) {
-            if (!window.confirm('Discard changes?')) {
-                return
-            }
-        }
-        onCancelEdit()
+            setDialogOpen(true)
+        } else
+            onCancelEdit()
     };
 
-    return (
+    const handleDiscard = () => {
+        setDialogOpen(false)
+        onCancelEdit()
+    }
+
+    return <>
+        <Dialog
+            open={dialogOpen}
+            onClose={() => setDialogOpen(false)}
+        >
+            <DialogTitle>Discard changes?</DialogTitle>
+            <DialogActions>
+                <Button
+                    variant={'text'}
+                    color={'primary'}
+                    onClick={() => setDialogOpen(false)}
+                >Cancel
+                </Button>
+
+                <Button
+                    variant={'text'}
+                    color={'primary'}
+                    onClick={handleDiscard}
+                >Discard
+                </Button>
+            </DialogActions>
+
+        </Dialog>
         <InputContainer>
             <StyledTextField
                 label='Title'
@@ -66,17 +86,11 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
                 autoFocus
                 {...bind('title')}
             />
-            {isMarkdownDocument ?
+
             <MarkdownEditor
                 value={values.notes}
                 setValue={value => setValue({name: 'notes', value})}
-            />:
-            <StyledTextField
-                label={'Notes'}
-                multiline
-                fullWidth
-                {...bind('notes')}
-            />}
+            />
 
             <ButtonContainer>
 
@@ -96,5 +110,5 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
 
             </ButtonContainer>
         </InputContainer>
-    );
+    </>
 };
