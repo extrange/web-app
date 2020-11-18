@@ -40,6 +40,7 @@ export class Networking {
 
     /**
      * Wrap fetch request with authentication headers and todo manage reauth automatically
+     * Throws errors if response status code is not between 200-299.
      * @param url
      * @param obj Parameters for the fetch() request. Must include 'method'.
      * @returns {Promise<Response>}

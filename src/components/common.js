@@ -1,4 +1,4 @@
-import muiStyled from "@material-ui/core/styles/styled"
+import {styled} from "@material-ui/core/styles"
 import React, {useEffect, useState} from 'react'
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {Button, InputAdornment, Slide, useScrollTrigger} from "@material-ui/core";
@@ -16,7 +16,7 @@ export const HideOnScroll = ({children, ...props}) => {
     </Slide>
 };
 
-const MuiStyledButton = muiStyled(Button)({
+const MuiStyledButton = styled(Button)({
     margin: '10px',
 });
 
@@ -31,7 +31,7 @@ export const StyledButton = ({variant, color, onClick, ...props}) => <MuiStyledB
     {...props}
 />;
 
-const MuiStyledAutocompleteMultiSort = muiStyled(Autocomplete)({
+const MuiStyledAutocompleteMultiSort = styled(Autocomplete)({
     margin: '10px 0',
 });
 
@@ -176,7 +176,7 @@ export const StyledAutocompleteMultiSort = ({displayKey = 'name', searchKeys = [
     />
 };
 
-const MuiStyledTextField = muiStyled(TextField)({
+const MuiStyledTextField = styled(TextField)({
     margin: '5px 0',
 });
 

@@ -13,7 +13,7 @@ const Container = styled.div`
     align-items: center;
 `;
 
-export const TaskApp = ({returnToMainApp, logout}) => {
+export const TaskModule = ({returnToMainApp, logout}) => {
 
     const [currentTasklist, setCurrentTasklist] = useState(null);
     const [tasklists, setTasklists] = useState(null);

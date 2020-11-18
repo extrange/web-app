@@ -4,13 +4,14 @@ import 'fontsource-roboto/300.css'
 import 'fontsource-roboto/400.css'
 import 'fontsource-roboto/500.css'
 import 'fontsource-roboto/700.css'
+import 'fontsource-source-sans-pro' //For codemirror in markdownEditor.js
 import {createMuiTheme} from "@material-ui/core/styles";
 import * as serviceWorker from "./serviceWorker";
 import {MuiThemeProvider} from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import {Login} from "./login";
 import styled from 'styled-components'
-import bg from './bg.jpg'
+import bg from './bg.webp'
+import {LoginCheck} from "./main/loginCheck";
 
 const theme = createMuiTheme({
     palette: {
@@ -40,18 +41,15 @@ const BackgroundHolder = styled.div`
     z-index: -1;
 `;
 
-const App = () => (
-    <MuiThemeProvider theme={theme}>
-        <CssBaseline/>
-        <Background/>
-        <BackgroundHolder/>
-        <Login/>
-    </MuiThemeProvider>
-);
 
 ReactDOM.render(
     <React.StrictMode>
-        <App/>
+        <MuiThemeProvider theme={theme}>
+            <CssBaseline/>
+            <Background/>
+            <BackgroundHolder/>
+            <LoginCheck/>
+        </MuiThemeProvider>
     </React.StrictMode>
     , document.getElementById('root'));
 

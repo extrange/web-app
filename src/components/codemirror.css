@@ -1,7 +1,7 @@
 /*Autoresize, font change*/
 
 .cm-s-codemirror {
-    font-family: "Source Sans Pro", Consolas, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif;
+    font-family: "Source Sans Pro", sans-serif;
 }
 
 .cm-s-codemirror.CodeMirror {
