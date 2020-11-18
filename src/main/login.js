@@ -51,7 +51,9 @@ export const Login = ({setLoggedIn}) => {
 
     return <StyledContainer>
 
-        <Typography variant={'h6'} gutterBottom align={"center"}>{loginState.message}</Typography>
+        <Typography variant={'h6'} gutterBottom align={"center"}>
+            {loginState.message}
+        </Typography>
         <StyledTextField
             type='text'
             label={'Username'}

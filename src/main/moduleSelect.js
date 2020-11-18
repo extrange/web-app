@@ -30,11 +30,11 @@ const SelectContainer = styled.div`
 `;
 
 export const ModuleSelect = ({setLoggedIn}) => {
-    const [currentApp, setCurrentApp] = useState(localStorage.getItem(CURRENT_MODULE));
+    const [currentModule, setCurrentModule] = useState(localStorage.getItem(CURRENT_MODULE));
 
     const returnToMainApp = () => {
         localStorage.removeItem(CURRENT_MODULE);
-        setCurrentApp(null);
+        setCurrentModule(null);
     };
 
     const logout = () => {
@@ -43,8 +43,8 @@ export const ModuleSelect = ({setLoggedIn}) => {
             .then(() => setLoggedIn(false));
     };
 
-    return currentApp
-            ? modules({returnToMainApp, logout})[currentApp].jsx
+    return currentModule
+            ? modules({returnToMainApp, logout})[currentModule].jsx
             : <SelectContainer>
             {
                 Object.entries(modules()).map(([moduleName, value]) =>
@@ -55,7 +55,7 @@ export const ModuleSelect = ({setLoggedIn}) => {
                         key={moduleName}
                         onClick={() => {
                             localStorage.setItem(CURRENT_MODULE, moduleName);
-                            setCurrentApp(moduleName)
+                            setCurrentModule(moduleName)
                         }}
                     >{value.displayName}</StyledButton>
                 )

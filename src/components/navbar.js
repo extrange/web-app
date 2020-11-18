@@ -15,12 +15,22 @@ import MenuIcon from "@material-ui/icons/Menu";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import React from "react";
-import muiStyled from "@material-ui/core/styles/styled"
+import {styled} from "@material-ui/core/styles"
 
+const drawerWidth = 240;
 
-const StyledPaper = muiStyled(Paper)({
+const StyledPaper = styled(Paper)({
     'max-width': '80vw'
 });
+
+const StyledDrawer = styled(Drawer)(({theme}) =>
+    ({
+        [theme.breakpoints.up('sm')]: {
+            width: drawerWidth,
+            flexShrink: 0,
+        },
+    })
+);
 
 export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout}) => {
     const drawer = <StyledPaper>
