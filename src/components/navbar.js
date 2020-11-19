@@ -55,6 +55,12 @@ const StyledContentContainer = styled.div`
     flex-direction: column;
 `;
 
+const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
+    [theme.breakpoints.up('md')]: {
+        display: 'none',
+    }
+}));
+
 
 export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout, content}) => {
     const drawer = <StyledPaper>
@@ -79,9 +85,12 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
         <HideOnScroll>
             <StyledAppBar position={'fixed'}>
                 <Toolbar variant={"dense"}>
-                    <IconButton color={"inherit"} onClick={() => setDrawerOpen(true)}>
+                    <StyledIconButton
+                        color={"inherit"}
+                        edge={'start'}
+                        onClick={() => setDrawerOpen(true)}>
                         <MenuIcon/>
-                    </IconButton>
+                    </StyledIconButton>
                     <Typography variant={'h6'}>
                         {title}
                     </Typography>
