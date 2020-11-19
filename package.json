@@ -32,6 +32,7 @@
     "react-window": "^1.8.6",
     "remarkable": "^2.0.1",
     "remove-accents": "^0.4.2",
+    "seedrandom": "^3.0.5",
     "source-map-explorer": "^2.5.0",
     "styled-components": "^5.2.0",
     "worker-loader": "^2.0.0",

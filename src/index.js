@@ -9,9 +9,11 @@ import {createMuiTheme} from "@material-ui/core/styles";
 import * as serviceWorker from "./serviceWorker";
 import {MuiThemeProvider} from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import styled from 'styled-components'
-import bg from './bg.webp'
 import {LoginCheck} from "./main/loginCheck";
+import {Background} from "./components/background";
+
+/*Largest index of background images, inclusive*/
+const numImages = 26;
 
 const theme = createMuiTheme({
     palette: {
@@ -25,29 +27,11 @@ const theme = createMuiTheme({
     }
 });
 
-const Background = styled.div`
-    background: url(${bg}) top/cover;
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    z-index: -1;
-`;
-
-const BackgroundHolder = styled.div`
-    background: rgba(0, 0, 0, 0.6);
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-`;
-
-
 ReactDOM.render(
     <React.StrictMode>
         <MuiThemeProvider theme={theme}>
             <CssBaseline/>
-            <Background/>
-            <BackgroundHolder/>
+            <Background numImages={numImages}/>
             <LoginCheck/>
         </MuiThemeProvider>
     </React.StrictMode>

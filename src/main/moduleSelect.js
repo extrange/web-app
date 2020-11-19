@@ -6,9 +6,10 @@ import {Literature} from "../literature/main";
 import {StyledButton} from "../components/common";
 import styled from "styled-components";
 
-// LocalStorage key
+/*LocalStorage key*/
 const CURRENT_MODULE= 'CURRENT_MODULE';
 
+/*Add new modules here*/
 const modules = props => ({
     TASKS: {
         displayName: 'Lists',
