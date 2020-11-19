@@ -19,36 +19,45 @@ import React from "react";
 import {styled as muiStyled} from "@material-ui/core/styles"
 import styled from 'styled-components'
 
-const drawerWidth = 240;
+/*StyledContainer is a flex container for StyledDrawerContainer (flex: 1 0),
+HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
+
+const drawerWidth = 300;
 
 const StyledPaper = muiStyled(Paper)({
-    'max-width': '80vw'
+    'max-width': drawerWidth,
 });
 
 const StyledContainer = styled.div`
     display: flex;
+    width: 100%;
+    height: 100%;
 `;
 
-const StyledDrawer = muiStyled('div')(({theme}) => ({
-    [theme.breakpoints.up('sm')]: {
+const StyledAppBar = muiStyled(AppBar)(({theme}) => ({
+    [theme.breakpoints.up('md')]: {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: drawerWidth,
+    },
+}));
+
+const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
+    [theme.breakpoints.up('md')]: {
         width: drawerWidth,
         flexShrink: 0,
     },
 }));
 
-const StyledAppBar = muiStyled(AppBar)(({theme}) => ({
-    [theme.breakpoints.up('sm')]: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth,
-    }
-}));
-
-const StyledContents = styled.div`
+const StyledContentContainer = styled.div`
+    width: 100%;
     flex: 1;
+    display: flex;
+    flex-direction: column;
 `;
 
+
 export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout, content}) => {
-    const drawer = <Paper>
+    const drawer = <StyledPaper>
         <List>
             <ListItem button onClick={returnToMainApp}>
                 <ListItemIcon>
@@ -64,12 +73,12 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                 <ListItemText primary={'Logout'}/>
             </ListItem>
         </List>
-    </Paper>;
+    </StyledPaper>;
 
     return <StyledContainer>
         <HideOnScroll>
-            <StyledAppBar position={'sticky'}>
-                <Toolbar variant={'dense'}>
+            <StyledAppBar position={'fixed'}>
+                <Toolbar variant={"dense"}>
                     <IconButton color={"inherit"} onClick={() => setDrawerOpen(true)}>
                         <MenuIcon/>
                     </IconButton>
@@ -80,9 +89,8 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
             </StyledAppBar>
         </HideOnScroll>
 
-        <StyledDrawer>
-
-            <Hidden smUp>
+        <StyledDrawerContainer>
+            <Hidden mdUp>
                 <Drawer
                     open={drawerOpen}
                     onClose={() => setDrawerOpen(false)}
@@ -90,7 +98,7 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                 </Drawer>
             </Hidden>
 
-            <Hidden xsDown>
+            <Hidden smDown>
                 <Drawer
                     open
                     variant={"permanent"}
@@ -98,11 +106,12 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                 </Drawer>
             </Hidden>
 
-        </StyledDrawer>
+        </StyledDrawerContainer>
 
-        <StyledContents>
+        <StyledContentContainer>
+            <Toolbar variant={"dense"}/>
             {content}
-        </StyledContents>
+        </StyledContentContainer>
 
 
     </StyledContainer>
