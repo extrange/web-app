@@ -45,7 +45,11 @@ export const TaskModule = ({returnToMainApp, logout}) => {
             logout={logout}
             drawerOpen={drawerOpen}
             setDrawerOpen={setDrawerOpen}
-            title={getTasklistTitle(currentTasklist)}>
+            title={getTasklistTitle(currentTasklist)}
+            content={<Tasks
+                currentTasklist={currentTasklist}
+            />}
+        >
             <Tasklists
                 currentTasklist={currentTasklist}
                 setCurrentTasklist={setCurrentTasklist}
@@ -56,8 +60,5 @@ export const TaskModule = ({returnToMainApp, logout}) => {
                 listTasklists={listTasklists}
             />
         </Navbar>
-        <Tasks
-            currentTasklist={currentTasklist}
-        />
     </Container>;
 };

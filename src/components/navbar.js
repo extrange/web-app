@@ -2,6 +2,7 @@ import {HideOnScroll} from "./common";
 import {
     AppBar,
     Drawer,
+    Hidden,
     IconButton,
     List,
     ListItem,
@@ -9,31 +10,45 @@ import {
     ListItemText,
     Paper,
     Toolbar,
-    Typography
+    Typography,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import React from "react";
-import {styled} from "@material-ui/core/styles"
+import {styled as muiStyled} from "@material-ui/core/styles"
+import styled from 'styled-components'
 
 const drawerWidth = 240;
 
-const StyledPaper = styled(Paper)({
+const StyledPaper = muiStyled(Paper)({
     'max-width': '80vw'
 });
 
-const StyledDrawer = styled(Drawer)(({theme}) =>
-    ({
-        [theme.breakpoints.up('sm')]: {
-            width: drawerWidth,
-            flexShrink: 0,
-        },
-    })
-);
+const StyledContainer = styled.div`
+    display: flex;
+`;
 
-export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout}) => {
-    const drawer = <StyledPaper>
+const StyledDrawer = muiStyled('div')(({theme}) => ({
+    [theme.breakpoints.up('sm')]: {
+        width: drawerWidth,
+        flexShrink: 0,
+    },
+}));
+
+const StyledAppBar = muiStyled(AppBar)(({theme}) => ({
+    [theme.breakpoints.up('sm')]: {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: drawerWidth,
+    }
+}));
+
+const StyledContents = styled.div`
+    flex: 1;
+`;
+
+export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout, content}) => {
+    const drawer = <Paper>
         <List>
             <ListItem button onClick={returnToMainApp}>
                 <ListItemIcon>
@@ -49,11 +64,11 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                 <ListItemText primary={'Logout'}/>
             </ListItem>
         </List>
-    </StyledPaper>;
+    </Paper>;
 
-    return <>
+    return <StyledContainer>
         <HideOnScroll>
-            <AppBar position={'sticky'}>
+            <StyledAppBar position={'sticky'}>
                 <Toolbar variant={'dense'}>
                     <IconButton color={"inherit"} onClick={() => setDrawerOpen(true)}>
                         <MenuIcon/>
@@ -62,15 +77,33 @@ export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMain
                         {title}
                     </Typography>
                 </Toolbar>
-            </AppBar>
+            </StyledAppBar>
         </HideOnScroll>
 
+        <StyledDrawer>
 
-        <Drawer
-            open={drawerOpen}
-            onClose={() => setDrawerOpen(false)}
-        >{drawer}
-        </Drawer>
+            <Hidden smUp>
+                <Drawer
+                    open={drawerOpen}
+                    onClose={() => setDrawerOpen(false)}
+                >{drawer}
+                </Drawer>
+            </Hidden>
 
-    </>
+            <Hidden xsDown>
+                <Drawer
+                    open
+                    variant={"permanent"}
+                >{drawer}
+                </Drawer>
+            </Hidden>
+
+        </StyledDrawer>
+
+        <StyledContents>
+            {content}
+        </StyledContents>
+
+
+    </StyledContainer>
 };
