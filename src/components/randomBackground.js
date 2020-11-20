@@ -3,7 +3,7 @@ import {getRandomInt} from "../util";
 import {getDaysSinceEpoch} from "../util";
 import React from "react";
 
-const BackgroundImage = styled.div`
+const RandomBackgroundImage = styled.div`
     background: url(${({numImages}) => `/bg/${getRandomInt(1, numImages, getDaysSinceEpoch())}.jpg`}) top/cover;
     width: 100%;
     height: 100%;
@@ -19,9 +19,9 @@ const BackgroundScreen = styled.div`
     z-index: -1;
 `;
 
-export const Background = ({numImages}) => {
+export const RandomBackground = ({numImages}) => {
     return <>
-        <BackgroundImage numImages={numImages}/>
+        <RandomBackgroundImage numImages={numImages}/>
         <BackgroundScreen/>
         </>
 };

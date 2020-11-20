@@ -5,9 +5,11 @@ import {TaskModule} from "../tasks/main";
 import {Literature} from "../literature/main";
 import {StyledButton} from "../components/common";
 import styled from "styled-components";
+import {Button, Snackbar} from "@material-ui/core";
+import {Alert, AlertTitle} from "@material-ui/lab";
 
 /*LocalStorage key*/
-const CURRENT_MODULE= 'CURRENT_MODULE';
+const CURRENT_MODULE = 'CURRENT_MODULE';
 
 /*Add new modules here*/
 const modules = props => ({
@@ -45,8 +47,8 @@ export const ModuleSelect = ({setLoggedIn}) => {
     };
 
     return currentModule
-            ? modules({returnToMainApp, logout})[currentModule].jsx
-            : <SelectContainer>
+        ? modules({returnToMainApp, logout})[currentModule].jsx
+        : <SelectContainer>
             {
                 Object.entries(modules()).map(([moduleName, value]) =>
                     <StyledButton
@@ -61,14 +63,15 @@ export const ModuleSelect = ({setLoggedIn}) => {
                     >{value.displayName}</StyledButton>
                 )
             }
-                <StyledButton
-                    variant={'contained'}
-                    color={'primary'}
-                    fullWidth
-                    onClick={logout}
-                >Logout
-                </StyledButton>
+            <StyledButton
+                variant={'contained'}
+                color={'primary'}
+                fullWidth
+                onClick={logout}
+            >Logout
+            </StyledButton>
 
-            </SelectContainer>
+
+        </SelectContainer>
         ;
 };

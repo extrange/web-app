@@ -25,7 +25,7 @@ HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
 const drawerWidth = 300;
 
 const StyledPaper = muiStyled(Paper)({
-    'max-width': drawerWidth,
+    width: drawerWidth,
 });
 
 const StyledContainer = styled.div`
@@ -62,7 +62,7 @@ const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
 }));
 
 
-export const Navbar = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout, content}) => {
+export const AppBarResponsive = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout, content}) => {
     const drawer = <StyledPaper>
         <List>
             <ListItem button onClick={returnToMainApp}>

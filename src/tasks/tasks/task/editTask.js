@@ -1,10 +1,10 @@
-import React, {useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {StyledTextField} from "../../../components/common";
 import styled from "styled-components";
-import {useInput} from "../../../util";
 import muiStyled from "@material-ui/core/styles/styled"
 import {MarkdownEditor} from "../../../components/markdownEditor";
 import {Button, Dialog, DialogActions, DialogTitle} from "@material-ui/core";
+import {useForm} from "react-hook-form";
 
 const ButtonContainer = styled.div`
     display: flex;
@@ -21,30 +21,53 @@ const StyledButton = muiStyled(Button)({
 });
 
 export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) => {
+
     const initialTitle = editingTask['title'];
     const initialNotes = editingTask['notes'];
-    const [dialogOpen, setDialogOpen] = useState(false);
 
-    const {values, setValue, bind} = useInput({
-        title: initialTitle,
-        notes: initialNotes,
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const {register, getValues, setValue} = useForm({
+        defaultValues: {
+            'title': initialTitle,
+            'notes': initialNotes,
+        }
     });
+
+    register({name: 'title'});
+    register({name: 'notes'});
+
+    const titleRef = useRef();
+
+    // Autofocus if both title and notes are empty
+    useEffect(() => {
+        if (!initialTitle && !initialNotes)
+            titleRef.current.focus()
+        // eslint-disable-next-line
+    }, []);
 
 
     const handleSubmit = event => {
         let id = editingTask['id'];
         let tasklist = editingTask['tasklist'];
+        let {title, notes} = getValues();
+
+        //Do not trigger submission if nothing was changed
+        if (title === initialTitle && notes === initialNotes){
+            onCancelEdit();
+            return;
+        }
 
         if (id === null)
-            createTask(tasklist, values.title, values.notes);
+            createTask(tasklist, title, notes);
         else
-            updateTask(id, tasklist, values.title, values.notes);
+            updateTask(id, tasklist, title, notes);
 
         event.preventDefault();
     };
 
     const handleCancelEdit = () => {
-        if (values.title !== initialTitle || values.notes !== initialNotes) {
+        let {title, notes} = getValues();
+        if (title !== initialTitle || notes !== initialNotes) {
             setDialogOpen(true)
         } else
             onCancelEdit()
@@ -79,16 +102,20 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
 
         </Dialog>
         <InputContainer>
+
             <StyledTextField
                 label='Title'
                 multiline
                 fullWidth
-                {...bind('title')}
+                name={'title'}
+                inputRef={titleRef}
+                defaultValue={initialTitle}
+                onChange={e => setValue('title', e.target.value)}
             />
 
             <MarkdownEditor
-                value={values.notes}
-                setValue={value => setValue({name: 'notes', value})}
+                value={initialNotes}
+                onChange={newVal => setValue('notes', newVal)}
             />
 
             <ButtonContainer>

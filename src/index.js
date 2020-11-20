@@ -6,11 +6,11 @@ import 'fontsource-roboto/500.css'
 import 'fontsource-roboto/700.css'
 import 'fontsource-source-sans-pro' //For codemirror in markdownEditor.js
 import {createMuiTheme} from "@material-ui/core/styles";
-import * as serviceWorker from "./serviceWorker";
 import {MuiThemeProvider} from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {LoginCheck} from "./main/loginCheck";
-import {Background} from "./components/background";
+import {RandomBackground} from "./components/randomBackground";
+import {ServiceWorker} from "./main/serviceWorker";
 
 /*Largest index of background images, inclusive*/
 const numImages = 26;
@@ -31,10 +31,12 @@ ReactDOM.render(
     <React.StrictMode>
         <MuiThemeProvider theme={theme}>
             <CssBaseline/>
-            <Background numImages={numImages}/>
+            <ServiceWorker/>
+            <RandomBackground numImages={numImages}/>
             <LoginCheck/>
         </MuiThemeProvider>
     </React.StrictMode>
     , document.getElementById('root'));
 
-serviceWorker.register();
+
+

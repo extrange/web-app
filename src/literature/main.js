@@ -4,7 +4,7 @@ import {ViewBooks} from "./viewBooks";
 import {Networking} from "../util";
 import * as Url from "./urls";
 import {Paper, Tab, Tabs} from "@material-ui/core";
-import {Navbar} from "../components/navbar";
+import {AppBarResponsive} from "../components/appBarResponsive";
 
 const LIT_APP_SECTIONS = {
     addBooks: 'addBooks',
@@ -41,7 +41,7 @@ export const Literature = ({returnToMainApp, logout, ...props}) => {
     }
 
     return <>
-        <Navbar
+        <AppBarResponsive
             title={'Literature'}
             logout={logout}
             drawerOpen={drawerOpen}

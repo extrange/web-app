@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Navbar} from "../components/navbar";
+import {AppBarResponsive} from "../components/appBarResponsive";
 import {Tasklists} from "./tasklists/tasklists";
 import {Tasks} from "./tasks/tasks";
 import {Networking} from "../util";
@@ -40,7 +40,7 @@ export const TaskModule = ({returnToMainApp, logout}) => {
     }, []);
 
     return <Container>
-        <Navbar
+        <AppBarResponsive
             returnToMainApp={returnToMainApp}
             logout={logout}
             drawerOpen={drawerOpen}
@@ -59,6 +59,6 @@ export const TaskModule = ({returnToMainApp, logout}) => {
                 tasklists={tasklists}
                 listTasklists={listTasklists}
             />
-        </Navbar>
+        </AppBarResponsive>
     </Container>;
 };
