@@ -11,6 +11,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import {LoginCheck} from "./main/loginCheck";
 import {RandomBackground} from "./components/randomBackground";
 import {ServiceWorker} from "./main/serviceWorker";
+import {ErrorBoundary} from "./components/errorBoundary";
 
 /*Largest index of background images, inclusive*/
 const numImages = 26;
@@ -31,9 +32,11 @@ ReactDOM.render(
     <React.StrictMode>
         <MuiThemeProvider theme={theme}>
             <CssBaseline/>
-            <ServiceWorker/>
             <RandomBackground numImages={numImages}/>
-            <LoginCheck/>
+            <ErrorBoundary>
+                <ServiceWorker/>
+                <LoginCheck/>
+            </ErrorBoundary>
         </MuiThemeProvider>
     </React.StrictMode>
     , document.getElementById('root'));

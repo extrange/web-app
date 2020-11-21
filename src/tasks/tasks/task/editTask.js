@@ -126,7 +126,7 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
                     multiline
                     fullWidth
                     getInitialValue={() => getValues('notes')}
-                    onChange={newVal => setValue('notes', newVal.target.value)}
+                    onChange={e => setValue('notes', e.target.value)}
                 />
             </Hidden>
 

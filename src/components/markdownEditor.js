@@ -14,7 +14,6 @@ import 'codemirror/addon/selection/active-line'
  * Uncontrolled. defaultValue should not trigger re-renders.
  */
 export const MarkdownEditor = ({defaultValue, onChange}) => {
-
     return <CodeMirror
         value={defaultValue}
         options={{
