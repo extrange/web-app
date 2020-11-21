@@ -11,12 +11,12 @@ import 'codemirror/addon/selection/active-line'
 
 
 /*
- * Best used with useForm due to excessive rerendering otherwise and subsequent input lag
+ * Uncontrolled. defaultValue should not trigger re-renders.
  */
-export const MarkdownEditor = ({value, onChange}) => {
+export const MarkdownEditor = ({defaultValue, onChange}) => {
 
     return <CodeMirror
-        value={value}
+        value={defaultValue}
         options={{
             theme: 'codemirror',
             mode: {

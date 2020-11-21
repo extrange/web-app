@@ -5,8 +5,6 @@ import {TaskModule} from "../tasks/main";
 import {Literature} from "../literature/main";
 import {StyledButton} from "../components/common";
 import styled from "styled-components";
-import {Button, Snackbar} from "@material-ui/core";
-import {Alert, AlertTitle} from "@material-ui/lab";
 
 /*LocalStorage key*/
 const CURRENT_MODULE = 'CURRENT_MODULE';

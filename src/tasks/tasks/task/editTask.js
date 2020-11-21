@@ -5,6 +5,8 @@ import muiStyled from "@material-ui/core/styles/styled"
 import {MarkdownEditor} from "../../../components/markdownEditor";
 import {Button, Dialog, DialogActions, DialogTitle} from "@material-ui/core";
 import {useForm} from "react-hook-form";
+import Hidden from "@material-ui/core/Hidden";
+import {withSetDefaultValueOnMount} from "../../../components/withSetDefaultValueOnMount";
 
 const ButtonContainer = styled.div`
     display: flex;
@@ -26,6 +28,7 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
     const initialNotes = editingTask['notes'];
 
     const [dialogOpen, setDialogOpen] = useState(false);
+
     const {register, getValues, setValue} = useForm({
         defaultValues: {
             'title': initialTitle,
@@ -52,7 +55,7 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
         let {title, notes} = getValues();
 
         //Do not trigger submission if nothing was changed
-        if (title === initialTitle && notes === initialNotes){
+        if (title === initialTitle && notes === initialNotes) {
             onCancelEdit();
             return;
         }
@@ -77,6 +80,9 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
         setDialogOpen(false);
         onCancelEdit()
     };
+
+    const UncontrolledStyledTextField = withSetDefaultValueOnMount(StyledTextField);
+    const UncontrolledMarkdownEditor = withSetDefaultValueOnMount(MarkdownEditor);
 
     return <>
         <Dialog
@@ -113,10 +119,24 @@ export const EditTask = ({editingTask, createTask, updateTask, onCancelEdit}) =>
                 onChange={e => setValue('title', e.target.value)}
             />
 
-            <MarkdownEditor
-                value={initialNotes}
-                onChange={newVal => setValue('notes', newVal)}
-            />
+
+            <Hidden mdUp>
+                <UncontrolledStyledTextField
+                    label='Notes'
+                    multiline
+                    fullWidth
+                    getInitialValue={() => getValues('notes')}
+                    onChange={newVal => setValue('notes', newVal.target.value)}
+                />
+            </Hidden>
+
+            <Hidden smDown>
+                <UncontrolledMarkdownEditor
+                    getInitialValue={() => getValues('notes')}
+                    onChange={newVal => setValue('notes', newVal)}
+                />
+            </Hidden>
+
 
             <ButtonContainer>
 
