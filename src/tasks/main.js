@@ -46,18 +46,16 @@ export const TaskModule = ({returnToMainApp, logout}) => {
             drawerOpen={drawerOpen}
             setDrawerOpen={setDrawerOpen}
             title={getTasklistTitle(currentTasklist)}
-            content={<Tasks
-                currentTasklist={currentTasklist}
-            />}
-        >
-            <Tasklists
+            drawerContent={<Tasklists
                 currentTasklist={currentTasklist}
                 setCurrentTasklist={setCurrentTasklist}
-                returnToMainApp={returnToMainApp}
-                setDrawerOpen={setDrawerOpen}
-                logout={logout}
                 tasklists={tasklists}
                 listTasklists={listTasklists}
+                setDrawerOpen={setDrawerOpen}
+            />}
+        >
+            <Tasks
+                currentTasklist={currentTasklist}
             />
         </AppBarResponsive>
     </Container>;

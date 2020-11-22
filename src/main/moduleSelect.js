@@ -30,6 +30,7 @@ const SelectContainer = styled.div`
     height: 100vh;
 `;
 
+
 export const ModuleSelect = ({setLoggedIn}) => {
     const [currentModule, setCurrentModule] = useState(localStorage.getItem(CURRENT_MODULE));
 
@@ -39,10 +40,11 @@ export const ModuleSelect = ({setLoggedIn}) => {
     };
 
     const logout = () => {
+        /*Todo optionally display a loading element*/
         Networking
             .send(LOGOUT_URL, {method: 'POST'})
             .then(() => setLoggedIn(false));
-    };
+    }
 
     return currentModule
         ? modules({returnToMainApp, logout})[currentModule].jsx
@@ -65,11 +67,8 @@ export const ModuleSelect = ({setLoggedIn}) => {
                 variant={'contained'}
                 color={'primary'}
                 fullWidth
-                onClick={logout}
-            >Logout
+                onClick={logout}>
+                Logout
             </StyledButton>
-
-
-        </SelectContainer>
-        ;
+        </SelectContainer>;
 };

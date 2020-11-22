@@ -40,26 +40,23 @@ export const Literature = ({returnToMainApp, logout, ...props}) => {
             currentApp = 'Select a tab'
     }
 
-    return <>
-        <AppBarResponsive
-            title={'Literature'}
-            logout={logout}
-            drawerOpen={drawerOpen}
-            setDrawerOpen={setDrawerOpen}
-            returnToMainApp={returnToMainApp}
-        />
+    return <AppBarResponsive
+        title={'Literature'}
+        logout={logout}
+        returnToMainApp={returnToMainApp}
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}>
 
         <Paper>
             <Tabs
                 value={tabValue}
                 onChange={handleChange}
                 indicatorColor={'primary'}
-                textColor={'primary'}
-            >
+                textColor={'primary'}>
                 <Tab label={'Add Books'} value={LIT_APP_SECTIONS.addBooks}/>
                 <Tab label={'Book List'} value={LIT_APP_SECTIONS.viewBooks}/>
             </Tabs>
         </Paper>
         {currentApp}
-    </>;
+    </AppBarResponsive>;
 };

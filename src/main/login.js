@@ -28,8 +28,8 @@ const StyledContainer = styled.form`
 
 export const Login = ({setLoggedIn}) => {
 
-    let [loginState, setLoginState] = useState(LOGIN_STATES.NOT_AUTHENTICATED);
-    let {values, bind} = useInput();
+    const [loginState, setLoginState] = useState(LOGIN_STATES.NOT_AUTHENTICATED);
+    const {values, bind} = useInput();
 
     const handleSubmit = event => {
         event.preventDefault();

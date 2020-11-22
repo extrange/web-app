@@ -56,6 +56,6 @@ export const LoginCheck = () => {
         message={'Checking authentication...'}
         loggedIn={loggedIn}
         loading={loading}
-        setLoggedIn={setLoggedIn}
-    />;
+        setLoggedIn={setLoggedIn}/>
+    ;
 };

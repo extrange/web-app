@@ -1,11 +1,10 @@
-import React from "react";
+import React, {useContext} from "react";
 import {CreateTasklist} from "./tasklist/createTasklist";
 import {Tasklist} from "./tasklist/tasklist";
 import './tasklists.css'
 import {Networking} from "../../util";
 import styled from "styled-components";
 import {getTasklistUrl, TASKLISTS_URL} from "../urls";
-
 
 const TasklistLists = styled.ul`
     display: flex;
@@ -16,7 +15,7 @@ const TasklistLists = styled.ul`
 `;
 
 
-export const Tasklists = ({setDrawerOpen, tasklists, listTasklists, currentTasklist, setCurrentTasklist}) => {
+export const Tasklists = ({tasklists, listTasklists, currentTasklist, setCurrentTasklist, setDrawerOpen}) => {
 
     const createTasklist = async (title) => {
         let resp = await Networking.send(TASKLISTS_URL, {

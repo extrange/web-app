@@ -26,6 +26,7 @@ const drawerWidth = 300;
 
 const StyledPaper = muiStyled(Paper)({
     width: drawerWidth,
+    'max-width': '80vw',
     'overflow-y': 'scroll', // Fixes x-scrollbar being visible
 });
 
@@ -63,7 +64,16 @@ const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
 }));
 
 
-export const AppBarResponsive = ({title, drawerOpen, setDrawerOpen, children, returnToMainApp, logout, content}) => {
+export const AppBarResponsive = ({
+                                     title,
+                                     drawerOpen,
+                                     setDrawerOpen,
+                                     drawerContent,
+                                     children,
+                                     returnToMainApp,
+                                     logout
+                                 }) => {
+
     const drawer = <StyledPaper>
         <List>
             <ListItem button onClick={returnToMainApp}>
@@ -72,8 +82,8 @@ export const AppBarResponsive = ({title, drawerOpen, setDrawerOpen, children, re
                 </ListItemIcon>
                 <ListItemText primary={'Back to Apps'}/>
             </ListItem>
-            {children}
-            <ListItem button onClick={logout}>
+            {drawerContent}
+            <ListItem button onClick={logout}>{/*Todo make button fixed at bottom to prevent layout jumps*/}
                 <ListItemIcon>
                     <MeetingRoomIcon/>
                 </ListItemIcon>
@@ -120,7 +130,7 @@ export const AppBarResponsive = ({title, drawerOpen, setDrawerOpen, children, re
 
         <StyledContentContainer>
             <Toolbar variant={"dense"}/>
-            {content}
+            {children}
         </StyledContentContainer>
 
 
