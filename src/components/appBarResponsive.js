@@ -26,6 +26,7 @@ const drawerWidth = 300;
 
 const StyledPaper = muiStyled(Paper)({
     width: drawerWidth,
+    'overflow-y': 'scroll', // Fixes x-scrollbar being visible
 });
 
 const StyledContainer = styled.div`

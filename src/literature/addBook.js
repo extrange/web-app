@@ -13,7 +13,7 @@ import {KeyboardDatePicker} from "@material-ui/pickers/DatePicker";
 import {MuiPickersUtilsProvider} from "@material-ui/pickers/MuiPickersUtilsProvider"
 import DateFns from '@date-io/date-fns'
 import {Controller, useForm} from 'react-hook-form'
-import {yupResolver} from "@hookform/resolvers";
+import {yupResolver} from "@hookform/resolvers/yup";
 import {format, isValid} from "date-fns"
 import {bookFields, bookSchema, defaultBookValues, resultType} from "./schema";
 import {SearchBooks} from "./searchBooks";

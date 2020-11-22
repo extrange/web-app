@@ -9,6 +9,12 @@ import {
     Snackbar
 } from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
+import {styled as muiStyled} from '@material-ui/core'
+
+const StyledDialog = muiStyled(Dialog)(({theme}) => ({
+    /*As zIndex is set inline in Dialog, style must be overridden with !important*/
+    zIndex: `${theme.zIndex.snackbar + 1} !important`,
+}))
 
 export class ErrorBoundary extends React.Component {
 
@@ -37,9 +43,11 @@ export class ErrorBoundary extends React.Component {
 
     render = () => this.state.error
         ? <>
-            <Dialog
+            <StyledDialog
                 open={this.state.dialogOpen}
-                onClose={() => this.setDialogOpen(false)}>
+                onClose={() => this.setDialogOpen(false)}
+                scroll={'body'}
+            >
 
                 <DialogTitle>{this.state.error.toString()}</DialogTitle>
 
@@ -56,7 +64,7 @@ export class ErrorBoundary extends React.Component {
                     </Button>
                 </DialogActions>
 
-            </Dialog>
+            </StyledDialog>
             <Snackbar open>
                 <Alert
                     severity={'error'}

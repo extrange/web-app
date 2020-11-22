@@ -6,7 +6,7 @@ import {Search} from './search'
 import {Networking} from "../../util";
 import {getTasksUrl, getTaskUrl} from "../urls";
 import {Virtuoso} from 'react-virtuoso/dist'
-import matchSorter from 'match-sorter'
+import {matchSorter} from 'match-sorter'
 import styled from 'styled-components'
 
 //Virtuoso doesn't know the width/height of its children

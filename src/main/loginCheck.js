@@ -2,23 +2,10 @@ import React, {useEffect, useState} from "react";
 import {Networking, NotAuthenticated, ServerError} from "../util";
 import {LOGIN_URL} from "../urls";
 import {Login} from "./login";
-import {Backdrop, CircularProgress, Typography} from "@material-ui/core";
-import {styled as muiStyled} from '@material-ui/core/styles';
 import {flowRight} from 'lodash'
-import styled from 'styled-components'
 import {ModuleSelect} from "./moduleSelect";
+import {Loading} from "../components/loading";
 
-const StyledBackdrop = muiStyled(Backdrop)(({theme}) => ({
-    zIndex: theme.zIndex.drawer + 1,
-}));
-
-const LoadingContainer = styled.div`
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    height: 100px;
-`;
 
 const withLoginCheck = Component => ({loggedIn, ...props}) => {
     return loggedIn
@@ -26,14 +13,11 @@ const withLoginCheck = Component => ({loggedIn, ...props}) => {
         : <Login {...props}/>
 };
 
-const withLoading = Component => ({loading, ...props}) => {
+const withLoading = Component => ({loading, message, ...props}) => {
     return loading
-        ? <StyledBackdrop open={loading}>
-            <LoadingContainer>
-                <CircularProgress color="inherit" size={20}/>
-                <Typography variant={'body1'} display={"block"}>Checking authentication...</Typography>
-            </LoadingContainer>
-        </StyledBackdrop>
+        ? <Loading
+            open={loading}
+            message={message}/>
         : <Component {...props} />
 };
 
@@ -69,6 +53,7 @@ export const LoginCheck = () => {
     useEffect(checkIfLoggedIn, []);
 
     return <LoginCheckWithLoginLoading
+        message={'Checking authentication...'}
         loggedIn={loggedIn}
         loading={loading}
         setLoggedIn={setLoggedIn}

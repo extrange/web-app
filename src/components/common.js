@@ -7,7 +7,7 @@ import Chip from "@material-ui/core/Chip";
 import ClearIcon from "@material-ui/icons/Clear";
 import {sanitizeString} from "../util";
 import TextField from "@material-ui/core/TextField";
-import matchSorter from "match-sorter";
+import {matchSorter} from "match-sorter";
 
 export const HideOnScroll = ({children, ...props}) => {
     const trigger = useScrollTrigger({threshold: 50});
