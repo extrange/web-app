@@ -44,7 +44,7 @@ export const ModuleSelect = ({setLoggedIn}) => {
         Networking
             .send(LOGOUT_URL, {method: 'POST'})
             .then(() => setLoggedIn(false));
-    }
+    };
 
     return currentModule
         ? modules({returnToMainApp, logout})[currentModule].jsx

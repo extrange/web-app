@@ -208,3 +208,6 @@ export const StyledTextFieldClearable = ({onClear, ...props}) =>
         }}
     />
 ;
+
+export const noop = () => {
+};

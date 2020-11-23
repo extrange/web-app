@@ -26,6 +26,7 @@ const StyledContainer = styled.form`
     padding: 0 10px;
 `;
 
+
 export const Login = ({setLoggedIn}) => {
 
     const [loginState, setLoginState] = useState(LOGIN_STATES.NOT_AUTHENTICATED);
@@ -50,7 +51,6 @@ export const Login = ({setLoggedIn}) => {
 
 
     return <StyledContainer>
-
         <Typography variant={'h6'} gutterBottom align={"center"}>
             {loginState.message}
         </Typography>
@@ -78,7 +78,8 @@ export const Login = ({setLoggedIn}) => {
             onClick={handleSubmit}
             color={'primary'}
             fullWidth
-        >Login
+        >
+            Login
         </Button>
 
     </StyledContainer>;

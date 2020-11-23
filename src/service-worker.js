@@ -35,7 +35,8 @@ registerRoute(
 
     if (url.pathname.startsWith('/_')) {
       return false;
-    } // If this looks like a URL for a resource, because it contains // a file extension, skip.
+    } // If this looks like a URL for a resource, because it contains
+      // a file extension, skip.
 
     if (url.pathname.match(fileExtensionRegexp)) {
       return false;
@@ -43,6 +44,11 @@ registerRoute(
 
     return true;
   },
+
+    /*This will serve the /index.html in the cache, to any navigation request by the browser
+    * which is not a file or starts with _ or contains a '.' or a '?'.
+    * It will also not work on api.nicholaslyz.com, because that is a different subdomain.
+    * (So, I don't have to worry about server resources being cached)..*/
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
@@ -66,7 +72,9 @@ registerRoute(
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+    console.log('SW: SKIP_WAITING received, activating now.')
   }
 });
 
 // Any other custom service worker logic can go here.
+console.log('SW: service-worker.js executed');
