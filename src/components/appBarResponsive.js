@@ -8,7 +8,6 @@ import {
     ListItem,
     ListItemIcon,
     ListItemText,
-    Paper,
     Toolbar,
     Typography,
 } from "@material-ui/core";
@@ -24,11 +23,17 @@ HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
 
 const drawerWidth = 300;
 
-const StyledPaper = muiStyled(Paper)({
-    width: drawerWidth,
-    'max-width': '80vw',
-    'overflow-y': 'scroll', // Fixes x-scrollbar being visible
-});
+const StyledMaxWidthDiv = styled.div`
+    width: ${drawerWidth}px;
+    max-width: 80vw;
+    overflow-y: scroll; // Fixes x-scrollbar being visible
+`;
+
+const TransparentDrawer = styled(Drawer)`
+    .MuiDrawer-paper {
+        background: none;
+    }
+`;
 
 const StyledContainer = styled.div`
     display: flex;
@@ -74,7 +79,7 @@ export const AppBarResponsive = ({
                                      logout
                                  }) => {
 
-    const drawer = <StyledPaper>
+    const drawer = <StyledMaxWidthDiv>
         <List>
             <ListItem button onClick={returnToMainApp}>
                 <ListItemIcon>
@@ -90,11 +95,15 @@ export const AppBarResponsive = ({
                 <ListItemText primary={'Logout'}/>
             </ListItem>
         </List>
-    </StyledPaper>;
+    </StyledMaxWidthDiv>;
 
     return <StyledContainer>
         <HideOnScroll>
-            <StyledAppBar position={'fixed'}>
+            <StyledAppBar
+                position={'fixed'}
+                color={'transparent'}
+                elevation={0}
+            >
                 <Toolbar variant={"dense"}>
                     <StyledIconButton
                         color={"inherit"}
@@ -119,11 +128,11 @@ export const AppBarResponsive = ({
             </Hidden>
 
             <Hidden smDown>
-                <Drawer
+                <TransparentDrawer
                     open
                     variant={"permanent"}
                 >{drawer}
-                </Drawer>
+                </TransparentDrawer>
             </Hidden>
 
         </StyledDrawerContainer>
