@@ -26,7 +26,12 @@ const drawerWidth = 300;
 const StyledMaxWidthDiv = styled.div`
     width: ${drawerWidth}px;
     max-width: 80vw;
-    overflow-y: scroll; // Fixes x-scrollbar being visible
+    overflow-y: hidden; // Fixes x-scrollbar being visible
+    padding-right: 15px;
+    
+    :hover {
+        overflow-y: scroll;
+    }
 `;
 
 const TransparentDrawer = styled(Drawer)`
@@ -41,14 +46,14 @@ const StyledContainer = styled.div`
     height: 100%;
 `;
 
-const StyledAppBar = muiStyled(AppBar)(({theme}) => ({
+const ResponsiveAppBar = muiStyled(AppBar)(({theme}) => ({
     [theme.breakpoints.up('md')]: {
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: drawerWidth,
     },
 }));
 
-const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
+const ResponsiveDrawerContainer = muiStyled('div')(({theme}) => ({
     [theme.breakpoints.up('md')]: {
         width: drawerWidth,
         flexShrink: 0,
@@ -62,12 +67,19 @@ const StyledContentContainer = styled.div`
     flex-direction: column;
 `;
 
-const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
+const HiddenIconButton = muiStyled(IconButton)(({theme}) => ({
     [theme.breakpoints.up('md')]: {
         display: 'none',
     }
 }));
 
+const ResponsiveCenterDiv = muiStyled('div')(({theme}) => ({
+    display: 'flex',
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+        'justify-content': 'center',
+    }
+}))
 
 export const AppBarResponsive = ({
                                      title,
@@ -99,26 +111,36 @@ export const AppBarResponsive = ({
 
     return <StyledContainer>
         <HideOnScroll>
-            <StyledAppBar
+            <ResponsiveAppBar
                 position={'fixed'}
                 color={'transparent'}
-                elevation={0}
             >
                 <Toolbar variant={"dense"}>
-                    <StyledIconButton
+                    <HiddenIconButton
                         color={"inherit"}
                         edge={'start'}
                         onClick={() => setDrawerOpen(true)}>
                         <MenuIcon/>
-                    </StyledIconButton>
-                    <Typography variant={'h6'}>
-                        {title}
-                    </Typography>
+                    </HiddenIconButton>
+                    <ResponsiveCenterDiv>
+                        <div style={{
+                            filter: 'blur(50px)',
+                            background: 'inherit',
+                            ':before': {
+                                content: 'eaoue',
+                                background: 'red',
+                                filter: 'blur(50px)'
+                            }
+                        }}/>
+                        <Typography variant={'h6'}>
+                            {title}
+                        </Typography>
+                    </ResponsiveCenterDiv>
                 </Toolbar>
-            </StyledAppBar>
+            </ResponsiveAppBar>
         </HideOnScroll>
 
-        <StyledDrawerContainer>
+        <ResponsiveDrawerContainer>
             <Hidden mdUp>
                 <Drawer
                     open={drawerOpen}
@@ -135,7 +157,7 @@ export const AppBarResponsive = ({
                 </TransparentDrawer>
             </Hidden>
 
-        </StyledDrawerContainer>
+        </ResponsiveDrawerContainer>
 
         <StyledContentContainer>
             <Toolbar variant={"dense"}/>
