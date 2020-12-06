@@ -10,8 +10,3 @@ export const API_URL = 'https://api.nicholaslyz.com';
 // Login/Logout
 export const LOGIN_URL = `${API_URL}/login/`;
 export const LOGOUT_URL = `${API_URL}/logout/`;
-
-// React-App static content
-export const STATIC_URL = `${API_URL}/static/`;
-
-

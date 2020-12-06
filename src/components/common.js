@@ -9,9 +9,9 @@ import {sanitizeString} from "../util";
 import TextField from "@material-ui/core/TextField";
 import {matchSorter} from "match-sorter";
 
-export const HideOnScroll = ({children, ...props}) => {
+export const HideOnScroll = ({children}) => {
     const trigger = useScrollTrigger({threshold: 50});
-    return <Slide appear={false} direction={'down'} in={!trigger}>
+    return <Slide direction={'down'} in={!trigger}>
         {children}
     </Slide>
 };
