@@ -19,6 +19,8 @@
     "lodash": "^4.17.20",
     "match-sorter": "^5.0.0",
     "npm": "^7.0.13",
+    "overlayscrollbars": "^1.13.0",
+    "overlayscrollbars-react": "^0.2.2",
     "prop-types": "^15.7.2",
     "react": "^17.0.0",
     "react-codemirror2": "^7.2.1",

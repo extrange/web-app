@@ -17,6 +17,8 @@ import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import React from "react";
 import {styled as muiStyled} from "@material-ui/core/styles"
 import styled from 'styled-components'
+import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
+import 'overlayscrollbars/css/OverlayScrollbars.css';
 
 /*StyledContainer is a flex container for StyledDrawerContainer (flex: 1 0),
 HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
@@ -26,7 +28,6 @@ const drawerWidth = 300;
 const StyledMaxWidthDiv = styled.div`
     width: ${drawerWidth}px;
     max-width: 80vw;
-    overflow-y: scroll; // Fixes x-scrollbar being visible
 `;
 
 const TransparentDrawer = styled(Drawer)`
@@ -136,6 +137,7 @@ export const AppBarResponsive = ({
             </Hidden>
 
         </StyledDrawerContainer>
+
 
         <StyledContentContainer>
             <Toolbar variant={"dense"}/>
