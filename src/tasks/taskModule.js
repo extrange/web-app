@@ -5,6 +5,7 @@ import {Tasks} from "./tasks/tasks";
 import {Networking} from "../util";
 import {TASKLISTS_URL} from "./urls";
 import styled from 'styled-components'
+import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 
 const Container = styled.div`
     display: flex;
@@ -39,24 +40,26 @@ export const TaskModule = ({returnToMainApp, logout}) => {
         listTasklists()
     }, []);
 
-    return <Container>
-        <AppBarResponsive
-            returnToMainApp={returnToMainApp}
-            logout={logout}
-            drawerOpen={drawerOpen}
-            setDrawerOpen={setDrawerOpen}
-            title={getTasklistTitle(currentTasklist)}
-            drawerContent={<Tasklists
-                currentTasklist={currentTasklist}
-                setCurrentTasklist={setCurrentTasklist}
-                tasklists={tasklists}
-                listTasklists={listTasklists}
+    return <OverlayScrollbarsComponent options={{className: 'os-theme-light '}}>
+        <Container>
+            <AppBarResponsive
+                returnToMainApp={returnToMainApp}
+                logout={logout}
+                drawerOpen={drawerOpen}
                 setDrawerOpen={setDrawerOpen}
-            />}
-        >
-            <Tasks
-                currentTasklist={currentTasklist}
-            />
-        </AppBarResponsive>
-    </Container>;
+                title={getTasklistTitle(currentTasklist)}
+                drawerContent={<Tasklists
+                    currentTasklist={currentTasklist}
+                    setCurrentTasklist={setCurrentTasklist}
+                    tasklists={tasklists}
+                    listTasklists={listTasklists}
+                    setDrawerOpen={setDrawerOpen}
+                />}
+            >
+                <Tasks
+                    currentTasklist={currentTasklist}
+                />
+            </AppBarResponsive>
+        </Container>
+    </OverlayScrollbarsComponent>;
 };

@@ -13,6 +13,7 @@ import {ServiceWorker} from "./main/serviceWorker";
 import {ErrorBoundary} from "./components/errorBoundary";
 import styled, {createGlobalStyle} from "styled-components";
 import {getDaysSinceEpoch, getRandomInt} from "./util";
+import 'overlayscrollbars/css/OverlayScrollbars.css';
 
 /*Largest index of background images, inclusive*/
 const numImages = 26;
@@ -36,11 +37,7 @@ const BackgroundTest = createGlobalStyle`
         background-attachment: fixed;
         overflow-x: hidden;
     }
-    
-    * {
-        scrollbar-color: #666 #201c29;
-    }
-`
+`;
 
 const BackgroundScreen = styled.div`
     background: rgba(0, 0, 0, 0.6);
