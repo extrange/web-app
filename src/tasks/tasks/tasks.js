@@ -12,7 +12,7 @@ import styled from 'styled-components'
 //Virtuoso doesn't know the width/height of its children
 const TasksContainer = styled.div`
     width: 100%;
-    height: 100%;
+    height: calc(100% - 48px); //48px is the height of Toolbar (variant=dense)
 `;
 
 

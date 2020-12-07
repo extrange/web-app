@@ -13,7 +13,7 @@ import {ServiceWorker} from "./main/serviceWorker";
 import {ErrorBoundary} from "./components/errorBoundary";
 import styled, {createGlobalStyle} from "styled-components";
 import {getDaysSinceEpoch, getRandomInt} from "./util";
-import 'overlayscrollbars/css/OverlayScrollbars.css';
+import 'overlayscrollbars/css/OverlayScrollbars.css'
 
 /*Largest index of background images, inclusive*/
 const numImages = 26;

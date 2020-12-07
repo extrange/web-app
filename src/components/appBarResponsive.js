@@ -17,15 +17,17 @@ import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import React from "react";
 import {styled as muiStyled} from "@material-ui/core/styles"
 import styled from 'styled-components'
+import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 
 /*StyledContainer is a flex container for StyledDrawerContainer (flex: 1 0),
 HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
 
 const drawerWidth = 300;
 
-const StyledMaxWidthDiv = styled.div`
+const OverlayScrollbarsWithMaxWidth = styled(OverlayScrollbarsComponent)`
     width: ${drawerWidth}px;
     max-width: 80vw;
+    height: 100%; // This was the key to making OverlayScrollbars work!!
 `;
 
 const TransparentDrawer = styled(Drawer)`
@@ -34,10 +36,9 @@ const TransparentDrawer = styled(Drawer)`
     }
 `;
 
-const StyledContainer = styled.div`
+const FlexContainer = styled.div`
     display: flex;
-    width: 100%;
-    height: 100%;
+    height: 100vh;
 `;
 
 const StyledAppBar = muiStyled(AppBar)(({theme}) => ({
@@ -54,11 +55,9 @@ const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
     },
 }));
 
-const StyledContentContainer = styled.div`
+const StyledContentContainer = styled(OverlayScrollbarsComponent)`
+    height: 100%;
     width: 100%;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
 `;
 
 const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
@@ -78,7 +77,19 @@ export const AppBarResponsive = ({
                                      logout
                                  }) => {
 
-    const drawer = <StyledMaxWidthDiv>
+    const drawer = <OverlayScrollbarsWithMaxWidth
+        options={{
+            className: 'os-theme-light',
+            nativeScrollbarsOverlaid: {
+                initialize: false,
+            },
+            overflowBehavior: {
+                x: 'hidden'
+            },
+            scrollbars: {
+                autoHide: 'move',
+            }
+        }}>
         <List>
             <ListItem button onClick={returnToMainApp}>
                 <ListItemIcon>
@@ -94,9 +105,9 @@ export const AppBarResponsive = ({
                 <ListItemText primary={'Logout'}/>
             </ListItem>
         </List>
-    </StyledMaxWidthDiv>;
+    </OverlayScrollbarsWithMaxWidth>;
 
-    return <StyledContainer>
+    return <FlexContainer>
         <HideOnScroll>
             <StyledAppBar
                 position={'fixed'}
@@ -137,11 +148,23 @@ export const AppBarResponsive = ({
         </StyledDrawerContainer>
 
 
-        <StyledContentContainer>
+        <StyledContentContainer
+            options={{
+                className: 'os-theme-light',
+                nativeScrollbarsOverlaid: {
+                    initialize: false,
+                },
+                overflowBehavior: {
+                    x: 'hidden'
+                },
+                scrollbars: {
+                    autoHide: 'move',
+                }
+            }}>
             <Toolbar variant={"dense"}/>
             {children}
         </StyledContentContainer>
 
 
-    </StyledContainer>
+    </FlexContainer>
 };

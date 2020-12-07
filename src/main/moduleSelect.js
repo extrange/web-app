@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Networking} from "../util";
 import {LOGOUT_URL} from "../urls";
 import {TaskModule} from "../tasks/taskModule";
-import {Literature} from "../literature/main";
+import {LiteratureModule} from "../literature/literatureModule";
 import {StyledButton} from "../components/common";
 import styled from "styled-components";
 
@@ -17,7 +17,7 @@ const modules = props => ({
     },
     LITERATURE: {
         displayName: 'Literature',
-        jsx: <Literature {...props}/>
+        jsx: <LiteratureModule {...props}/>
     },
 });
 

@@ -11,7 +11,7 @@ const LIT_APP_SECTIONS = {
     viewBooks: 'viewBooks'
 };
 
-export const Literature = ({returnToMainApp, logout, ...props}) => {
+export const LiteratureModule = ({returnToMainApp, logout, ...props}) => {
     const [books, setBooks] = useState([]);
     const [tabValue, setTabValue] = useState(LIT_APP_SECTIONS.addBooks);
     const [drawerOpen, setDrawerOpen] = useState(false);

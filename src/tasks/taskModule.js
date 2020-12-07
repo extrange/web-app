@@ -4,15 +4,6 @@ import {Tasklists} from "./tasklists/tasklists";
 import {Tasks} from "./tasks/tasks";
 import {Networking} from "../util";
 import {TASKLISTS_URL} from "./urls";
-import styled from 'styled-components'
-import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
-
-const Container = styled.div`
-    display: flex;
-    height: 100vh;
-    flex-direction: column;
-    align-items: center;
-`;
 
 export const TaskModule = ({returnToMainApp, logout}) => {
 
@@ -40,26 +31,22 @@ export const TaskModule = ({returnToMainApp, logout}) => {
         listTasklists()
     }, []);
 
-    return <OverlayScrollbarsComponent options={{className: 'os-theme-light '}}>
-        <Container>
-            <AppBarResponsive
-                returnToMainApp={returnToMainApp}
-                logout={logout}
-                drawerOpen={drawerOpen}
-                setDrawerOpen={setDrawerOpen}
-                title={getTasklistTitle(currentTasklist)}
-                drawerContent={<Tasklists
-                    currentTasklist={currentTasklist}
-                    setCurrentTasklist={setCurrentTasklist}
-                    tasklists={tasklists}
-                    listTasklists={listTasklists}
-                    setDrawerOpen={setDrawerOpen}
-                />}
-            >
-                <Tasks
-                    currentTasklist={currentTasklist}
-                />
-            </AppBarResponsive>
-        </Container>
-    </OverlayScrollbarsComponent>;
+    return <AppBarResponsive
+        returnToMainApp={returnToMainApp}
+        logout={logout}
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}
+        title={getTasklistTitle(currentTasklist)}
+        drawerContent={<Tasklists
+            currentTasklist={currentTasklist}
+            setCurrentTasklist={setCurrentTasklist}
+            tasklists={tasklists}
+            listTasklists={listTasklists}
+            setDrawerOpen={setDrawerOpen}
+        />}
+    >
+        <Tasks
+            currentTasklist={currentTasklist}
+        />
+    </AppBarResponsive>
 };
