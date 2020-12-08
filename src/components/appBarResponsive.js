@@ -46,6 +46,14 @@ const StyledAppBar = muiStyled(AppBar)(({theme}) => ({
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: drawerWidth,
     },
+    '@supports (backdrop-filter: blur(10px))': {
+        'backdrop-filter': 'blur(10px)'
+    },
+
+    '@supports not (backdrop-filter: blur(10px))': {
+        background: 'rgba(0,0,0,0.8)'
+    },
+
 }));
 
 const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
@@ -56,8 +64,12 @@ const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
 }));
 
 const StyledContentContainer = styled.div`
-    height: 100%;
+    flex: 1;
+`;
+
+const ContentDiv = styled.div`
     width: 100%;
+    height: calc(100% - 48px); //48px is the height of Toolbar (variant=dense)
 `;
 
 const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
@@ -110,7 +122,6 @@ export const AppBarResponsive = ({
             <StyledAppBar
                 position={'fixed'}
                 color={'transparent'}
-                elevation={0}
             >
                 <Toolbar variant={"dense"}>
                     <StyledIconButton
@@ -148,7 +159,7 @@ export const AppBarResponsive = ({
 
         <StyledContentContainer>
             <Toolbar variant={"dense"}/>
-            {children}
+            <ContentDiv>{children}</ContentDiv>
         </StyledContentContainer>
 
 

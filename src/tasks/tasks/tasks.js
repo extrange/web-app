@@ -7,13 +7,6 @@ import {Networking} from "../../util";
 import {getTasksUrl, getTaskUrl} from "../urls";
 import {Virtuoso} from 'react-virtuoso/dist'
 import {matchSorter} from 'match-sorter'
-import styled from 'styled-components'
-
-//Virtuoso doesn't know the width/height of its children
-const TasksContainer = styled.div`
-    width: 100%;
-    height: calc(100% - 48px); //48px is the height of Toolbar (variant=dense)
-`;
 
 
 export const Tasks = ({currentTasklist}) => {
@@ -137,6 +130,6 @@ export const Tasks = ({currentTasklist}) => {
         />
 
     }
-    return <TasksContainer>{content}</TasksContainer>;
+    return content;
 
 };

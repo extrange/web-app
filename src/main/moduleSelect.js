@@ -26,6 +26,7 @@ const SelectContainer = styled.div`
     flex-direction: column;
     justify-content: center;
     max-width: 300px;
+    padding: 0 10px;
     margin: 0 auto;
     height: 100vh;
 `;
@@ -54,7 +55,6 @@ export const ModuleSelect = ({setLoggedIn}) => {
                     <StyledButton
                         variant={'outlined'}
                         color={'primary'}
-                        fullWidth
                         key={moduleName}
                         onClick={() => {
                             localStorage.setItem(CURRENT_MODULE, moduleName);
@@ -66,7 +66,6 @@ export const ModuleSelect = ({setLoggedIn}) => {
             <StyledButton
                 variant={'contained'}
                 color={'primary'}
-                fullWidth
                 onClick={logout}>
                 Logout
             </StyledButton>
