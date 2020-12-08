@@ -8,13 +8,32 @@ import {noop} from "../components/common";
 
 // https://developers.google.com/web/tools/workbox/modules/workbox-window#important_service_worker_lifecycle_moments
 
-const withBrowserCheck = Component => {
-    return 'serviceWorker' in navigator
-        ? Component
-        : null
+const hasServiceWorker = () => 'serviceWorker' in navigator;
+
+// Workbox() calls navigator.serviceWorker which is undefined in Firefox private browsing.
+const wb = hasServiceWorker() ? new Workbox('./service-worker.js') : null;
+
+const NoServiceWorker = () => {
+    const [sbOpen, setSbOpen] = useState(true);
+
+    return <Snackbar
+        open={sbOpen}
+        onClose={() => setSbOpen(false)}
+        autoHideDuration={3000}>
+        <Alert
+            severity={'info'}
+            onClose={() => setSbOpen(false)}>
+            {'ServiceWorker is not supported in your browser'}
+        </Alert>
+    </Snackbar>
 };
 
-const wb = new Workbox('./service-worker.js');
+const withBrowserCheck = Component => {
+    return hasServiceWorker()
+    ? Component
+    : NoServiceWorker;
+};
+
 
 const ServiceWorkerMain = () => {
 
@@ -25,7 +44,7 @@ const ServiceWorkerMain = () => {
         text: '',
         severity: 'info',
         actions: undefined,
-        autoHideDuration: 5000,
+        autoHideDuration: 3000,
     });
 
     const setError = useAsyncError();
@@ -42,7 +61,7 @@ const ServiceWorkerMain = () => {
             setDetails({
                 text: 'Site is now available offline.',
                 severity: 'info',
-                autoHideDuration: 5000,
+                autoHideDuration: 3000,
             });
             console.log('Installed, isUpdate false');
         } else
@@ -110,7 +129,7 @@ const ServiceWorkerMain = () => {
         setSbOpen(true);
         setDetails({
             text: 'On localhost, service worker registration skipped',
-            autoHideDuration: 5000,
+            autoHideDuration: 3000,
             severity: 'info'
         });
         console.log('On localhost, service worker registration skipped.')
@@ -134,6 +153,7 @@ const ServiceWorkerMain = () => {
         // Throw errors during registration
         wb.register().then(r => registration.current = r).catch(e => setError(e));
 
+        // Service worker updates are checked on initial load
         const periodicUpdateCheckId = setInterval(() => {
             console.log('Checking for service worker updates...');
 

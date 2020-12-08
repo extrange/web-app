@@ -14,6 +14,7 @@ import {ErrorBoundary} from "./components/errorBoundary";
 import styled, {createGlobalStyle} from "styled-components";
 import {getDaysSinceEpoch, getRandomInt} from "./util";
 import 'overlayscrollbars/css/OverlayScrollbars.css'
+import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 
 /*Largest index of background images, inclusive*/
 const numImages = 26;
@@ -32,10 +33,7 @@ const theme = createMuiTheme({
 
 const BackgroundTest = createGlobalStyle`
     body {
-        background: red;
         background: url(${({numImages}) => `/bg/${getRandomInt(1, numImages, getDaysSinceEpoch())}.jpg`}) top/cover;
-        background-attachment: fixed;
-        overflow-x: hidden;
     }
 `;
 
@@ -56,7 +54,20 @@ ReactDOM.render(
             <BackgroundScreen/>
             <ErrorBoundary>
                 <ServiceWorker/>
-                <LoginCheck/>
+
+                <OverlayScrollbarsComponent
+                    options={{
+                        className: 'os-theme-light',
+                        overflowBehavior: {
+                            x: 'hidden'
+                        },
+                        scrollbars: {
+                            autoHide: 'move',
+                        }
+                    }}>
+                    <LoginCheck/>
+                </OverlayScrollbarsComponent>
+
             </ErrorBoundary>
         </MuiThemeProvider>
     </React.StrictMode>

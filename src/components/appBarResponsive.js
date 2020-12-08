@@ -55,7 +55,7 @@ const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
     },
 }));
 
-const StyledContentContainer = styled(OverlayScrollbarsComponent)`
+const StyledContentContainer = styled.div`
     height: 100%;
     width: 100%;
 `;
@@ -77,12 +77,10 @@ export const AppBarResponsive = ({
                                      logout
                                  }) => {
 
+
     const drawer = <OverlayScrollbarsWithMaxWidth
         options={{
             className: 'os-theme-light',
-            nativeScrollbarsOverlaid: {
-                initialize: false,
-            },
             overflowBehavior: {
                 x: 'hidden'
             },
@@ -148,19 +146,7 @@ export const AppBarResponsive = ({
         </StyledDrawerContainer>
 
 
-        <StyledContentContainer
-            options={{
-                className: 'os-theme-light',
-                nativeScrollbarsOverlaid: {
-                    initialize: false,
-                },
-                overflowBehavior: {
-                    x: 'hidden'
-                },
-                scrollbars: {
-                    autoHide: 'move',
-                }
-            }}>
+        <StyledContentContainer>
             <Toolbar variant={"dense"}/>
             {children}
         </StyledContentContainer>
