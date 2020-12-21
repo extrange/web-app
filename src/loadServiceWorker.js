@@ -2,9 +2,9 @@ import {messageSW, Workbox} from "workbox-window";
 import React, {useEffect, useRef, useState} from 'react'
 import {Button, Snackbar} from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
-import {useAsyncError} from "../components/useAsyncError";
-import {isLocalhost} from "../util";
-import {noop} from "../components/common";
+import {useAsyncError} from "./components/useAsyncError";
+import {isLocalhost} from "./util";
+import {noop} from "./components/common";
 
 // https://developers.google.com/web/tools/workbox/modules/workbox-window#important_service_worker_lifecycle_moments
 
@@ -23,7 +23,7 @@ const NoServiceWorker = () => {
         <Alert
             severity={'info'}
             onClose={() => setSbOpen(false)}>
-            {'ServiceWorker is not supported in your browser'}
+            {'LoadServiceWorker is not supported in your browser'}
         </Alert>
     </Snackbar>
 };
@@ -179,4 +179,4 @@ const ServiceWorkerMain = () => {
     </Snackbar>;
 };
 
-export const ServiceWorker = withBrowserCheck(ServiceWorkerMain);
+export const LoadServiceWorker = withBrowserCheck(ServiceWorkerMain);

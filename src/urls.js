@@ -1,5 +1,5 @@
 /**
- * Constants shared between modules
+ * Entrypoint URLs shared between modules
  * */
 
 /*All URLs to end with slashes*/

@@ -1,0 +1,4 @@
+@font-face {
+    font-family: 'Starcraft';
+    src: url('../fonts/starcraft/Starcraft-Normal.woff2') format('woff2'), url('../fonts/starcraft/Starcraft-Normal.woff') format('woff');
+}

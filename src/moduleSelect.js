@@ -1,9 +1,9 @@
 import React, {useState} from "react";
-import {Networking} from "../util";
-import {LOGOUT_URL} from "../urls";
-import {TaskModule} from "../tasks/taskModule";
-import {LiteratureModule} from "../literature/literatureModule";
-import {StyledButton} from "../components/common";
+import {Networking} from "./util";
+import {LOGOUT_URL} from "./urls";
+import {ListModule} from "./lists/listModule";
+import {LiteratureModule} from "./literature/literatureModule";
+import {StyledButton} from "./components/common";
 import styled from "styled-components";
 
 /*LocalStorage key*/
@@ -13,7 +13,7 @@ const CURRENT_MODULE = 'CURRENT_MODULE';
 const modules = props => ({
     TASKS: {
         displayName: 'Lists',
-        jsx: <TaskModule {...props}/>
+        jsx: <ListModule {...props}/>
     },
     LITERATURE: {
         displayName: 'Literature',

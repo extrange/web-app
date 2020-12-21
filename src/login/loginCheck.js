@@ -3,7 +3,7 @@ import {Networking, NotAuthenticated, ServerError} from "../util";
 import {LOGIN_URL} from "../urls";
 import {Login} from "./login";
 import {flowRight} from 'lodash'
-import {ModuleSelect} from "./moduleSelect";
+import {ModuleSelect} from "../moduleSelect";
 import {Loading} from "../components/loading";
 
 

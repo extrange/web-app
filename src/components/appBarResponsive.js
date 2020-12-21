@@ -12,7 +12,7 @@ import {
     Typography,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import React from "react";
 import {styled as muiStyled} from "@material-ui/core/styles"
@@ -25,20 +25,20 @@ HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
 const drawerWidth = 300;
 
 const OverlayScrollbarsWithMaxWidth = styled(OverlayScrollbarsComponent)`
-    width: ${drawerWidth}px;
-    max-width: 80vw;
-    height: 100%; // This was the key to making OverlayScrollbars work!!
+  width: ${drawerWidth}px;
+  max-width: 80vw;
+  height: 100%; // This was the key to making OverlayScrollbars work!!
 `;
 
 const TransparentDrawer = styled(Drawer)`
-    .MuiDrawer-paper {
-        background: none;
-    }
+  .MuiDrawer-paper {
+    background: none;
+  }
 `;
 
 const FlexContainer = styled.div`
-    display: flex;
-    height: 100vh;
+  display: flex;
+  height: 100vh;
 `;
 
 const StyledAppBar = muiStyled(AppBar)(({theme}) => ({
@@ -64,12 +64,20 @@ const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
 }));
 
 const StyledContentContainer = styled.div`
-    flex: 1;
+  flex: 1;
 `;
 
 const ContentDiv = styled.div`
-    width: 100%;
-    height: calc(100% - 48px); //48px is the height of Toolbar (variant=dense)
+  width: 100%;
+  height: calc(100% - 48px); //48px is the height of Toolbar (variant=dense)
+`;
+
+const StyledAppNameDiv = styled.div`
+  font-family: 'Starcraft', serif;
+  font-size: 20px;
+  margin: 0 auto;
+  text-align: center;
+  cursor: default;
 `;
 
 const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
@@ -80,6 +88,7 @@ const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
 
 
 export const AppBarResponsive = ({
+                                     appName,
                                      title,
                                      drawerOpen,
                                      setDrawerOpen,
@@ -101,9 +110,12 @@ export const AppBarResponsive = ({
             }
         }}>
         <List>
+            <ListItem>
+                <StyledAppNameDiv>{appName}</StyledAppNameDiv>
+            </ListItem>
             <ListItem button onClick={returnToMainApp}>
                 <ListItemIcon>
-                    <ExitToAppIcon/>
+                    <ArrowBackIcon/>
                 </ListItemIcon>
                 <ListItemText primary={'Back to Apps'}/>
             </ListItem>

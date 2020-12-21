@@ -41,6 +41,7 @@ export const LiteratureModule = ({returnToMainApp, logout, ...props}) => {
     }
 
     return <AppBarResponsive
+        appName={'Literature'}
         title={'Literature'}
         logout={logout}
         returnToMainApp={returnToMainApp}

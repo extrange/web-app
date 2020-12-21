@@ -5,7 +5,7 @@ import {Tasks} from "./tasks/tasks";
 import {Networking} from "../util";
 import {TASKLISTS_URL} from "./urls";
 
-export const TaskModule = ({returnToMainApp, logout}) => {
+export const ListModule = ({returnToMainApp, logout}) => {
 
     const [currentTasklist, setCurrentTasklist] = useState(null);
     const [tasklists, setTasklists] = useState(null);
@@ -32,6 +32,7 @@ export const TaskModule = ({returnToMainApp, logout}) => {
     }, []);
 
     return <AppBarResponsive
+        appName={'Lists'}
         returnToMainApp={returnToMainApp}
         logout={logout}
         drawerOpen={drawerOpen}

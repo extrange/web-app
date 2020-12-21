@@ -102,7 +102,7 @@ export const Tasks = ({currentTasklist}) => {
             onCancelEdit={onCancelEdit}
         />
 
-    } else if (tasks) { //only render if tasks have been loaded
+    } else if (tasks) { //only render if lists have been loaded
 
         let createTask = <CreateTask
             key={0}
@@ -126,7 +126,7 @@ export const Tasks = ({currentTasklist}) => {
 
         content = <Virtuoso
             totalCount={items.length}
-            item={index => items[index]}
+            itemContent={index => items[index]}
         />
 
     }

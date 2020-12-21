@@ -17,8 +17,8 @@
     "fontsource-roboto": "^3.0.3",
     "fontsource-source-sans-pro": "^3.0.9",
     "lodash": "^4.17.20",
-    "match-sorter": "^5.0.0",
-    "npm": "^7.0.13",
+    "match-sorter": "^6.0.2",
+    "npm": "^6.14.10",
     "overlayscrollbars": "^1.13.0",
     "overlayscrollbars-react": "^0.2.2",
     "prop-types": "^15.7.2",
@@ -27,7 +27,7 @@
     "react-dom": "^17.0.1",
     "react-hook-form": "^6.11.4",
     "react-scripts": "^4.0.0",
-    "react-virtuoso": "^0.20.1",
+    "react-virtuoso": "^1.1.0",
     "react-window": "^1.8.6",
     "remove-accents": "^0.4.2",
     "seedrandom": "^3.0.5",
@@ -35,7 +35,7 @@
     "source-map-explorer": "^2.5.0",
     "styled-components": "^5.2.1",
     "worker-loader": "^3.0.5",
-    "yup": "^0.30.0"
+    "yup": "^0.32.8"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
