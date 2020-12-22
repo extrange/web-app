@@ -1,4 +1,3 @@
-import React from "react";
 import {CreateTasklist} from "./tasklist/createTasklist";
 import {Tasklist} from "./tasklist/tasklist";
 import './tasklists.css'
@@ -15,7 +14,7 @@ const TasklistLists = styled.ul`
 `;
 
 
-export const Tasklists = ({tasklists, listTasklists, currentTasklist, setCurrentTasklist, setDrawerOpen}) => {
+export const Tasklists = ({tasklists, listTasklists, currentList, setCurrentList, setDrawerOpen}) => {
 
     const createTasklist = async (title) => {
         let resp = await Networking.send(TASKLISTS_URL, {
@@ -26,7 +25,7 @@ export const Tasklists = ({tasklists, listTasklists, currentTasklist, setCurrent
         let json = await resp.json();
         let id = json['id'];
         await listTasklists();
-        setCurrentTasklist(id);
+        setCurrentList(id);
     };
 
     const deleteTasklist = id => {
@@ -37,8 +36,8 @@ export const Tasklists = ({tasklists, listTasklists, currentTasklist, setCurrent
         })
             .then(() => listTasklists())
             .then(() => {
-                if (currentTasklist === id) { //If currently selected tasklist is deleted, display first tasklist
-                    setCurrentTasklist(tasklists[0]['id'])
+                if (currentList === id) { //If currently selected tasklist is deleted, display first tasklist
+                    setCurrentList(tasklists[0]['id'])
                 }
             });
     };
@@ -63,7 +62,7 @@ export const Tasklists = ({tasklists, listTasklists, currentTasklist, setCurrent
                     value={e.title}
                     onClick={() => {
                         setDrawerOpen(false);
-                        setCurrentTasklist(e.id);
+                        setCurrentList(e.id);
                     }}
                     handleDelete={() => deleteTasklist(e.id)}
                 />)

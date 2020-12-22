@@ -1,4 +1,4 @@
-import React from "react";
+import {Component} from "react";
 import {
     Button,
     Dialog,
@@ -6,17 +6,17 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    Snackbar
+    Snackbar,
+    styled as muiStyled
 } from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
-import {styled as muiStyled} from '@material-ui/core'
 
 const StyledDialog = muiStyled(Dialog)(({theme}) => ({
     /*As zIndex is set inline in Dialog, style must be overridden with !important*/
     zIndex: `${theme.zIndex.snackbar + 1} !important`,
-}))
+}));
 
-export class ErrorBoundary extends React.Component {
+export class ErrorBoundary extends Component {
 
     constructor(props) {
         super(props);
@@ -27,15 +27,15 @@ export class ErrorBoundary extends React.Component {
         };
     }
 
+    static getDerivedStateFromError(error) {
+        return {error: error};
+    }
+
     reloadPage = () => {
         window.location.reload()
     };
 
     setDialogOpen = state => this.setState({dialogOpen: state});
-
-    static getDerivedStateFromError(error) {
-        return {error: error};
-    }
 
     componentDidCatch(error, errorInfo) {
         this.setState({errorInfo});

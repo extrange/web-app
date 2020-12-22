@@ -1,10 +1,11 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import {Networking} from "./util";
 import {LOGOUT_URL} from "./urls";
 import {ListModule} from "./lists/listModule";
 import {LiteratureModule} from "./literature/literatureModule";
 import {StyledButton} from "./components/common";
 import styled from "styled-components";
+import {BackgroundScreenRounded} from "./components/backgroundScreen";
 
 /*LocalStorage key*/
 const CURRENT_MODULE = 'CURRENT_MODULE';
@@ -21,14 +22,19 @@ const modules = props => ({
     },
 });
 
-const SelectContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    max-width: 300px;
-    padding: 0 10px;
-    margin: 0 auto;
-    height: 100vh;
+const FlexContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  margin: 0 auto;
+  max-width: 300px;
+`;
+
+const InnerContainer = styled(BackgroundScreenRounded)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 
@@ -49,25 +55,27 @@ export const ModuleSelect = ({setLoggedIn}) => {
 
     return currentModule
         ? modules({returnToMainApp, logout})[currentModule].jsx
-        : <SelectContainer>
-            {
-                Object.entries(modules()).map(([moduleName, value]) =>
-                    <StyledButton
-                        variant={'outlined'}
-                        color={'primary'}
-                        key={moduleName}
-                        onClick={() => {
-                            localStorage.setItem(CURRENT_MODULE, moduleName);
-                            setCurrentModule(moduleName)
-                        }}
-                    >{value.displayName}</StyledButton>
-                )
-            }
-            <StyledButton
-                variant={'contained'}
-                color={'primary'}
-                onClick={logout}>
-                Logout
-            </StyledButton>
-        </SelectContainer>;
+        : <FlexContainer>
+            <InnerContainer>
+                {
+                    Object.entries(modules()).map(([moduleName, value]) =>
+                        <StyledButton
+                            variant={'outlined'}
+                            color={'primary'}
+                            key={moduleName}
+                            onClick={() => {
+                                localStorage.setItem(CURRENT_MODULE, moduleName);
+                                setCurrentModule(moduleName)
+                            }}
+                        >{value.displayName}</StyledButton>
+                    )
+                }
+                <StyledButton
+                    variant={'contained'}
+                    color={'primary'}
+                    onClick={logout}>
+                    Logout
+                </StyledButton>
+            </InnerContainer>
+        </FlexContainer>;
 };

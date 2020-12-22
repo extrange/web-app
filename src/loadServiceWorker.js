@@ -1,5 +1,5 @@
 import {messageSW, Workbox} from "workbox-window";
-import React, {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react';
 import {Button, Snackbar} from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
 import {useAsyncError} from "./components/useAsyncError";
@@ -120,7 +120,7 @@ const ServiceWorkerMain = () => {
         setDetails({
             text: `Service worker update failed: ${error.toString()}`,
             autoHideDuration: null,
-            severity: 'error'
+            severity: 'error',
         });
         console.log('Service worker update failed: ', error)
     };
@@ -154,13 +154,12 @@ const ServiceWorkerMain = () => {
         wb.register().then(r => registration.current = r).catch(e => setError(e));
 
         // Service worker updates are checked on initial load
-        const periodicUpdateCheckId = setInterval(() => {
+        intervalId.current = setInterval(() => {
             console.log('Checking for service worker updates...');
 
             // Show snackbar on update failure, rather than throwing error
             wb.update().catch(onError)
         }, 5 * 60 * 1000);
-        intervalId.current = periodicUpdateCheckId;
 
         // eslint-disable-next-line
     }, []);

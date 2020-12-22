@@ -1,9 +1,10 @@
-import React, {useState} from 'react'
+import {useState} from 'react';
 import {Networking, NotAuthenticated, useInput} from "../util";
 import {LOGIN_URL} from "../urls";
 import styled from "styled-components";
 import {StyledTextField} from "../components/common";
 import {Button, Typography} from "@material-ui/core";
+import {BackgroundScreenRounded} from "../components/backgroundScreen";
 
 /*If this is in the class, it is redeclared on every render
 In switch statements, this will cause LOGIN_STATES.AUTHENTICATED to be unequal to other instances
@@ -15,15 +16,20 @@ const LOGIN_STATES = {
     NOT_AUTHENTICATED: {name: 'sign_in', message: 'Sign In'},
 };
 
-const StyledContainer = styled.form`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    max-width: 300px;
-    height: 100vh;
-    padding: 0 10px;
+const StyledContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 300px;
+  height: 100vh;
+`;
+
+const InnerContainer = styled(BackgroundScreenRounded)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px;
 `;
 
 
@@ -51,36 +57,37 @@ export const Login = ({setLoggedIn}) => {
 
 
     return <StyledContainer>
-        <Typography variant={'h6'} gutterBottom align={"center"}>
-            {loginState.message}
-        </Typography>
-        <StyledTextField
-            type='text'
-            label={'Username'}
-            fullWidth
-            required
-            autoFocus
-            autoComplete={'username'}
-            {...bind('username')}
-        />
+        <InnerContainer>
+            <Typography variant={'h6'} gutterBottom align={"center"}>
+                {loginState.message}
+            </Typography>
+            <StyledTextField
+                type='text'
+                label={'Username'}
+                fullWidth
+                required
+                autoFocus
+                autoComplete={'username'}
+                {...bind('username')}
+            />
 
-        <StyledTextField
-            type={'password'}
-            label={'Password'}
-            autoComplete={'current-password'}
-            fullWidth
-            required
-            {...bind('password')}
-        />
+            <StyledTextField
+                type={'password'}
+                label={'Password'}
+                autoComplete={'current-password'}
+                fullWidth
+                required
+                {...bind('password')}
+            />
 
-        <Button
-            variant={'contained'}
-            onClick={handleSubmit}
-            color={'primary'}
-            fullWidth
-        >
-            Login
-        </Button>
-
+            <Button
+                variant={'contained'}
+                onClick={handleSubmit}
+                color={'primary'}
+                fullWidth
+            >
+                Login
+            </Button>
+        </InnerContainer>
     </StyledContainer>;
 };

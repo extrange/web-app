@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Networking, NotAuthenticated, ServerError} from "../util";
 import {LOGIN_URL} from "../urls";
 import {Login} from "./login";
@@ -16,8 +16,10 @@ const withLoginCheck = Component => ({loggedIn, ...props}) => {
 const withLoading = Component => ({loading, message, ...props}) => {
     return loading
         ? <Loading
-            open={loading}
-            message={message}/>
+            open={true}
+            message={message}
+            fullscreen={true}
+        />
         : <Component {...props} />
 };
 
@@ -56,6 +58,5 @@ export const LoginCheck = () => {
         message={'Checking authentication...'}
         loggedIn={loggedIn}
         loading={loading}
-        setLoggedIn={setLoggedIn}/>
-    ;
+        setLoggedIn={setLoggedIn}/>;
 };

@@ -1,4 +1,3 @@
-import React from "react";
 import {BookResult} from "./BookResult";
 import styled from "styled-components";
 import {Dialog, useMediaQuery, useTheme} from "@material-ui/core";
@@ -14,11 +13,12 @@ export const SearchBooks = props => {
     let {open, close, results, handleClick} = props;
 
     const theme = useTheme();
+    const fullscreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     return <Dialog
         open={open}
         onClose={close}
-        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        fullScreen={fullscreen}
     >
         <CardContainer>
             {results.map((result, idx) => {

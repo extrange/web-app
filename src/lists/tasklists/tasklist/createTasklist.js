@@ -1,5 +1,3 @@
-import React from "react";
-import './createTasklist.css'
 import {StyledButton} from "../../../components/common";
 
 export const CreateTasklist = props => {

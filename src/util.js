@@ -22,7 +22,7 @@ export class ServerError {
 /**
  * Returned when invalid/missing values are given for fields
  */
-export class BadRequest extends Error{
+export class BadRequest extends Error {
     constructor(message, payload) {
         super(message);
         this.payload = payload;
@@ -177,7 +177,7 @@ export const getRandomInt = (min, max, seed) => {
     min = Math.ceil(min);
     max = Math.floor(max);
     let rng = seedrandom(seed);
-    return Math.floor(rng() * (max-min) + min)
+    return Math.floor(rng() * (max - min) + min)
 };
 
 /**

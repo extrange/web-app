@@ -14,10 +14,11 @@ import {
 import MenuIcon from "@material-ui/icons/Menu";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
-import React from "react";
 import {styled as muiStyled} from "@material-ui/core/styles"
 import styled from 'styled-components'
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
+import {BACKGROUND_COLOR} from "./backgroundScreen";
+import {OverlayScrollbarOptions} from "../theme";
 
 /*StyledContainer is a flex container for StyledDrawerContainer (flex: 1 0),
 HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
@@ -27,12 +28,11 @@ const drawerWidth = 300;
 const OverlayScrollbarsWithMaxWidth = styled(OverlayScrollbarsComponent)`
   width: ${drawerWidth}px;
   max-width: 80vw;
-  height: 100%; // This was the key to making OverlayScrollbars work!!
 `;
 
 const TransparentDrawer = styled(Drawer)`
   .MuiDrawer-paper {
-    background: none;
+    ${BACKGROUND_COLOR};
   }
 `;
 
@@ -41,18 +41,17 @@ const FlexContainer = styled.div`
   height: 100vh;
 `;
 
-const StyledAppBar = muiStyled(AppBar)(({theme}) => ({
+const TransparentAppBar = muiStyled(AppBar)(({theme}) => ({
     [theme.breakpoints.up('md')]: {
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: drawerWidth,
     },
+
     '@supports (backdrop-filter: blur(10px))': {
-        'backdrop-filter': 'blur(10px)'
+        'backdrop-filter': 'blur(10px)',
     },
 
-    '@supports not (backdrop-filter: blur(10px))': {
-        background: 'rgba(0,0,0,0.8)'
-    },
+    background: 'rgba(0,0,0,0.6)',
 
 }));
 
@@ -100,15 +99,8 @@ export const AppBarResponsive = ({
 
 
     const drawer = <OverlayScrollbarsWithMaxWidth
-        options={{
-            className: 'os-theme-light',
-            overflowBehavior: {
-                x: 'hidden'
-            },
-            scrollbars: {
-                autoHide: 'move',
-            }
-        }}>
+        options={OverlayScrollbarOptions}
+    className={'os-host-flexbox'}>
         <List>
             <ListItem>
                 <StyledAppNameDiv>{appName}</StyledAppNameDiv>
@@ -131,9 +123,12 @@ export const AppBarResponsive = ({
 
     return <FlexContainer>
         <HideOnScroll>
-            <StyledAppBar
+            <TransparentAppBar
                 position={'fixed'}
                 color={'transparent'}
+
+                // Elevation adds more borders, and makes the page look more busy
+                elevation={0}
             >
                 <Toolbar variant={"dense"}>
                     <StyledIconButton
@@ -146,7 +141,7 @@ export const AppBarResponsive = ({
                         {title}
                     </Typography>
                 </Toolbar>
-            </StyledAppBar>
+            </TransparentAppBar>
         </HideOnScroll>
 
         <StyledDrawerContainer>

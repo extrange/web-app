@@ -1,5 +1,5 @@
 //Books in a series should be collapsible
-import React, {useEffect} from 'react'
+import { useEffect } from 'react';
 import styled from "styled-components";
 
 const StyledTh = styled.th`
@@ -25,6 +25,7 @@ const StyledTable = styled.table`
 
 export const ViewBooks = ({refreshBooks, books, ...props}) => {
 
+    // eslint-disable-next-line
     useEffect(refreshBooks, []);
 
     return <>

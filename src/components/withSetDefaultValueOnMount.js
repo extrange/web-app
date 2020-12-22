@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 /**
  * Sets values only on the first render. Injected as defaultValue.

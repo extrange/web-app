@@ -1,5 +1,5 @@
 import {styled} from "@material-ui/core/styles"
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {Button, InputAdornment, Slide, useScrollTrigger} from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -54,7 +54,20 @@ const MuiStyledAutocompleteMultiSort = styled(Autocomplete)({
  * @returns {JSX.Element}
  * @constructor
  */
-export const StyledAutocompleteMultiSort = ({displayKey = 'name', searchKeys = ['name'], multiple = true, value, setValue, label, callback, options, refreshOptions, getValues, renderProps, ...props}) => {
+export const StyledAutocompleteMultiSort = ({
+                                                displayKey = 'name',
+                                                searchKeys = ['name'],
+                                                multiple = true,
+                                                value,
+                                                setValue,
+                                                label,
+                                                callback,
+                                                options,
+                                                refreshOptions,
+                                                getValues,
+                                                renderProps,
+                                                ...props
+                                            }) => {
 
     let [loading, setLoading] = useState(true);
     useEffect(() => setLoading(options.length < 1), [options]); //todo this will display a loading sign when there are no options, even if loaded

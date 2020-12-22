@@ -1,15 +1,14 @@
-import React from 'react';
-import {StyledTextField} from "../../components/common";
-import {useInput} from "../../util";
+import {StyledTextField} from "../../../components/common";
+import {useInput} from "../../../util";
 import SearchIcon from '@material-ui/icons/Search';
 import InputAdornment from "@material-ui/core/InputAdornment";
 
-export let Search = (props) => {
+export const Search = ({filter}) => {
     let {bind, onChange} = useInput();
 
     let handleInputChange = e => {
         onChange(e);
-        props.filter(e.currentTarget.value);
+        filter(e.currentTarget.value);
     };
 
     return <StyledTextField

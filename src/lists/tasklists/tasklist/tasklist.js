@@ -1,18 +1,26 @@
-import React from "react";
-import './tasklist.css'
+import {StyledListItem, StyledListItemSecondaryAction} from "../../../components/styledListItem";
+import {IconButton, ListItemText} from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
 
-export class Tasklist extends React.Component {
-    render() {
-        return (
-            <li className='tasklist'>
-                <div className='tasklist__title'
-                     onClick={this.props.onClick}>
-                    {this.props.value}
-                </div>
-                <div className='tasklist__delete'
-                     onClick={this.props.handleDelete}>DEL
-                </div>
-            </li>
-        )
-    }
-}
+export const Tasklist = ({handleDelete, onClick, value}) => (
+
+    <StyledListItem
+        button
+        onClick={onClick}
+        dense
+        $hideBackground
+    >
+        <ListItemText
+            primary={value}
+            primaryTypographyProps={{noWrap: true}}
+        />
+        <StyledListItemSecondaryAction>
+            <IconButton
+                edge={'end'}
+                onClick={handleDelete}>
+                <DeleteIcon/>
+            </IconButton>
+        </StyledListItemSecondaryAction>
+
+    </StyledListItem>
+);

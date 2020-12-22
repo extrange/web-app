@@ -1,15 +1,17 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {AppBarResponsive} from "../components/appBarResponsive";
 import {Tasklists} from "./tasklists/tasklists";
 import {Tasks} from "./tasks/tasks";
 import {Networking} from "../util";
 import {TASKLISTS_URL} from "./urls";
+import {CircularProgress} from "@material-ui/core";
 
 export const ListModule = ({returnToMainApp, logout}) => {
 
-    const [currentTasklist, setCurrentTasklist] = useState(null);
+    const [currentList, setCurrentList] = useState(null);
     const [tasklists, setTasklists] = useState(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
 
     const listTasklists = () => {
@@ -31,23 +33,29 @@ export const ListModule = ({returnToMainApp, logout}) => {
         listTasklists()
     }, []);
 
+    const title = <>
+        {getTasklistTitle(currentList)}
+        {loading && <CircularProgress color="inherit" size={20} style={{'marginLeft': '20px'}}/>}
+    </>;
+
     return <AppBarResponsive
         appName={'Lists'}
         returnToMainApp={returnToMainApp}
         logout={logout}
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
-        title={getTasklistTitle(currentTasklist)}
+        title={title}
         drawerContent={<Tasklists
-            currentTasklist={currentTasklist}
-            setCurrentTasklist={setCurrentTasklist}
+            currentList={currentList}
+            setCurrentList={setCurrentList}
             tasklists={tasklists}
             listTasklists={listTasklists}
             setDrawerOpen={setDrawerOpen}
         />}
     >
         <Tasks
-            currentTasklist={currentTasklist}
+            currentList={currentList}
+            setLoading={setLoading}
         />
     </AppBarResponsive>
 };

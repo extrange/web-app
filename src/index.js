@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import {StrictMode} from "react";
 import 'fontsource-roboto/300.css'
 import 'fontsource-roboto/400.css'
 import 'fontsource-roboto/500.css'
@@ -19,7 +20,7 @@ import {RandomBackground} from "./components/randomBackground";
 const numImages = 26;
 
 ReactDOM.render(
-    <React.StrictMode>
+    <StrictMode>
         <MuiThemeProvider theme={theme}>
             <CssBaseline/>
             <RandomBackground numImages={numImages}/>
@@ -33,7 +34,7 @@ ReactDOM.render(
 
             </ErrorBoundary>
         </MuiThemeProvider>
-    </React.StrictMode>
+    </StrictMode>
     , document.getElementById('root'));
 
 
