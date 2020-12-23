@@ -14,7 +14,7 @@ const TasklistLists = styled.ul`
 `;
 
 
-export const Tasklists = ({tasklists, listTasklists, currentList, setCurrentList, setDrawerOpen}) => {
+export const Tasklists = ({tasklists, listTasklists, currentListId, setAndSaveCurrentList, setDrawerOpen}) => {
 
     const createTasklist = async (title) => {
         let resp = await Networking.send(TASKLISTS_URL, {
@@ -25,7 +25,7 @@ export const Tasklists = ({tasklists, listTasklists, currentList, setCurrentList
         let json = await resp.json();
         let id = json['id'];
         await listTasklists();
-        setCurrentList(id);
+        setAndSaveCurrentList(id);
     };
 
     const deleteTasklist = id => {
@@ -36,8 +36,8 @@ export const Tasklists = ({tasklists, listTasklists, currentList, setCurrentList
         })
             .then(() => listTasklists())
             .then(() => {
-                if (currentList === id) { //If currently selected tasklist is deleted, display first tasklist
-                    setCurrentList(tasklists[0]['id'])
+                if (currentListId === id) { //If currently selected tasklist is deleted, display first tasklist
+                    setAndSaveCurrentList(tasklists[0]['id'])
                 }
             });
     };
@@ -62,7 +62,7 @@ export const Tasklists = ({tasklists, listTasklists, currentList, setCurrentList
                     value={e.title}
                     onClick={() => {
                         setDrawerOpen(false);
-                        setCurrentList(e.id);
+                        setAndSaveCurrentList(e.id);
                     }}
                     handleDelete={() => deleteTasklist(e.id)}
                 />)
