@@ -6,7 +6,6 @@ import {getTasksUrl, getTaskUrl} from "../urls";
 import {Virtuoso} from 'react-virtuoso/dist'
 import {Fab, List} from "@material-ui/core";
 import {Loading} from "../../components/loading";
-import {useAsyncError} from "../../components/useAsyncError";
 import styled from 'styled-components'
 import AddIcon from '@material-ui/icons/Add';
 
@@ -18,24 +17,13 @@ const StyledFab = styled(Fab)`
 `;
 
 //todo move into urls as static methods
-const [get, add, update, del] = Networking.crudMethods(getTasksUrl, getTaskUrl);
+const [, add, update, del] = Networking.crudMethods(getTasksUrl, getTaskUrl);
 
-export const Tasks = ({currentList, setLoading}) => {
+export const Tasks = ({currentList, items, listItems}) => {
 
     const [editingTask, setEditingTask] = useState(null);
-    const [items, setItems] = useState([]);
 
     const virtuosoRef = useRef();
-    const setError = useAsyncError();
-
-    //todo use Abort controller to cancel requests
-    const listItems = list => {
-        setLoading(true);
-        get(list).then(result => {
-            setLoading(false);
-            setItems(result);
-        }).catch(e => setError(e));
-    };
 
     useEffect(() => {
         if (!currentList) return;
@@ -48,51 +36,35 @@ export const Tasks = ({currentList, setLoading}) => {
         // eslint-disable-next-line
     }, [currentList]);
 
-    const createTask = (list, title, notes) => {
-        add({tasklist: list, title, notes}, list)
-            .then(() => {
-                // Close editing item dialog
-                setEditingTask(null);
-                listItems(list)
-            })
+    const createTask = (list, title, notes) => add({tasklist: list, title, notes}, list);
+
+    const updateTask = (id, list, title, notes) => update({id, tasklist: list, title, notes}, id, list);
+
+    const deleteTask = (id, list, prompt = true) => {
+        if (prompt) {
+            let decision = window.confirm('Delete item?');
+            if (!decision) return;
+        }
+        return del(id, list)
+            .then(() => listItems(currentList))
     };
 
-    const updateTask = (id, list, title, notes) => {
-        update({id, tasklist: list, title, notes}, id, list)
-            .then(result => {
-                // Close editing item dialog
-                setEditingTask(null);
-                listItems(list)
-            });
+    const closeEdit = () => void setEditingTask(null);
+
+    const handleEditTask = (id, title, notes) => {
+        setEditingTask({id, title, notes});
     };
 
-    const deleteTask = (id, list) => {
-        let decision = window.confirm('Delete item?');
-        if (!decision) return;
-        del(id, list)
-            .then(result => listItems(list))
-    };
+    const handleCreateTask = () => void setEditingTask({
+        id: null,
+        title: '',
+        notes: '',
+    });
 
-    const onCancelEdit = () => {
-        setEditingTask(null);
-    };
-
-    const handleEditTask = (id, list, title, notes) => {
-        setEditingTask({id, list, title, notes});
-    };
-
-    const handleCreateTask = (list) => {
-        setEditingTask({
-            id: null,
-            list: list,
-            title: '',
-            notes: '',
-        });
-    };
 
     const list = items.map(e => (
         <Item
-            handleEditTask={() => handleEditTask(e.id, e.tasklist, e.title, e.notes)}
+            handleEditTask={() => handleEditTask(e.id, e.title, e.notes)}
             deleteTask={() => deleteTask(e.id, e.tasklist)}
             key={e.id}
             task={e}/>
@@ -112,7 +84,10 @@ export const Tasks = ({currentList, setLoading}) => {
             editingTask={editingTask}
             updateTask={updateTask}
             createTask={createTask}
-            onCancelEdit={onCancelEdit}
+            closeEdit={closeEdit}
+            currentList={currentList}
+            listItems={listItems}
+            deleteTask={deleteTask}
         />}
         <Virtuoso
             ref={virtuosoRef}
@@ -126,9 +101,7 @@ export const Tasks = ({currentList, setLoading}) => {
                         dense
                         ref={listRef}>
                         {children}
-                    </List>
-                )
-            }}
-        />
+                    </List>)
+            }}/>
     </>
 };

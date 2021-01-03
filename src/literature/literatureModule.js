@@ -3,7 +3,7 @@ import {AddBooks} from "./addBook";
 import {ViewBooks} from "./viewBooks";
 import {Networking} from "../util";
 import * as Url from "./urls";
-import {Paper, Tab, Tabs} from "@material-ui/core";
+import {Paper, Tab, Tabs, Typography} from "@material-ui/core";
 import {AppBarResponsive} from "../components/appBarResponsive";
 
 const LIT_APP_SECTIONS = {
@@ -42,7 +42,7 @@ export const LiteratureModule = ({returnToMainApp, logout, ...props}) => {
 
     return <AppBarResponsive
         appName={'Literature'}
-        title={'Literature'}
+        titleContent={<Typography variant={"h6"} noWrap>Literature</Typography>}
         logout={logout}
         returnToMainApp={returnToMainApp}
         drawerOpen={drawerOpen}

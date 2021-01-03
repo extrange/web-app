@@ -7,6 +7,7 @@ export const Item = ({deleteTask, handleEditTask, task}) =>
     <StyledListItem
         button
         onClick={handleEditTask}
+        $reserveSpace={true}
     >
         <ListItemText
             primary={task.title}

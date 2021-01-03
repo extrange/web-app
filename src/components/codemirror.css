@@ -1,9 +1,9 @@
-/*Autoresize, font change*/
-
 .cm-s-codemirror {
     font-family: "Source Sans Pro", sans-serif;
+    font-size: medium;
 }
 
+/*Autoresize*/
 .cm-s-codemirror.CodeMirror {
     height: auto;
     background: rgba(41, 41, 35, 0.6);

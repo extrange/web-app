@@ -9,6 +9,7 @@ export const Tasklist = ({handleDelete, onClick, value}) => (
         onClick={onClick}
         dense
         $hideBackground
+        $reserveSpace={false}
     >
         <ListItemText
             primary={value}

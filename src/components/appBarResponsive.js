@@ -9,7 +9,6 @@ import {
     ListItemIcon,
     ListItemText,
     Toolbar,
-    Typography,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -29,6 +28,7 @@ const OverlayScrollbarsWithMaxWidth = styled(OverlayScrollbarsComponent)`
   width: ${drawerWidth}px;
   max-width: 80vw;
 `;
+
 
 const TransparentDrawer = styled(Drawer)`
   .MuiDrawer-paper {
@@ -60,9 +60,11 @@ const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
         width: drawerWidth,
         flexShrink: 0,
     },
+
 }));
 
 const StyledContentContainer = styled.div`
+  width: 100vw;
   flex: 1;
 `;
 
@@ -88,7 +90,7 @@ const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
 
 export const AppBarResponsive = ({
                                      appName,
-                                     title,
+                                     titleContent, // Typography h6 is recommended with 'noWrap'
                                      drawerOpen,
                                      setDrawerOpen,
                                      drawerContent,
@@ -100,7 +102,7 @@ export const AppBarResponsive = ({
 
     const drawer = <OverlayScrollbarsWithMaxWidth
         options={OverlayScrollbarOptions}
-    className={'os-host-flexbox'}>
+        className={'os-host-flexbox'}>
         <List>
             <ListItem>
                 <StyledAppNameDiv>{appName}</StyledAppNameDiv>
@@ -128,8 +130,7 @@ export const AppBarResponsive = ({
                 color={'transparent'}
 
                 // Elevation adds more borders, and makes the page look more busy
-                elevation={0}
-            >
+                elevation={0}>
                 <Toolbar variant={"dense"}>
                     <StyledIconButton
                         color={"inherit"}
@@ -137,9 +138,7 @@ export const AppBarResponsive = ({
                         onClick={() => setDrawerOpen(true)}>
                         <MenuIcon/>
                     </StyledIconButton>
-                    <Typography variant={'h6'}>
-                        {title}
-                    </Typography>
+                    {titleContent}
                 </Toolbar>
             </TransparentAppBar>
         </HideOnScroll>
@@ -168,7 +167,6 @@ export const AppBarResponsive = ({
             <Toolbar variant={"dense"}/>
             <ContentDiv>{children}</ContentDiv>
         </StyledContentContainer>
-
 
     </FlexContainer>
 };

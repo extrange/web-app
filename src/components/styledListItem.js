@@ -14,11 +14,10 @@ export const StyledListItem = styled(ListItem)`
   }
 
   @media (hover: hover) {
-    padding-right: 16px;
-    
+    ${({$reserveSpace}) => $reserveSpace ? 'padding-right: 48px' : 'padding-right: 16px'};
   }
-
-  :hover, .MuiListItem-container:hover & {
+  
+  .MuiListItem-container:hover & {
     padding-right: 48px;
   }
 `;

@@ -3,10 +3,15 @@ import {AppBarResponsive} from "../components/appBarResponsive";
 import {Tasklists} from "./tasklists/tasklists";
 import {Tasks} from "./tasks/tasks";
 import {Networking} from "../util";
-import {TASKLISTS_URL} from "./urls";
-import {CircularProgress} from "@material-ui/core";
+import {getTasksUrl, getTaskUrl, TASKLISTS_URL} from "./urls";
+import {CircularProgress, IconButton, Typography} from "@material-ui/core";
+import SyncIcon from '@material-ui/icons/Sync';
+import {useAsyncError} from "../components/useAsyncError";
 
 const CURRENT_LIST = 'CURRENT_LIST';
+
+//todo move into urls as static methods
+const get = Networking.crudMethods(getTasksUrl, getTaskUrl)[0];
 
 export const ListModule = ({returnToMainApp, logout}) => {
 
@@ -15,6 +20,8 @@ export const ListModule = ({returnToMainApp, logout}) => {
     const [tasklists, setTasklists] = useState(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [items, setItems] = useState([]);
+    const setError = useAsyncError();
 
     const setAndSaveCurrentList = listId => {
         setCurrentListId(listId);
@@ -27,10 +34,16 @@ export const ListModule = ({returnToMainApp, logout}) => {
         .then(resp => resp.json())
         .then(json => setTasklists(json));
 
+    //todo use Abort controller to cancel requests
+    const listItems = list => {
+        setLoading(true);
+        get(list).then(result => {
+            setLoading(false);
+            setItems(result);
+        }).catch(e => setError(e));
+    };
 
-    useEffect(() => {
-        listTasklists()
-    }, []);
+    useEffect(() => void listTasklists(), []);
 
     // Only set currentListId to saved id if valid
     useEffect(() => {
@@ -47,8 +60,10 @@ export const ListModule = ({returnToMainApp, logout}) => {
     };
 
     const title = <>
-        {getTasklistTitle(currentListId)}
-        {loading && <CircularProgress color="inherit" size={20} style={{'marginLeft': '20px'}}/>}
+        <Typography variant={"h6"} noWrap>{getTasklistTitle(currentListId)}</Typography>
+        {loading
+            ? <CircularProgress color="inherit" size={20} style={{margin: '12px'}}/>
+            : <IconButton onClick={() => currentListId ? listItems(currentListId) : 0}><SyncIcon/></IconButton>}
     </>;
 
     return <AppBarResponsive
@@ -57,7 +72,7 @@ export const ListModule = ({returnToMainApp, logout}) => {
         logout={logout}
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
-        title={title}
+        titleContent={title}
         drawerContent={<Tasklists
             currentListId={currentListId}
             setAndSaveCurrentList={setAndSaveCurrentList}
@@ -69,6 +84,9 @@ export const ListModule = ({returnToMainApp, logout}) => {
         <Tasks
             currentList={currentListId}
             setLoading={setLoading}
+            items={items}
+            setItems={setItems}
+            listItems={listItems}
         />
     </AppBarResponsive>
 };

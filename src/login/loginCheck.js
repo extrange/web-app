@@ -2,32 +2,8 @@ import {useEffect, useState} from "react";
 import {Networking, NotAuthenticated, ServerError} from "../util";
 import {LOGIN_URL} from "../urls";
 import {Login} from "./login";
-import {flowRight} from 'lodash'
 import {ModuleSelect} from "../moduleSelect";
 import {Loading} from "../components/loading";
-
-
-const withLoginCheck = Component => ({loggedIn, ...props}) => {
-    return loggedIn
-        ? <Component {...props}/>
-        : <Login {...props}/>
-};
-
-const withLoading = Component => ({loading, message, ...props}) => {
-    return loading
-        ? <Loading
-            open={true}
-            message={message}
-            fullscreen={true}
-        />
-        : <Component {...props} />
-};
-
-const LoginCheckWithLoginLoading =
-    flowRight([
-        withLoading,
-        withLoginCheck,
-    ])(ModuleSelect);
 
 export const LoginCheck = () => {
 
@@ -54,9 +30,15 @@ export const LoginCheck = () => {
 
     useEffect(checkIfLoggedIn, []);
 
-    return <LoginCheckWithLoginLoading
+    if (loading) return <Loading
+        open={true}
         message={'Checking authentication...'}
-        loggedIn={loggedIn}
-        loading={loading}
-        setLoggedIn={setLoggedIn}/>;
+        fullscreen={true}/>;
+
+    if (!loggedIn)
+        return <Login
+            setLoggedIn={setLoggedIn}/>;
+    else
+        return <ModuleSelect
+            setLoggedIn={setLoggedIn}/>;
 };

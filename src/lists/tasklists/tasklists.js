@@ -4,13 +4,14 @@ import './tasklists.css'
 import {Networking} from "../../util";
 import styled from "styled-components";
 import {getTasklistUrl, TASKLISTS_URL} from "../urls";
+import {useMemo} from "react";
 
 const TasklistLists = styled.ul`
-    display: flex;
-    flex-direction: column;
-    height: inherit;
-    margin: 0;
-    padding: 5px;
+  display: flex;
+  flex-direction: column;
+  height: inherit;
+  margin: 0;
+  padding: 5px;
 `;
 
 
@@ -42,34 +43,36 @@ export const Tasklists = ({tasklists, listTasklists, currentListId, setAndSaveCu
             });
     };
 
-    let tasklists_display;
-    if (tasklists) { //ensure tasklists got loaded before trying to render it
-        tasklists_display = [
-            <CreateTasklist
-                key={0}
-                promptCreateTasklist={() => {
-                    let title = prompt('Enter title:');
-                    if (title) {
-                        createTasklist(title).then(() => setDrawerOpen(false));
-                    }
+    let listItems = useMemo(() => [
+        <CreateTasklist
+            key={0}
+            promptCreateTasklist={() => {
+                let title = prompt('Enter title:');
+                if (title) {
+                    createTasklist(title).then(() => setDrawerOpen(false));
+                }
+            }}
+        />,
+        tasklists?.map(e =>
+            (<Tasklist
+                key={e.id}
+                id={e.id}
+                value={e.title}
+                onClick={() => {
+                    setDrawerOpen(false);
+                    setAndSaveCurrentList(e.id);
                 }}
-            />
-        ];
-        tasklists_display = tasklists_display.concat(tasklists.map(e =>
-                (<Tasklist
-                    key={e.id}
-                    id={e.id}
-                    value={e.title}
-                    onClick={() => {
-                        setDrawerOpen(false);
-                        setAndSaveCurrentList(e.id);
-                    }}
-                    handleDelete={() => deleteTasklist(e.id)}
-                />)
-            )
-        );
-    } else tasklists_display = 'loading';
+                handleDelete={() => deleteTasklist(e.id)}
+            />)
+        )
 
-    return <TasklistLists>{tasklists_display}</TasklistLists>
+        // eslint-disable-next-line
+    ], [tasklists]);
+
+    return <TasklistLists>
+        {tasklists
+            ? listItems
+            : 'Loading...'}
+    </TasklistLists>
 
 };

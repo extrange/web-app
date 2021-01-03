@@ -167,6 +167,8 @@ export const sanitizeString = string =>
     string ? removeAccents(string).trim().toLowerCase() : ''
 ;
 
+export const isEmpty = string => !Boolean(string.trim());
+
 /**
  * Returns a seeded random number between min (inclusive) and max (exclusive)
  * @param min
