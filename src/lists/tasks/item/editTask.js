@@ -93,17 +93,22 @@ export const EditTask = ({editingTask, createTask, updateTask, closeEdit, listIt
         //, albeit the gap is very narrow (server reply must take > debounceTime)
 
 
-    }, 3000, {maxWait: 5000}), [updateTask, editingTask, createTask]);
+    }, 1000, {maxWait: 5000}), [updateTask, editingTask, createTask]);
 
     const handleClose = () => {
+        //  getValues is null once closeEdit() is called
+        let {title, notes} = getValues();
+
         // debouncedAutoSave.flush() is only defined when it has been called at least once
         debouncedAutoSave.flush()?.then(() => {
 
             // Delete task if it's empty
-            if (taskId.current && isEmpty(getValues('title')) && isEmpty(getValues('notes'))) {
+            if (taskId.current && isEmpty(title) && isEmpty(notes)) {
                 deleteTask(taskId.current, currentList, false)
             } else listItems(currentList);
+
         });
+
         closeEdit();
     };
 

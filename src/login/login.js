@@ -16,7 +16,7 @@ const LOGIN_STATES = {
     NOT_AUTHENTICATED: {name: 'sign_in', message: 'Sign In'},
 };
 
-const StyledContainer = styled.div`
+const StyledContainer = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -56,7 +56,7 @@ export const Login = ({setLoggedIn}) => {
     };
 
 
-    return <StyledContainer>
+    return <StyledContainer onSubmit={handleSubmit}>
         <InnerContainer>
             <Typography variant={'h6'} gutterBottom align={"center"}>
                 {loginState.message}
@@ -82,7 +82,7 @@ export const Login = ({setLoggedIn}) => {
 
             <Button
                 variant={'contained'}
-                onClick={handleSubmit}
+                type={'submit'}
                 color={'primary'}
                 fullWidth
             >
