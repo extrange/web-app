@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import {ListItem, ListItemSecondaryAction} from "@material-ui/core";
 import {BACKGROUND_COLOR} from "./backgroundScreen";
+import {theme} from "../theme";
 
 export const StyledListItem = styled(ListItem)`
   ::before {
@@ -10,19 +11,22 @@ export const StyledListItem = styled(ListItem)`
     height: 100%;
     position: absolute;
     z-index: -1;
-    ${props => props.$hideBackground ? '' : BACKGROUND_COLOR};
+    ${({$hideBackground}) => $hideBackground ? '' : BACKGROUND_COLOR};
   }
 
-  @media (hover: hover) {
+  ${theme.breakpoints.up('md')} {
     ${({$reserveSpace}) => $reserveSpace ? 'padding-right: 48px' : 'padding-right: 16px'};
   }
   
   .MuiListItem-container:hover & {
     padding-right: 48px;
+    
+    // Highlight entire item even when secondary action is hovered
+    background-color: rgba(255, 255, 255, 0.08);
   }
 `;
 export const StyledListItemSecondaryAction = styled(ListItemSecondaryAction)`
-  @media (hover: hover) {
+  ${theme.breakpoints.up('md')}  {
     display: none;
   }
 

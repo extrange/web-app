@@ -2,18 +2,18 @@ import {HideOnScroll} from "./common";
 import {
     AppBar,
     Drawer,
-    Hidden,
     IconButton,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
     Toolbar,
+    useMediaQuery,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
-import {styled as muiStyled} from "@material-ui/core/styles"
+import {styled as muiStyled, useTheme} from "@material-ui/core/styles"
 import styled from 'styled-components'
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {BACKGROUND_COLOR} from "./backgroundScreen";
@@ -64,12 +64,10 @@ const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
 }));
 
 const StyledContentContainer = styled.div`
-  width: 100vw;
   flex: 1;
 `;
 
 const ContentDiv = styled.div`
-  width: 100%;
   height: calc(100% - 48px); //48px is the height of Toolbar (variant=dense)
 `;
 
@@ -98,6 +96,9 @@ export const AppBarResponsive = ({
                                      returnToMainApp,
                                      logout
                                  }) => {
+
+    const theme = useTheme();
+    const mobile = useMediaQuery(theme.breakpoints.down('sm'));
 
 
     const drawer = <OverlayScrollbarsWithMaxWidth
@@ -144,22 +145,17 @@ export const AppBarResponsive = ({
         </HideOnScroll>
 
         <StyledDrawerContainer>
-            <Hidden mdUp>
-                <Drawer
+            {mobile
+                ? <Drawer
                     open={drawerOpen}
                     onClose={() => setDrawerOpen(false)}
                 >{drawer}
                 </Drawer>
-            </Hidden>
-
-            <Hidden smDown>
-                <TransparentDrawer
+                : <TransparentDrawer
                     open
                     variant={"permanent"}
                 >{drawer}
-                </TransparentDrawer>
-            </Hidden>
-
+                </TransparentDrawer>}
         </StyledDrawerContainer>
 
 

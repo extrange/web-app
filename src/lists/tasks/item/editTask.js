@@ -4,7 +4,7 @@ import {MarkdownEditor} from "../../../components/markdownEditor";
 import {Button, Dialog, useMediaQuery} from "@material-ui/core";
 import {useForm} from "react-hook-form";
 import {useTheme} from "@material-ui/core/styles";
-import {OverlayScrollbarOptions} from "../../../theme";
+import {OverlayScrollbarOptions, theme} from "../../../theme";
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {debounce} from 'lodash'
 import {useCallback, useRef, useState} from "react";
@@ -16,11 +16,11 @@ const ButtonContainer = styled.div`
 `;
 
 const StyledOverlayScrollbars = styled(OverlayScrollbarsComponent)`
-  width: min(100vw, 600px);
-  max-width: 800px;
+  width: min(100vw - 32px, 800px);
 `;
 
 const StyledDialog = styled(Dialog)`
+  // Blur effect only if supported
   @supports (backdrop-filter: blur(5px)) {
     .MuiDialog-container {
       backdrop-filter: blur(5px);
@@ -36,6 +36,27 @@ const StyledDialog = styled(Dialog)`
     flex-direction: column;
     justify-content: flex-start;
   }
+
+  // Reduce margins when on mobile
+  ${theme.breakpoints.down('sm')} {
+    
+    // Extend width
+    .MuiDialog-paperWidthFalse {
+      max-width: calc(100% - 32px);
+    }
+    
+    // Extend height
+    .MuiDialog-paperScrollPaper {
+      max-height: 100%;
+    }
+    
+    // Add some margin to the top, and remove bottom margin settings
+    .MuiDialog-paper {
+      margin: 16px 0 0;
+    }
+
+  }
+
 `;
 
 const SavingStates = {
@@ -120,8 +141,8 @@ export const EditTask = ({editingTask, createTask, updateTask, closeEdit, listIt
 
     return <StyledDialog
         open
-        onClose={handleClose}
-        fullScreen={fullScreen}>
+        maxWidth={false}
+        onClose={handleClose}>
         <StyledOverlayScrollbars
             options={OverlayScrollbarOptions}
             className={'os-host-flexbox'}>

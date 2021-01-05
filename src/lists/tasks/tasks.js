@@ -16,6 +16,11 @@ const StyledFab = styled(Fab)`
   right: 20px;
 `;
 
+const StyledDiv = styled.div`
+  max-width: 800px;
+  height: 100%;
+`;
+
 //todo move into urls as static methods
 const [, add, update, del] = Networking.crudMethods(getTasksUrl, getTaskUrl);
 
@@ -89,19 +94,21 @@ export const Tasks = ({currentList, items, listItems}) => {
             listItems={listItems}
             deleteTask={deleteTask}
         />}
-        <Virtuoso
-            ref={virtuosoRef}
-            totalCount={list.length}
-            itemContent={index => list[index]}
-            components={{
-                List: forwardRef(({children, ...props}, listRef) =>
-                    <List
-                        {...props}
-                        disablePadding
-                        dense
-                        ref={listRef}>
-                        {children}
-                    </List>)
-            }}/>
+        <StyledDiv>
+            <Virtuoso
+                ref={virtuosoRef}
+                totalCount={list.length}
+                itemContent={index => list[index]}
+                components={{
+                    List: forwardRef(({children, ...props}, listRef) =>
+                        <List
+                            {...props}
+                            disablePadding
+                            dense
+                            ref={listRef}>
+                            {children}
+                        </List>)
+                }}/>
+        </StyledDiv>
     </>
 };
