@@ -115,7 +115,7 @@ export const AppBarResponsive = ({
                 <ListItemText primary={'Back to Apps'}/>
             </ListItem>
             {drawerContent}
-            <ListItem button onClick={logout}>{/*Todo make button fixed at bottom to prevent layout jumps*/}
+            <ListItem button onClick={logout}>
                 <ListItemIcon>
                     <MeetingRoomIcon/>
                 </ListItemIcon>

@@ -7,6 +7,7 @@ import 'codemirror/addon/edit/matchbrackets'
 import 'codemirror/addon/selection/mark-selection'
 import 'codemirror/addon/selection/active-line'
 import 'codemirror/addon/display/autorefresh'
+import './scrollPastEnd'
 import {useEffect, useState} from "react";
 
 
@@ -48,7 +49,9 @@ export const MarkdownEditor = ({defaultValue, onChange}) => {
                 matchBrackets: true,
                 styleSelectedText: true,
                 styleActiveLine: true,
-                autoRefresh: true
+                autoRefresh: true,
+                scrollPastEnd: true
+
             }}
             editorDidMount={editor => setInstance(editor)}
             onChange={(editor, data, newValue) => {

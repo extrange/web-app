@@ -4,7 +4,6 @@ import './tasklists.css'
 import {Networking} from "../../util";
 import styled from "styled-components";
 import {getTasklistUrl, TASKLISTS_URL} from "../urls";
-import {useMemo} from "react";
 
 const TasklistLists = styled.ul`
   display: flex;
@@ -43,7 +42,7 @@ export const Tasklists = ({tasklists, listTasklists, currentListId, setAndSaveCu
             });
     };
 
-    let listItems = useMemo(() => [
+    let listItems = [
         <CreateTasklist
             key={0}
             promptCreateTasklist={() => {
@@ -66,8 +65,7 @@ export const Tasklists = ({tasklists, listTasklists, currentListId, setAndSaveCu
             />)
         )
 
-        // eslint-disable-next-line
-    ], [tasklists]);
+    ];
 
     return <TasklistLists>
         {tasklists
