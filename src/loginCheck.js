@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
-import {Networking, NotAuthenticated, ServerError} from "../util";
-import {LOGIN_URL} from "../urls";
-import {Login} from "./login";
-import {ModuleSelect} from "../moduleSelect";
-import {Loading} from "../components/loading";
+import {Networking, NotAuthenticated, ServerError} from "./util";
+import {LOGIN_URL} from "./urls";
+import {Login} from "./login/login";
+import {ModuleSelect} from "./moduleSelect";
+import {Loading} from "./components/loading";
+import {App} from "./app";
 
 export const LoginCheck = () => {
 
@@ -39,6 +40,6 @@ export const LoginCheck = () => {
         return <Login
             setLoggedIn={setLoggedIn}/>;
     else
-        return <ModuleSelect
-            setLoggedIn={setLoggedIn}/>;
+        return <App><ModuleSelect
+            setLoggedIn={setLoggedIn}/></App>;
 };

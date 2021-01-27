@@ -18,6 +18,7 @@ import styled from 'styled-components'
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {BACKGROUND_COLOR} from "./backgroundScreen";
 import {OverlayScrollbarOptions} from "../theme";
+import {NotificationMenu} from "./notificationMenu";
 
 /*StyledContainer is a flex container for StyledDrawerContainer (flex: 1 0),
 HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
@@ -100,7 +101,6 @@ export const AppBarResponsive = ({
     const theme = useTheme();
     const mobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-
     const drawer = <OverlayScrollbarsWithMaxWidth
         options={OverlayScrollbarOptions}
         className={'os-host-flexbox'}>
@@ -140,6 +140,8 @@ export const AppBarResponsive = ({
                         <MenuIcon/>
                     </StyledIconButton>
                     {titleContent}
+                    <div style={{flex: 1}}/>
+                    <NotificationMenu/>
                 </Toolbar>
             </TransparentAppBar>
         </HideOnScroll>
@@ -161,7 +163,9 @@ export const AppBarResponsive = ({
 
         <StyledContentContainer>
             <Toolbar variant={"dense"}/>
-            <ContentDiv>{children}</ContentDiv>
+            <ContentDiv>
+                {children}
+            </ContentDiv>
         </StyledContentContainer>
 
     </FlexContainer>

@@ -50,6 +50,8 @@ const MuiStyledAutocompleteMultiSort = styled(Autocomplete)({
  * @param callback function(newName: string) => object. Called when new option is added
  * @param options [] of objects
  * @param refreshOptions function to call to trigger refetching options from server. Should update options.
+ * @param getValues
+ * @param renderProps
  * @param props
  * @returns {JSX.Element}
  * @constructor
