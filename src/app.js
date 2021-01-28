@@ -9,7 +9,10 @@ export const App = ({children}) => {
     const [notifications, setNotifications] = useState([])
     const nextId = useRef(0);
 
-    const addNotification = ({source, title, content, count = 1}) => {
+    const addNotification = ({
+                                 source, title, content, count = 1, action = () => {
+        }
+                             }) => {
         setNotifications(state => [...state, {
             id: nextId.current,
             source,
@@ -17,6 +20,7 @@ export const App = ({children}) => {
             content,
             count,
             timestamp: Date.now(),
+            action,
         }])
         return nextId.current++;
     }
@@ -40,7 +44,7 @@ export const App = ({children}) => {
             let intervalId;
             const onFocusListener = () => {
                 notifyMailDebounced(notificationParams)
-                intervalId = setInterval(() => notifyMailDebounced(notificationParams), 30* 1000)
+                intervalId = setInterval(() => notifyMailDebounced(notificationParams), 30 * 1000)
             }
 
             // Don't actively check for mail when window is blurred

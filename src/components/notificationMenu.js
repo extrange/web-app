@@ -48,28 +48,35 @@ export const NotificationMenu = () => {
                 horizontal: 'right',
             }}
         >
-            {context.notifications.map(e => <React.Fragment key={e.id}><ListItem
-                    button>
+            {context.notifications.length > 0 ?
+                context.notifications.map(e => <React.Fragment key={e.id}><ListItem
+                        onClick={e.action}
+                        button>
+                        <ListItemText
+                            disableTypography
+                            primary={<>
+                                <StyledChip
+                                    color={'primary'}
+                                    label={e.source}
+                                />
+                                {e.title}
+                            </>
+                            }
+                            secondary={<>
+                                <StyledSpan>{e.content}</StyledSpan>
+                                <Typography variant={'body2'}
+                                            align={'right'}>
+                                    {formatDistanceToNowStrict(e.timestamp, {addSuffix: true})}
+                                </Typography></>}
+                        />
+                    </ListItem>
+                        <Divider/>
+                    </React.Fragment>
+                ) :
+                <ListItem>
                     <ListItemText
-                        disableTypography
-                        primary={<>
-                            <StyledChip
-                                color={'primary'}
-                                label={e.source}
-                            />
-                            {e.title}
-                        </>
-                        }
-                        secondary={<><StyledSpan>{e.content}</StyledSpan>
-                            <Typography variant={'body2'}
-                                        align={'right'}>
-                                {formatDistanceToNowStrict(e.timestamp, {addSuffix: true})}
-                            </Typography></>}
-                    />
-                </ListItem>
-                    <Divider/>
-                </React.Fragment>
-            )}
+                        primary={'No new notifications'}/>
+                </ListItem>}
         </StyledPopover>
     </>
 

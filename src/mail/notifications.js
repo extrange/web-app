@@ -1,6 +1,7 @@
 import {getIhisMail, getMohhMail} from "./urls";
 import {debounce} from 'lodash'
 
+const HMAIL_URL = 'https://www.hmail.sg'
 const IHIS = 'IHIS';
 const MOHH = 'MOHH';
 const MAIL_UPDATE_FREQUENCY = 60 * 1000
@@ -15,6 +16,7 @@ export const notifyMailDebounced = debounce(({addNotification, removeNotificatio
                 title: `Unread Mail (${json.length})`,
                 content: [json[0]['from'].join(', '), json[0]['preview']].join(' - '),
                 count: json.length,
+                action: () => window.open(HMAIL_URL, '_blank')
             })
         }
     })
@@ -27,6 +29,7 @@ export const notifyMailDebounced = debounce(({addNotification, removeNotificatio
                 title: `Unread Mail (${json.length})`,
                 content: [json[0]['from'].join(', '), json[0]['preview']].join(' - '),
                 count: json.length,
+                action: () => window.open(HMAIL_URL, '_blank')
             })
         }
 

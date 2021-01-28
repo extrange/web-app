@@ -7,6 +7,8 @@ import {StyledButton} from "./components/common";
 import styled from "styled-components";
 import {BackgroundScreenRounded} from "./components/backgroundScreen";
 
+const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#'
+
 /*LocalStorage key*/
 const CURRENT_MODULE = 'CURRENT_MODULE';
 
@@ -70,6 +72,12 @@ export const ModuleSelect = ({setLoggedIn}) => {
                         >{value.displayName}</StyledButton>
                     )
                 }
+                <StyledButton
+                    variant={'outlined'}
+                    color={'primary'}
+                    onClick={() => window.open(GDOCS_ATTRACTIONS_URL, '_blank')}>
+                    Attractions and Food
+                </StyledButton>
                 <StyledButton
                     variant={'contained'}
                     color={'primary'}
