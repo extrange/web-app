@@ -1,6 +1,6 @@
 import {forwardRef, useEffect, useRef, useState} from "react";
 import {Item} from "./item/item";
-import {EditTask} from "./item/editTask";
+import {EditItem} from "./item/editItem";
 import {Networking} from "../../util";
 import {getTasksUrl, getTaskUrl} from "../urls";
 import {Virtuoso} from 'react-virtuoso/dist'
@@ -85,7 +85,7 @@ export const Tasks = ({currentList, items, listItems}) => {
         <StyledFab color={'primary'} onClick={() => handleCreateTask(currentList)}>
             <AddIcon/>
         </StyledFab>
-        {editingTask && <EditTask
+        {editingTask && <EditItem
             editingTask={editingTask}
             updateTask={updateTask}
             createTask={createTask}

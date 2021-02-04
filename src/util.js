@@ -7,26 +7,16 @@ import removeAccents from "remove-accents"
 import seedrandom from 'seedrandom'
 import {differenceInCalendarDays} from "date-fns";
 
-export class NotAuthenticated {
-    constructor(message) {
-        this.message = message;
-    }
+export class NotAuthenticated extends Error {
 }
 
-export class ServerError {
-    constructor(message) {
-        this.message = message;
-    }
+export class ServerError extends Error {
 }
 
 /**
  * Returned when invalid/missing values are given for fields
  */
 export class BadRequest extends Error {
-    constructor(message, payload) {
-        super(message);
-        this.payload = payload;
-    }
 }
 
 /**
@@ -62,11 +52,14 @@ export class Networking {
         if (resp.ok) {
             return resp
         } else if (resp.status === 400) {
-            throw new BadRequest(`Bad request: ${resp.status}:${resp.statusText}`, resp.body)
+            return resp.json().then(json => {
+                throw new BadRequest(`BadRequest: ${resp.status}:${resp.statusText}
+            ${JSON.stringify(json, undefined, 2)}`)
+            })
         } else if (399 < resp.status < 500) {
-            throw new NotAuthenticated(`Unauthenticated: ${resp.status}:${resp.statusText}`)
+            throw new NotAuthenticated(`NotAuthenticated: ${resp.status}:${resp.statusText}`)
             //todo reauth
-        } else throw new ServerError(`Status ${resp.status}:${resp.statusText}`)
+        } else throw new ServerError(`ServerError: ${resp.status}:${resp.statusText}`)
 
     };
 

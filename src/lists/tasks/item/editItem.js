@@ -1,62 +1,17 @@
 import {StyledTextField} from "../../../components/common";
 import styled from "styled-components";
 import {MarkdownEditor} from "../../../components/markdownEditor";
-import {Button, Dialog, useMediaQuery} from "@material-ui/core";
+import {Button, useMediaQuery} from "@material-ui/core";
 import {useForm} from "react-hook-form";
 import {useTheme} from "@material-ui/core/styles";
-import {OverlayScrollbarOptions, theme} from "../../../theme";
-import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {debounce} from 'lodash'
 import {useCallback, useRef, useState} from "react";
 import {isEmpty} from "../../../util";
+import {DialogBlurResponsive} from "../../../components/dialogBlurResponsive";
 
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
-`;
-
-const StyledOverlayScrollbars = styled(OverlayScrollbarsComponent)`
-  width: min(100vw - 32px, 800px);
-`;
-
-const StyledDialog = styled(Dialog)`
-  // Blur effect only if supported
-  @supports (backdrop-filter: blur(5px)) {
-    .MuiDialog-container {
-      backdrop-filter: blur(5px);
-    }
-
-    .MuiDialog-paper {
-      background: none;
-    }
-  }
-
-  .MuiDialog-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
-
-  // Reduce margins when on mobile
-  ${theme.breakpoints.down('sm')} {
-    
-    // Extend width
-    .MuiDialog-paperWidthFalse {
-      max-width: calc(100% - 32px);
-    }
-    
-    // Extend height
-    .MuiDialog-paperScrollPaper {
-      max-height: 100%;
-    }
-    
-    // Add some margin to the top, and remove bottom margin settings
-    .MuiDialog-paper {
-      margin: 16px 0 0;
-    }
-
-  }
-
 `;
 
 const SavingStates = {
@@ -65,7 +20,7 @@ const SavingStates = {
     SAVED: 3
 };
 
-export const EditTask = ({editingTask, createTask, updateTask, closeEdit, listItems, currentList, deleteTask}) => {
+export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listItems, currentList, deleteTask}) => {
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -139,47 +94,10 @@ export const EditTask = ({editingTask, createTask, updateTask, closeEdit, listIt
     };
 
 
-    return <StyledDialog
+    return <DialogBlurResponsive
         open
-        maxWidth={false}
-        onClose={handleClose}>
-        <StyledOverlayScrollbars
-            options={OverlayScrollbarOptions}
-            className={'os-host-flexbox'}>
-            <StyledTextField
-                label='Title'
-                multiline
-                fullWidth
-                name={'title'}
-                autoFocus={!initialTitle && !initialNotes}
-                defaultValue={initialTitle}
-                onChange={e => {
-                    setValue('title', e.target.value);
-                    autoSave()
-                }}
-            />
-            {fullScreen
-                ? <StyledTextField
-                    label='Notes'
-                    multiline
-                    fullWidth
-                    defaultValue={getValues('notes')}
-                    onChange={e => {
-                        setValue('notes', e.target.value);
-                        autoSave()
-                    }}
-                />
-                : <MarkdownEditor
-                    defaultValue={getValues('notes')}
-                    onChange={newVal => {
-                        setValue('notes', newVal);
-                        autoSave()
-                    }}/>
-            }
-
-
-        </StyledOverlayScrollbars>
-        <ButtonContainer>
+        onClose={handleClose}
+        footer={<ButtonContainer>
             {{
                 [SavingStates.UNCHANGED]: '',
                 [SavingStates.MODIFIED]: 'Saving...',
@@ -192,6 +110,37 @@ export const EditTask = ({editingTask, createTask, updateTask, closeEdit, listIt
             > Close
             </Button>
 
-        </ButtonContainer>
-    </StyledDialog>
+        </ButtonContainer>}
+    >
+        <StyledTextField
+            label='Title'
+            multiline
+            fullWidth
+            name={'title'}
+            autoFocus={!initialTitle && !initialNotes}
+            defaultValue={initialTitle}
+            onChange={e => {
+                setValue('title', e.target.value);
+                autoSave()
+            }}
+        />
+        {fullScreen
+            ? <StyledTextField
+                label='Notes'
+                multiline
+                fullWidth
+                defaultValue={getValues('notes')}
+                onChange={e => {
+                    setValue('notes', e.target.value);
+                    autoSave()
+                }}
+            />
+            : <MarkdownEditor
+                defaultValue={getValues('notes')}
+                onChange={newVal => {
+                    setValue('notes', newVal);
+                    autoSave()
+                }}/>
+        }
+    </DialogBlurResponsive>
 };

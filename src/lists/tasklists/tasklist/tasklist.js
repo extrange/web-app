@@ -7,7 +7,6 @@ export const Tasklist = ({handleDelete, onClick, value}) => (
     <StyledListItem
         button
         onClick={onClick}
-        dense
         $hideBackground
         $reserveSpace={false}
     >

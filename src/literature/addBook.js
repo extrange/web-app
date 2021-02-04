@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useState} from 'react';
 import {
     StyledAutocompleteMultiSort,
     StyledButton,
@@ -14,21 +14,30 @@ import {MuiPickersUtilsProvider} from "@material-ui/pickers/MuiPickersUtilsProvi
 import DateFns from '@date-io/date-fns'
 import {Controller, useForm} from 'react-hook-form'
 import {yupResolver} from "@hookform/resolvers/yup";
-import {format, isValid} from "date-fns"
-import {bookFields, bookSchema, defaultBookValues, resultType} from "./schema";
+import {BOOK_FIELDS, DEFAULT_BOOK_VALUES, isValidatedUserInputSame, transformBeforeSubmit, YUP_SCHEMA} from "./schema";
 import {SearchBooks} from "./searchBooks";
 import {Networking, sanitizeString} from "../util";
-import {Checkbox, CircularProgress, FormControlLabel, FormHelperText, InputAdornment} from "@material-ui/core";
+import {
+    Checkbox,
+    CircularProgress,
+    FormControlLabel,
+    FormHelperText,
+    InputAdornment,
+    Snackbar
+} from "@material-ui/core";
 import {mergeWith} from "lodash";
+import {DialogBlurResponsive} from "../components/dialogBlurResponsive";
+import {Alert} from "@material-ui/lab";
+import {useAsyncError} from "../components/useAsyncError";
 
 const FieldContainer = styled.div`
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    max-width: 500px;
-    margin: 10px;
-    overflow: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  max-width: 500px;
+  margin: 10px;
+  overflow: auto;
 `;
 
 // Inject error, helperText into control
@@ -46,60 +55,68 @@ const ControlHelper = ({control, errors, name, as, label, ...props}) =>
     />;
 
 
-export const AddBooks = ({refreshBooks, ...props}) => {
+export const AddBook = ({
+                            books,
+                            setBooks,
+                            authors,
+                            setAuthors,
+                            genres,
+                            setGenres,
+                            types,
+                            setTypes,
+                            getBooks,
+                            getAuthors,
+                            getGenres,
+                            getTypes,
 
-    const {register, handleSubmit, control, getValues, reset, setValue, errors, trigger} = useForm({
-        resolver: yupResolver(bookSchema),
-        defaultValues: defaultBookValues,
+                            editingBook,
+                            onClose,
+                        }) => {
+
+    const {
+        register,
+        handleSubmit,
+        control,
+        getValues,
+        reset,
+        setValue,
+        errors,
+        trigger,
+        watch
+    } = useForm({
+        resolver: yupResolver(YUP_SCHEMA),
+        defaultValues: editingBook || DEFAULT_BOOK_VALUES,
         mode: 'onTouched',
     });
 
-    const [authors, setAuthors] = useState([]);
-    const [genres, setGenres] = useState([]);
-    const [types, setTypes] = useState([]);
     const [searchOpen, setSearchOpen] = useState(false);
-
     const [results, setResults] = useState([]);
-
     const [loadingSearch, setLoadingSearch] = useState(false);
+    const [snackbar, setSnackbar] = useState(false)
 
-    const getAuthors = () => {
-        Url.getAuthors().then(result => setAuthors(result))
-    };
-    const getGenres = () => {
-        Url.getGenres().then(result => setGenres(result))
-    };
-    const getTypes = () => {
-        Url.getTypes().then(result => setTypes(result))
-    };
+    const onClear = name => () => setValue(name, DEFAULT_BOOK_VALUES[name]);
+    const setError = useAsyncError()
 
-    // Load authors, genre, types
-    useEffect(() => {
-        getAuthors();
-        getGenres();
-        getTypes();
-    }, []);
+    const onSubmit = data => {
+        // Execute any transforms
+        let transformedData = transformBeforeSubmit(data)
 
-    const onClear = name => () => setValue(name, defaultBookValues[name]);
 
-    const onSubmit = (data, e) => {
+        alert(isValidatedUserInputSame(transformedData, editingBook))
 
-        // Modify data before submission
-        data[bookFields.authors] = data[bookFields.authors].map(v => v.id);
-        data[bookFields.genres] = data[bookFields.genres].map(v => v.id);
-        data[bookFields.type] = data[bookFields.type] ? data[bookFields.type].id : null;
-        data[bookFields.dateRead] = isValid(data[bookFields.dateRead]) ? format(data[bookFields.dateRead], 'yyyy-MM-dd') : null;
 
-        Url.submit(data).then(refreshBooks);
-        reset()
+        // Url.submit(transformedData).then(() => {
+        //     getBooks();
+        //     reset();
+        // }).catch(setError);
     };
 
-    //todo make snackbar with dialog to view JSON response of error
+    const onError = () => void setSnackbar(true)
 
     const onSearch = event => {
-        if (event.key !== 'Enter' || !getValues(bookFields.title)) return;
+        if (event.key !== 'Enter' || !getValues(BOOK_FIELDS.title)) return;
         setLoadingSearch(true);
-        Networking.send(`${Url.SEARCH}?q=${getValues(bookFields.title)}`, {method: 'GET',})
+        Networking.send(`${Url.SEARCH}?q=${getValues(BOOK_FIELDS.title)}`, {method: 'GET',})
             .then(resp => resp.json())
             .then(json => {
                 setResults(json['results']);
@@ -111,9 +128,9 @@ export const AddBooks = ({refreshBooks, ...props}) => {
     // Handle book result click
     const handleClick = result => {
         setLoadingSearch(true);
-        let type = result.from === resultType.GOOGLE ? resultType.GOOGLE : resultType.GOODREADS;
+        let type = result.from;
         let request;
-        if (type === resultType.GOOGLE) {
+        if (type === 'google') {
             // Use ISBN_13 if available, otherwise ISBN_10
             request = getGoogleBookInfo(result.ISBN_13 || result.ISBN_10)
         } else {
@@ -142,22 +159,21 @@ export const AddBooks = ({refreshBooks, ...props}) => {
 
             // Add all current values first
 
-
-            setValue(bookFields.authors, authorsToAdd);
+            setValue(BOOK_FIELDS.authors, authorsToAdd);
             [
-                bookFields.description,
-                bookFields.googleId,
-                bookFields.goodreadsBookId,
-                bookFields.imageUrl,
-                bookFields.published,
-                bookFields.title,
-                bookFields.series,
-                bookFields.seriesPosition,
+                BOOK_FIELDS.description,
+                BOOK_FIELDS.google_id,
+                BOOK_FIELDS.goodreads_book_id,
+                BOOK_FIELDS.image_url,
+                BOOK_FIELDS.published,
+                BOOK_FIELDS.title,
+                BOOK_FIELDS.series,
+                BOOK_FIELDS.series_position,
             ].forEach(e => setValue(e, mergedResult[e] || getValues(e)));
 
             Promise.all(authorsToCreate.map(name => Url.addAuthor({name: name})))
                 .then(r => {
-                    setValue(bookFields.authors, [...authorsToAdd, ...r]);
+                    setValue(BOOK_FIELDS.authors, [...authorsToAdd, ...r]);
                     getAuthors();
                 });
 
@@ -167,238 +183,249 @@ export const AddBooks = ({refreshBooks, ...props}) => {
     };
 
 
-    return <FieldContainer>
-
-        <SearchBooks
-            open={searchOpen}
-            close={() => setSearchOpen(false)}
-            results={results}
-            handleClick={handleClick}
-        />
-        <StyledButton
-            color={'primary'}
-            variant={'contained'}
-            onClick={handleSubmit(onSubmit)}
-        >Submit
-        </StyledButton>
-
-        <ControlHelper
-            name={bookFields.title}
-            label={'Title'}
-            control={control}
-            as={StyledTextFieldClearable}
-            errors={errors}
-
-            placeholder={'Search or enter book title'}
-            onKeyPress={onSearch}
-            InputProps={{
-                startAdornment:
-                    <InputAdornment position={"start"}>
-                        <SearchIcon/>
-                    </InputAdornment>,
-                endAdornment:
-                    <InputAdornment position={'end'}>
-                        {loadingSearch && <CircularProgress size={20}/>}
-                    </InputAdornment>
-            }}
-            onClear={onClear(bookFields.title)}
-        />
-
-        <Controller
-            name={bookFields.authors}
-            control={control}
-            render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
-                getValues={() => getValues(bookFields.authors)}
-                name={name}
-                label={'Authors'}
-                renderProps={{
-                    error: Boolean(errors[bookFields.authors]),
-                    helperText: errors[bookFields.authors]?.message
-                }}
-                size={'small'}
-                value={value}
-                setValue={val => onChange(val)}
-                onBlur={onBlur}
-                options={authors}
-                refreshOptions={getAuthors}
-                callback={Url.addAuthor}
-            />}
-        />
-
-        <Controller
-            name={bookFields.genres}
-            control={control}
-            render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
-                getValues={() => getValues(bookFields.genres)}
-                name={name}
-                label={'Genres'}
-                renderProps={{
-                    error: Boolean(errors[bookFields.genres]),
-                    helperText: errors[bookFields.genres]?.message
-                }}
-                size={'small'}
-                value={value}
-                setValue={val => onChange(val)}
-                onBlur={onBlur}
-                options={genres}
-                refreshOptions={getGenres}
-                callback={Url.addGenre}
-            />}
-        />
-
-        <Controller
-            name={bookFields.type}
-            control={control}
-            render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
-                name={name}
-                onBlur={onBlur}
-                label={'Type'}
-                renderProps={{
-                    error: Boolean(errors[bookFields.type]),
-                    helperText: errors[bookFields.type]?.message
-                }}
-                size={'small'}
-                value={value}
-                multiple={false}
-                setValue={val => onChange(val)}
-                options={types}
-                refreshOptions={getTypes}
-                callback={Url.addType}
-            />}
-        />
-
-
-        <ControlHelper
-            name={bookFields.description}
-            label={'Description'}
-            errors={errors}
-            as={StyledTextField}
-            control={control}
-
-            multiline
-        />
-
-        <FormControlLabel
-            control={<Checkbox
-                name={'readNext'}
-                inputRef={register}
-            />}
-            label={'Read next?'}
-            labelPlacement={'end'}
-
-        />
-        <FormHelperText
-            error={Boolean(errors[bookFields.readNext])}
-        >
-            {errors[bookFields.readNext]?.message}
-        </FormHelperText>
-
-
-        <MuiPickersUtilsProvider utils={DateFns}>
-            <ControlHelper
-                name={bookFields.dateRead}
-                label={'Date Read'}
-                control={control}
-                errors={errors}
-                as={KeyboardDatePicker}
-
-                autoOk
-                disableFuture
-                format={'dd/MM/yyyy'}
-                placeholder={'dd/mm/yyyy'}
-                inputVariant={'outlined'}
-                variant={'inline'}
+    return <DialogBlurResponsive open onClose={onClose}>
+        <Snackbar
+            open={snackbar}
+            onClose={() => setSnackbar(false)}
+            autoHideDuration={3000}>
+            <Alert
+                severity={'error'}
+                onClose={() => setSnackbar(false)}>
+                Check errors before submitting
+            </Alert>
+        </Snackbar>
+        <FieldContainer>
+            <SearchBooks
+                open={searchOpen}
+                close={() => setSearchOpen(false)}
+                results={results}
+                handleClick={handleClick}
             />
-        </MuiPickersUtilsProvider>
+            <StyledButton
+                color={'primary'}
+                variant={'contained'}
+                onClick={handleSubmit(onSubmit, onError)}
+            >Submit
+            </StyledButton>
 
-        <ControlHelper
-            name={bookFields.imageUrl}
-            errors={errors}
-            label={'Image URL'}
-            as={StyledTextFieldClearable}
-            control={control}
-            onClear={onClear(bookFields.imageUrl)}
+            <ControlHelper
+                name={BOOK_FIELDS.title}
+                label={'Title'}
+                control={control}
+                as={StyledTextFieldClearable}
+                errors={errors}
 
-            type={'url'} // More for browser input purposes than validation, as Yup handles that
-        />
+                placeholder={'Search or enter book title'}
+                onKeyPress={onSearch}
+                InputProps={{
+                    startAdornment:
+                        <InputAdornment position={"start"}>
+                            <SearchIcon/>
+                        </InputAdornment>,
+                    endAdornment:
+                        <InputAdornment position={'end'}>
+                            {loadingSearch && <CircularProgress size={20}/>}
+                        </InputAdornment>
+                }}
+                onClear={onClear(BOOK_FIELDS.title)}
+            />
 
-        <ControlHelper
-            name={bookFields.published}
-            label={'Year Published'}
-            control={control}
-            as={StyledTextFieldClearable}
-            errors={errors}
+            <Controller
+                name={BOOK_FIELDS.authors}
+                control={control}
+                render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
+                    getValues={() => getValues(BOOK_FIELDS.authors)}
+                    name={name}
+                    label={'Authors'}
+                    renderProps={{
+                        error: Boolean(errors[BOOK_FIELDS.authors]),
+                        helperText: errors[BOOK_FIELDS.authors]?.message
+                    }}
+                    size={'small'}
+                    value={value}
+                    setValue={val => onChange(val)}
+                    onBlur={onBlur}
+                    options={authors}
+                    refreshOptions={getAuthors}
+                    callback={Url.addAuthor}
+                />}
+            />{JSON.stringify(watch('authors'))}
 
-            type={'tel'}
-            onClear={onClear(bookFields.published)}
-        />
+            <Controller
+                name={BOOK_FIELDS.genres}
+                control={control}
+                render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
+                    getValues={() => getValues(BOOK_FIELDS.genres)}
+                    name={name}
+                    label={'Genres'}
+                    renderProps={{
+                        error: Boolean(errors[BOOK_FIELDS.genres]),
+                        helperText: errors[BOOK_FIELDS.genres]?.message
+                    }}
+                    size={'small'}
+                    value={value}
+                    setValue={val => onChange(val)}
+                    onBlur={onBlur}
+                    options={genres}
+                    refreshOptions={getGenres}
+                    callback={Url.addGenre}
+                />}
+            />{JSON.stringify(watch('genres'))}
 
-        <ControlHelper
-            name={bookFields.googleId}
-            label={'Google ID'}
-            control={control}
-            as={StyledTextFieldClearable}
-            errors={errors}
-            onClear={onClear(bookFields.googleId)}
-        />
+            <Controller
+                name={BOOK_FIELDS.type}
+                control={control}
+                render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
+                    name={name}
+                    onBlur={onBlur}
+                    label={'Type'}
+                    renderProps={{
+                        error: Boolean(errors[BOOK_FIELDS.type]),
+                        helperText: errors[BOOK_FIELDS.type]?.message
+                    }}
+                    size={'small'}
+                    value={value}
+                    multiple={false}
+                    setValue={val => onChange(val)}
+                    options={types}
+                    refreshOptions={getTypes}
+                    callback={Url.addType}
+                />}
+            />{JSON.stringify(watch('type'))}
 
-        <ControlHelper
-            name={bookFields.goodreadsBookId}
-            label={'Goodreads ID'}
-            control={control}
-            as={StyledTextFieldClearable}
-            errors={errors}
-            onClear={onClear(bookFields.goodreadsBookId)}
-        />
 
-        <ControlHelper
-            name={bookFields.series}
-            label={'Series Name'}
-            control={control}
-            as={StyledTextFieldClearable}
-            errors={errors}
-            onClear={onClear(bookFields.series)}
-        />
+            <ControlHelper
+                name={BOOK_FIELDS.description}
+                label={'Description'}
+                errors={errors}
+                as={StyledTextField}
+                control={control}
 
-        <ControlHelper
-            name={bookFields.seriesPosition}
-            label={'Series Position'}
-            control={control}
-            as={StyledTextFieldClearable}
-            errors={errors}
-            onClear={onClear(bookFields.seriesPosition)}
-        />
+                multiline
+            />
 
-        <ControlHelper
-            name={bookFields.rating}
-            label={'Rating'}
-            control={control}
-            as={StyledTextFieldClearable}
-            errors={errors}
-            onClear={onClear(bookFields.rating)}
-        />
+            <FormControlLabel
+                control={<Checkbox
+                    name={BOOK_FIELDS.read_next}
+                    inputRef={register}
+                />}
+                label={'Read next?'}
+                labelPlacement={'end'}
 
-        <ControlHelper
-            name={bookFields.myReview}
-            label={'My Review'}
-            control={control}
-            as={StyledTextField}
-            errors={errors}
+            />
+            <FormHelperText
+                error={Boolean(errors[BOOK_FIELDS.read_next])}
+            >
+                {errors[BOOK_FIELDS.read_next]?.message}
+            </FormHelperText>
 
-            placeholder={'Not good, read others, highlight specific chapters, etc'}
-            multiline
-        />
 
-        <ControlHelper
-            name={bookFields.notes}
-            label={'Notes'}
-            control={control}
-            as={StyledTextField}
-            errors={errors}
+            <MuiPickersUtilsProvider utils={DateFns}>
+                <ControlHelper
+                    name={BOOK_FIELDS.date_read}
+                    label={'Date Read'}
+                    control={control}
+                    errors={errors}
+                    as={KeyboardDatePicker}
 
-            placeholder={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}
-            multiline
-        />
+                    autoOk
+                    disableFuture
+                    format={'dd/MM/yyyy'}
+                    placeholder={'dd/mm/yyyy'}
+                    inputVariant={'outlined'}
+                    variant={'inline'}
+                />
+            </MuiPickersUtilsProvider>
 
-    </FieldContainer>;
+            <ControlHelper
+                name={BOOK_FIELDS.image_url}
+                errors={errors}
+                label={'Image URL'}
+                as={StyledTextFieldClearable}
+                control={control}
+                onClear={onClear(BOOK_FIELDS.image_url)}
+
+                type={'url'} // More for browser input purposes than validation, as Yup handles that
+            />
+
+            <ControlHelper
+                name={BOOK_FIELDS.published}
+                label={'Year Published'}
+                control={control}
+                as={StyledTextFieldClearable}
+                errors={errors}
+
+                type={'tel'}
+                onClear={onClear(BOOK_FIELDS.published)}
+            />
+
+            <ControlHelper
+                name={BOOK_FIELDS.google_id}
+                label={'Google ID'}
+                control={control}
+                as={StyledTextFieldClearable}
+                errors={errors}
+                onClear={onClear(BOOK_FIELDS.google_id)}
+            />
+
+            <ControlHelper
+                name={BOOK_FIELDS.goodreads_book_id}
+                label={'Goodreads ID'}
+                control={control}
+                as={StyledTextFieldClearable}
+                errors={errors}
+                onClear={onClear(BOOK_FIELDS.goodreads_book_id)}
+            />
+
+            <ControlHelper
+                name={BOOK_FIELDS.series}
+                label={'Series Name'}
+                control={control}
+                as={StyledTextFieldClearable}
+                errors={errors}
+                onClear={onClear(BOOK_FIELDS.series)}
+            />
+
+            <ControlHelper
+                name={BOOK_FIELDS.series_position}
+                label={'Series Position'}
+                control={control}
+                as={StyledTextFieldClearable}
+                errors={errors}
+                onClear={onClear(BOOK_FIELDS.series_position)}
+            />
+
+            <ControlHelper
+                name={BOOK_FIELDS.rating}
+                label={'Rating'}
+                control={control}
+                as={StyledTextFieldClearable}
+                errors={errors}
+                onClear={onClear(BOOK_FIELDS.rating)}
+            />{String(watch('rating'))}
+
+            <ControlHelper
+                name={BOOK_FIELDS.my_review}
+                label={'My Review'}
+                control={control}
+                as={StyledTextField}
+                errors={errors}
+
+                placeholder={'Not good, read others, highlight specific chapters, etc'}
+                multiline
+            />
+
+            <ControlHelper
+                name={BOOK_FIELDS.notes}
+                label={'Notes'}
+                control={control}
+                as={StyledTextField}
+                errors={errors}
+
+                placeholder={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}
+                multiline
+            />
+
+        </FieldContainer>
+    </DialogBlurResponsive>
 };

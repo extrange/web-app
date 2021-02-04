@@ -2,17 +2,8 @@ import {CreateTasklist} from "./tasklist/createTasklist";
 import {Tasklist} from "./tasklist/tasklist";
 import './tasklists.css'
 import {Networking} from "../../util";
-import styled from "styled-components";
 import {getTasklistUrl, TASKLISTS_URL} from "../urls";
-
-const TasklistLists = styled.ul`
-  display: flex;
-  flex-direction: column;
-  height: inherit;
-  margin: 0;
-  padding: 5px;
-`;
-
+import {List} from "@material-ui/core";
 
 export const Tasklists = ({tasklists, listTasklists, currentListId, setAndSaveCurrentList, setDrawerOpen}) => {
 
@@ -67,10 +58,10 @@ export const Tasklists = ({tasklists, listTasklists, currentListId, setAndSaveCu
 
     ];
 
-    return <TasklistLists>
+    return <List disablePadding dense>
         {tasklists
             ? listItems
             : 'Loading...'}
-    </TasklistLists>
+    </List>
 
 };

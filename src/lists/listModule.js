@@ -8,7 +8,7 @@ import {CircularProgress, IconButton, Typography} from "@material-ui/core";
 import SyncIcon from '@material-ui/icons/Sync';
 import {useAsyncError} from "../components/useAsyncError";
 
-const CURRENT_LIST = 'CURRENT_LIST';
+const LIST_CURRENT_LIST = 'LIST_CURRENT_LIST';
 
 //todo move into urls as static methods
 const get = Networking.crudMethods(getTasksUrl, getTaskUrl)[0];
@@ -25,7 +25,7 @@ export const ListModule = ({returnToMainApp, logout}) => {
 
     const setAndSaveCurrentList = listId => {
         setCurrentListId(listId);
-        localStorage.setItem(CURRENT_LIST, listId);
+        localStorage.setItem(LIST_CURRENT_LIST, listId);
     };
 
     const listTasklists = () => Networking.send(TASKLISTS_URL, {
@@ -47,7 +47,7 @@ export const ListModule = ({returnToMainApp, logout}) => {
 
     // Only set currentListId to saved id if valid
     useEffect(() => {
-        let savedListId = localStorage.getItem(CURRENT_LIST);
+        let savedListId = localStorage.getItem(LIST_CURRENT_LIST);
         if (tasklists && tasklists.map(e => e.id).includes(savedListId)) {
             setCurrentListId(savedListId)
         }

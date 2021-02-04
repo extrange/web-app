@@ -1,18 +1,19 @@
 import {NotificationContext} from './notificationContext'
 import {useEffect, useRef, useState} from "react";
 import {notifyMailDebounced} from "./mail/notifications";
+import {useAsyncError} from "./components/useAsyncError";
+import {noop} from "./components/common";
+import {NotAuthenticated} from "./util";
 
-
+// This class handles notifications which should run on startup (via useEffect), and also provides notificationContext
 // Only executed after successful login
 export const App = ({children}) => {
 
     const [notifications, setNotifications] = useState([])
     const nextId = useRef(0);
+    const setError = useAsyncError()
 
-    const addNotification = ({
-                                 source, title, content, count = 1, action = () => {
-        }
-                             }) => {
+    const addNotification = ({source, title, content, count = 1, action = noop()}) => {
         setNotifications(state => [...state, {
             id: nextId.current,
             source,
@@ -36,15 +37,19 @@ export const App = ({children}) => {
         removeNotificationBySource
     }
 
-
+    //todo figure out some general purpose notification API. This is really just for mail now.
     useEffect(() => {
-            [notifyMailDebounced].forEach(e => e.call(null, notificationParams))
+            const notifyMailDebouncedWithError = () =>
+                notifyMailDebounced(notificationParams).catch(e => (e instanceof NotAuthenticated) ? console.log(e): setError(e.message))
+
+            // Run once on startup
+            notifyMailDebouncedWithError()
 
             // Set event listener for window
             let intervalId;
             const onFocusListener = () => {
-                notifyMailDebounced(notificationParams)
-                intervalId = setInterval(() => notifyMailDebounced(notificationParams), 30 * 1000)
+                notifyMailDebouncedWithError()
+                intervalId = setInterval(() => notifyMailDebouncedWithError(), 30 * 1000)
             }
 
             // Don't actively check for mail when window is blurred
@@ -55,7 +60,7 @@ export const App = ({children}) => {
             window.addEventListener('focus', onFocusListener)
             window.addEventListener('blur', onBlurListener)
 
-
+            // Be nice and tidy on unmounting
             return () => window.removeEventListener('focus', onFocusListener)
         }
 

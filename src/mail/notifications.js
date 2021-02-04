@@ -8,7 +8,7 @@ const MAIL_UPDATE_FREQUENCY = 60 * 1000
 
 export const notifyMailDebounced = debounce(({addNotification, removeNotificationBySource}) => {
 
-    getIhisMail().then(json => {
+    const ihisPromise = getIhisMail().then(json => {
         removeNotificationBySource(IHIS);
         if (json.length > 0) {
             addNotification({
@@ -21,7 +21,7 @@ export const notifyMailDebounced = debounce(({addNotification, removeNotificatio
         }
     })
 
-    getMohhMail().then(json => {
+    const mohhPromise = getMohhMail().then(json => {
         removeNotificationBySource(MOHH);
         if (json.length > 0) {
             addNotification({
@@ -34,5 +34,7 @@ export const notifyMailDebounced = debounce(({addNotification, removeNotificatio
         }
 
     })
+
+    return Promise.all([ihisPromise, mohhPromise])
 
 }, MAIL_UPDATE_FREQUENCY, {leading: true, trailing: true, maxWait: MAIL_UPDATE_FREQUENCY})

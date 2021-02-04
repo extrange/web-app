@@ -1,63 +1,104 @@
-import { useState } from 'react';
-import {AddBooks} from "./addBook";
-import {ViewBooks} from "./viewBooks";
+import {useEffect, useState} from 'react';
+import {Books} from "./books";
 import {Networking} from "../util";
 import * as Url from "./urls";
-import {Paper, Tab, Tabs, Typography} from "@material-ui/core";
+import {List, ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
 import {AppBarResponsive} from "../components/appBarResponsive";
+import HomeIcon from '@material-ui/icons/Home';
+import PeopleIcon from '@material-ui/icons/People';
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+import TitleIcon from '@material-ui/icons/Title';
 
-const LIT_APP_SECTIONS = {
-    addBooks: 'addBooks',
-    viewBooks: 'viewBooks'
-};
+const LITERATURE_MODULES = props => ({
+    BOOKS: {
+        appDrawer: <><ListItemIcon>
+            <HomeIcon/>
+        </ListItemIcon>
+            <ListItemText primary={'Books'}/>
+        </>,
+        jsx: <Books {...props}/>
+    },
+    AUTHORS: {
+        appDrawer: <><ListItemIcon>
+            <PeopleIcon/>
+        </ListItemIcon>
+            <ListItemText primary={'Authors'}/></>,
+        jsx: 'Authors Placeholder'
+    },
+    GENRES: {
+        appDrawer: <><ListItemIcon>
+            <InsertDriveFileIcon/>
+        </ListItemIcon>
+            <ListItemText primary={'Genres'}/></>,
+        jsx: 'Genres Placeholder'
+    },
+    TYPES: {
+        appDrawer: <><ListItemIcon>
+            <TitleIcon/>
+        </ListItemIcon>
+            <ListItemText primary={'Types'}/></>,
+        jsx: 'Types Placeholder'
+    }
+})
 
 export const LiteratureModule = ({returnToMainApp, logout}) => {
+
+    // Default to first module in LITERATURE_MODULES
+    const [currentSubModule, setCurrentSubModule] = useState(Object.entries(LITERATURE_MODULES())[0][0])
+
     const [books, setBooks] = useState([]);
-    const [tabValue, setTabValue] = useState(LIT_APP_SECTIONS.addBooks);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [authors, setAuthors] = useState([[]]);
+    const [genres, setGenres] = useState([]);
+    const [types, setTypes] = useState([]);
 
+    const getBooks = () => Networking.send(Url.BOOKS, {method: 'GET'})
+        .then(resp => resp.json())
+        .then(json => setBooks(json));
 
-    const refreshBooks = () => {
-        Networking.send(Url.BOOKS, {method: 'GET'})
-            .then(resp => resp.json())
-            .then(json => setBooks(json));
-    };
+    const getAuthors = () => Url.getAuthors().then(result => setAuthors(result))
+    const getGenres = () => Url.getGenres().then(result => setGenres(result));
+    const getTypes = () => Url.getTypes().then(result => setTypes(result));
 
-    const handleChange = (event, newValue) => {
-        setTabValue(newValue);
-    };
+    useEffect(() => {
+        getBooks();
+        getAuthors();
+        getGenres();
+        getTypes();
+    }, []);
 
-    let currentApp;
+    const drawerContent = <List disablePadding dense>
+        {Object.entries(LITERATURE_MODULES()).map(([key, value]) => <ListItem
+            button
+            onClick={() => setCurrentSubModule(key)}>
+            {value.appDrawer}</ListItem>)}
+    </List>
 
-    switch (tabValue) {
-        case LIT_APP_SECTIONS.addBooks:
-            currentApp = <AddBooks refreshBooks={refreshBooks}/>;
-            break;
-        case LIT_APP_SECTIONS.viewBooks:
-            currentApp = <ViewBooks books={books} refreshBooks={refreshBooks}/>;
-            break;
-        default:
-            currentApp = 'Select a tab'
-    }
-
-    return <AppBarResponsive
-        appName={'Literature'}
-        titleContent={<Typography variant={"h6"} noWrap>Literature</Typography>}
-        logout={logout}
-        returnToMainApp={returnToMainApp}
-        drawerOpen={drawerOpen}
-        setDrawerOpen={setDrawerOpen}>
-
-        <Paper>
-            <Tabs
-                value={tabValue}
-                onChange={handleChange}
-                indicatorColor={'primary'}
-                textColor={'primary'}>
-                <Tab label={'Add Books'} value={LIT_APP_SECTIONS.addBooks}/>
-                <Tab label={'Book List'} value={LIT_APP_SECTIONS.viewBooks}/>
-            </Tabs>
-        </Paper>
-        {currentApp}
-    </AppBarResponsive>;
+    return (
+        <AppBarResponsive
+            appName={'Literature'}
+            titleContent={<Typography variant={"h6"} noWrap>
+                Literature
+            </Typography>}
+            logout={logout}
+            returnToMainApp={returnToMainApp}
+            drawerOpen={drawerOpen}
+            setDrawerOpen={setDrawerOpen}
+            drawerContent={drawerContent}>
+            {LITERATURE_MODULES({
+                getBooks,
+                books,
+                setBooks,
+                authors,
+                setAuthors,
+                genres,
+                setGenres,
+                types,
+                setTypes,
+                getAuthors,
+                getGenres,
+                getTypes
+            })[currentSubModule].jsx}
+        </AppBarResponsive>
+    );
 };
