@@ -18,7 +18,7 @@ Transformations happen BEFORE validation
 */
 const BOOK_SCHEMA = {
     authors: {
-        yupSchema: yup.array(yup.number()).transform(val => val.map(e => e.id)),
+        yupSchema: yup.array(yup.number()).ensure().transform(val => val.map(e => e.id)),
         defaultValue: [],
     },
     genres: {
@@ -26,7 +26,7 @@ const BOOK_SCHEMA = {
         defaultValue: [],
     },
     type: {
-        yupSchema: yup.number().transform(val => 18).required(),
+        yupSchema: yup.mixed().transform(val => val?.id).required(),
         defaultValue: null,
     },
     title: {
@@ -135,12 +135,12 @@ export const isValidatedUserInputSame = (userInput, data) => {
         console.log('genres not eq')
         return false
     }
-    if (userInput.type.id !== data.type.id) {
-        console.log('types not eq')
+    if (parseInt(userInput.type) !== data.type.id) {
+        console.log('types not eq', userInput.type, data.type.id)
         return false
     }
-    if (!isEqual(userInput.date_read, new Date(data.date_read))) {
-        console.log('dates not eq')
+    if (!isEqual(userInput.date_read, formatISO(data.date_read, {representation: 'date'}))) {
+        console.log('dates not eq', userInput.date_read, data.date_read)
         return false
     }
 
