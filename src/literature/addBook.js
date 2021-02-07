@@ -1,10 +1,5 @@
 import {useState} from 'react';
-import {
-    StyledAutocompleteMultiSort,
-    StyledButton,
-    StyledTextField,
-    StyledTextFieldClearable
-} from "../components/common";
+import {StyledButton, StyledTextField, StyledTextFieldClearable} from "../components/common";
 import * as Url from "./urls";
 import {getGoodreadsBookInfo, getGoogleBookInfo} from "./urls";
 import styled from "styled-components";
@@ -29,6 +24,7 @@ import {mergeWith} from "lodash";
 import {DialogBlurResponsive} from "../components/dialogBlurResponsive";
 import {Alert} from "@material-ui/lab";
 import {useAsyncError} from "../components/useAsyncError";
+import {AutocompleteWithCreate} from "../components/autocompleteWithCreate";
 
 const FieldContainer = styled.div`
   flex: 1;
@@ -101,14 +97,12 @@ export const AddBook = ({
         // Execute any transforms
         let transformedData = transformBeforeSubmit(data)
 
-
         alert(isValidatedUserInputSame(transformedData, editingBook))
 
-
-        // Url.submit(transformedData).then(() => {
-        //     getBooks();
-        //     reset();
-        // }).catch(setError);
+       /* Url.submit(transformedData).then(() => {
+            getBooks();
+            reset();
+        }).catch(setError);*/
     };
 
     const onError = () => void setSnackbar(true)
@@ -233,63 +227,84 @@ export const AddBook = ({
             <Controller
                 name={BOOK_FIELDS.authors}
                 control={control}
-                render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
-                    getValues={() => getValues(BOOK_FIELDS.authors)}
+                render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
+                    autoComplete
+                    autoHighlight
+                    createOption={e => Url.addAuthor({name: e})}
+                    filterSelectedOptions
+                    getOptionLabel={e => e.name}
+                    getOptions={getAuthors}
+                    getOptionSelected={(option, value) => option.id === value.id}
+                    multiple={true}
                     name={name}
-                    label={'Authors'}
+                    onBlur={onBlur}
+                    onChange={onChange}
+                    options={authors}
                     renderProps={{
+                        label: 'Authors',
+                        variant: 'outlined',
+
                         error: Boolean(errors[BOOK_FIELDS.authors]),
                         helperText: errors[BOOK_FIELDS.authors]?.message
                     }}
                     size={'small'}
                     value={value}
-                    setValue={val => onChange(val)}
-                    onBlur={onBlur}
-                    options={authors}
-                    refreshOptions={getAuthors}
-                    callback={Url.addAuthor}
                 />}
             />{JSON.stringify(watch('authors'))}
 
             <Controller
                 name={BOOK_FIELDS.genres}
                 control={control}
-                render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
-                    getValues={() => getValues(BOOK_FIELDS.genres)}
+                render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
+                    autoComplete
+                    autoHighlight
+                    createOption={e => Url.addGenre({name: e})}
+                    filterSelectedOptions
+                    getOptionLabel={e => e.name}
+                    getOptions={getGenres}
+                    getOptionSelected={(option, value) => option.id === value.id}
+                    multiple={true}
                     name={name}
-                    label={'Genres'}
+                    onBlur={onBlur}
+                    onChange={onChange}
+                    options={genres}
                     renderProps={{
+                        label: 'Genres',
+                        variant: 'outlined',
+
                         error: Boolean(errors[BOOK_FIELDS.genres]),
                         helperText: errors[BOOK_FIELDS.genres]?.message
                     }}
                     size={'small'}
                     value={value}
-                    setValue={val => onChange(val)}
-                    onBlur={onBlur}
-                    options={genres}
-                    refreshOptions={getGenres}
-                    callback={Url.addGenre}
                 />}
             />{JSON.stringify(watch('genres'))}
 
             <Controller
                 name={BOOK_FIELDS.type}
                 control={control}
-                render={({onChange, onBlur, value, name}) => <StyledAutocompleteMultiSort
+                render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
+                    autoComplete
+                    autoHighlight
+                    createOption={e => Url.addType({name: e})}
+                    filterSelectedOptions
+                    getOptionLabel={e => e.name}
+                    getOptions={getTypes}
+                    getOptionSelected={(option, value) => option.id === value.id}
+                    multiple={false}
                     name={name}
                     onBlur={onBlur}
-                    label={'Type'}
+                    onChange={onChange}
+                    options={types}
                     renderProps={{
+                        label: 'Types',
+                        variant: 'outlined',
+
                         error: Boolean(errors[BOOK_FIELDS.type]),
                         helperText: errors[BOOK_FIELDS.type]?.message
                     }}
                     size={'small'}
                     value={value}
-                    multiple={false}
-                    setValue={val => onChange(val)}
-                    options={types}
-                    refreshOptions={getTypes}
-                    callback={Url.addType}
                 />}
             />{JSON.stringify(watch('type'))}
 

@@ -48,7 +48,7 @@ export const LiteratureModule = ({returnToMainApp, logout}) => {
 
     const [books, setBooks] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [authors, setAuthors] = useState([[]]);
+    const [authors, setAuthors] = useState([]);
     const [genres, setGenres] = useState([]);
     const [types, setTypes] = useState([]);
 

@@ -2,8 +2,7 @@ import {NotificationContext} from './notificationContext'
 import {useEffect, useRef, useState} from "react";
 import {notifyMailDebounced} from "./mail/notifications";
 import {useAsyncError} from "./components/useAsyncError";
-import {noop} from "./components/common";
-import {NotAuthenticated} from "./util";
+import {noop, NotAuthenticated} from "./util";
 
 // This class handles notifications which should run on startup (via useEffect), and also provides notificationContext
 // Only executed after successful login

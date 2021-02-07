@@ -3,8 +3,7 @@ import {useEffect, useRef, useState} from 'react';
 import {Button, Snackbar} from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
 import {useAsyncError} from "./components/useAsyncError";
-import {isLocalhost} from "./util";
-import {noop} from "./components/common";
+import {isLocalhost, noop} from "./util";
 
 // https://developers.google.com/web/tools/workbox/modules/workbox-window#important_service_worker_lifecycle_moments
 

@@ -44,7 +44,7 @@ export const Books = ({
         },
         {
             Header: 'Authors',
-            accessor: row => row.authors.map(id => authors.filter(authors => authors.id === id)[0]?.name).join(', ')
+            accessor: row => row?.authors?.map(id => authors.filter(authors => authors.id === id)[0]?.name).join(', ')
         },
         {
             Header: 'Date added',

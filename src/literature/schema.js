@@ -22,12 +22,12 @@ const BOOK_SCHEMA = {
         defaultValue: [],
     },
     genres: {
-        yupSchema: yup.array(yup.number()).transform(val => val.map(e => e.id)),
+        yupSchema: yup.array(yup.number()).ensure().transform(val => val.map(e => e.id)),
         defaultValue: [],
     },
     type: {
         yupSchema: yup.mixed().transform(val => val?.id).required(),
-        defaultValue: null,
+        defaultValue: '',
     },
     title: {
         yupSchema: yup.string().required(),
@@ -122,34 +122,26 @@ export const transformToUserInput = ({data, authors, genres, types}) => {
 }
 
 /*Compare user input to data prior to transformation
-* This function is expensive, so do not call onChange
+* This function is expensive, so do not call on every onChange
 * Note: test only VALIDATED data!!! */
-export const isValidatedUserInputSame = (userInput, data) => {
+export const isValidatedUserInputSame = (userInput, originalData) => {
     /*First check authors, genre, types
     * Order matters since I'm comparing arrays not sets*/
-    if (!isEqual(data.authors.map(e => e.id), userInput.authors)) {
-        console.log('authors not eq', data.authors.map(e => e.id), userInput.authors)
+    if (!isEqual(originalData.authors.map(e => e.id), userInput.authors)) {
         return false
     }
-    if (!isEqual(data.genres.map(e => e.id), userInput.genres)) {
-        console.log('genres not eq')
+    if (!isEqual(originalData.genres.map(e => e.id), userInput.genres)) {
         return false
     }
-    if (parseInt(userInput.type) !== data.type.id) {
-        console.log('types not eq', userInput.type, data.type.id)
+    if (userInput.type !== originalData.type.id) {
         return false
     }
-    if (!isEqual(userInput.date_read, formatISO(data.date_read, {representation: 'date'}))) {
-        console.log('dates not eq', userInput.date_read, data.date_read)
+    if (!isEqual(userInput.date_read, formatISO(originalData.date_read, {representation: 'date'}))) {
         return false
     }
 
     // Then check the rest of the properties
     let rest = omit(userInput, ['authors', 'genres', 'type', 'date_read'])
-    return Object.entries(rest).every(([k, v]) => {
-        if (!(v === data[k]))
-            console.log(`Field: ${k}, ${String(v)} === ${String(data[k])}`, v === data[k])
-        return v === data[k]
-    })
+    return Object.entries(rest).every(([k, v]) => v === originalData[k])
 
 }
