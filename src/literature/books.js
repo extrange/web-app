@@ -1,13 +1,13 @@
 //Books in a series should be collapsible
 import {useMemo, useState} from 'react';
 import {useTable} from 'react-table'
-import {Fab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import {Fab, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
 import styled from 'styled-components'
 import {BACKGROUND_COLOR} from "../components/backgroundScreen";
 import AddIcon from "@material-ui/icons/Add";
 import {AddBook} from "./addBook";
 import {formatDistanceToNow, parseISO} from 'date-fns'
-import {transformToUserInput} from "./schema";
+import {Alert} from "@material-ui/lab";
 
 const StyledTableContainer = styled(TableContainer)`
   ${BACKGROUND_COLOR}
@@ -21,7 +21,7 @@ const StyledFab = styled(Fab)`
 `;
 
 export const Books = ({
-                          refreshBooks,
+                          getBooks,
                           books,
                           setBooks,
                           authors,
@@ -35,7 +35,8 @@ export const Books = ({
                           getTypes
                       }) => {
     const [addBookOpen, setAddBookOpen] = useState(false)
-    const [editingBook, setEditingBook] = useState(null);
+    const [bookData, setBookData] = useState(null);
+    const [addedSnackbar, setAddedSnackbar] = useState(null);
     const data = useMemo(() => books, [books])
     const columns = useMemo(() => [
         {
@@ -68,7 +69,7 @@ export const Books = ({
             <AddIcon/>
         </StyledFab>
         {addBookOpen && <AddBook
-            getBooks={refreshBooks}
+            getBooks={getBooks}
             books={books}
             setBooks={setBooks}
             authors={authors}
@@ -81,9 +82,24 @@ export const Books = ({
             getGenres={getGenres}
             getTypes={getTypes}
 
-            onClose={() => setAddBookOpen(false)}
-            editingBook={editingBook}
+
+            bookData={bookData}
+            onClose={() => {
+                setAddBookOpen(false)
+                setBookData(null)
+            }}
+            setAddedSnackbar={setAddedSnackbar}
         />}
+        <Snackbar
+            open={Boolean(addedSnackbar)}
+            onClose={() => setAddedSnackbar(false)}
+            autoHideDuration={3000}>
+            <Alert
+                severity={'success'}
+                onClose={() => setAddedSnackbar(false)}>
+                {addedSnackbar?.message}
+            </Alert>
+        </Snackbar>
         <StyledTableContainer>
             <Table {...getTableProps()}>
                 <TableHead>
@@ -99,12 +115,7 @@ export const Books = ({
                             hover: true,
                             onClick: () => {
                                 setAddBookOpen(true)
-                                setEditingBook(transformToUserInput({
-                                    data: row.original,
-                                    authors,
-                                    genres,
-                                    types
-                                }))
+                                setBookData(row.original)
                             }
                         })}>
                             {row.cells.map(cell => <TableCell {...cell.getCellProps()}>

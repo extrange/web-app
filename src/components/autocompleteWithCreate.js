@@ -7,6 +7,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Chip from "@material-ui/core/Chip";
 import styled from 'styled-components'
 import {Autocomplete} from "@material-ui/lab";
+import PropTypes from 'prop-types'
+
 
 const StyledAutocomplete = styled(Autocomplete)`
   margin: 10px 0;
@@ -16,18 +18,24 @@ const StyledCircularProgress = styled(CircularProgress)`
   cursor: default;
 `
 
-/**
- * Autocomplete with option creation.
- *
- * createOption - function taking a string, creating an object, and returning a Promise resolving with the new object.
- *
- */
+const propTypes = {
+    createOption: PropTypes.func.isRequired,
+    getOptionLabel: PropTypes.func,
+    getOptions: PropTypes.func.isRequired,
+    getOptionSelected: PropTypes.func,
+    multiple: PropTypes.bool,
+    onChange: PropTypes.func.isRequired,
+    options: PropTypes.array.isRequired,
+    renderProps: PropTypes.object, // error state, helper text
+    value: PropTypes.any
+}
+
 export const AutocompleteWithCreate = ({
                                            createOption,
-                                           getOptionLabel,
+                                           getOptionLabel = e => e,
                                            getOptions,
-                                           getOptionSelected,
-                                           multiple,
+                                           getOptionSelected = (a, b) => a === b,
+                                           multiple = false,
                                            onChange,
                                            options,
                                            renderProps,
@@ -39,6 +47,18 @@ export const AutocompleteWithCreate = ({
 
         // Optimization for filtering through option labels
         const sanitizedOptionLabels = useMemo(() => options.map(flow(getOptionLabel, sanitizeString)), [options, getOptionLabel])
+
+        /* Needed for getting option label for single autocomplete when option is being added (i.e. _name is set)*/
+        const _getOptionLabel = option => getOptionLabel(option) ?? option._name;
+
+        /* Needed to detect options with _name (e.g. currently being added),
+         * otherwise when creating an option while another is being created,
+         * useAutocomplete returns 'remove-option' instead*/
+        const _getOptionSelected = (option, value) =>
+            getOptionSelected(option, value) ||
+            /*An option is currently being created.
+            * Ternary is needed because undefined === undefined*/
+            value._name ? value._name === option._name : false
 
         const filterOptions = (options, state) => {
             //Remove accents, spaces and convert to lowercase before filtering
@@ -93,26 +113,25 @@ export const AutocompleteWithCreate = ({
              * The component must be controlled, or else book search
              * will not be able to add authors.*/
 
+
             if (multiple) {
 
-                // Find the options with _justAdded, call createOption for it and remove the flag
+                // Find the options with _justAdded === true, call createOption for it and remove the flag
                 let el = newValue.find(e => e._justAdded)
                 if (el) {
-                    setLoading(true)
                     el._justAdded = false
                     createOption(el._name)
                         .then(obj => {
                             // Refresh options with newly added option
                             getOptions()
-                            onChange(newValue.map(e => e._name === el._name ? obj : e))
-                            setLoading(false)
+                            onChange(state => state.map(e => e._name === el._name ? obj : e))
                         })
 
                 }
 
             } else if (newValue && newValue._justAdded) {
 
-                // New option added to single value autocomplete
+                // New option added to single value autocomplete (will be disabled while loading)
                 setLoading(true)
                 createOption(newValue._name)
                     .then(obj => {
@@ -127,17 +146,17 @@ export const AutocompleteWithCreate = ({
             }
 
             /* Setting newValue here will result in some options having _name, _justAdded, _isNew properties.
-            * Submission should be prevented while in such a state.*/
+            * Submission should be prevented while in such a state, possibly by Yup schema validation.*/
             onChange(newValue)
         };
 
         return <StyledAutocomplete
             clearOnBlur
-            disabled={loading}
+            disabled={!multiple && loading}
             filterOptions={filterOptions}
             freeSolo
-            getOptionLabel={getOptionLabel}
-            getOptionSelected={getOptionSelected}
+            getOptionLabel={_getOptionLabel}
+            getOptionSelected={_getOptionSelected}
             loading={loading}
             multiple={multiple}
             onChange={onOptionChange}
@@ -150,3 +169,5 @@ export const AutocompleteWithCreate = ({
         />
     }
 ;
+
+AutocompleteWithCreate.propTypes = propTypes

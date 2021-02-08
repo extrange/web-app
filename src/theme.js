@@ -1,4 +1,4 @@
-import {createMuiTheme} from "@material-ui/core/styles";
+import {unstable_createMuiStrictModeTheme as createMuiTheme} from "@material-ui/core/styles"; //todo replace with v5 when out
 
 export const theme = createMuiTheme({
     palette: {

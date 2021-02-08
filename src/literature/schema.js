@@ -3,31 +3,48 @@
  */
 
 import * as yup from "yup";
-import {formatISO} from "date-fns";
-import {cloneDeep, isEqual, omit, trim} from 'lodash'
+import {formatISO, parseISO} from "date-fns";
+import {trim, isNumber, isEqual, pick} from 'lodash'
 
 /*
-Coerce empty strings to null if value was an empty string prior to transformation/coercion, else return result after base coercion
-Note that yup attempts to coerce values into the base type (string/array/integer) prior to transforms
-*/
-const emptyStringToNull = (val, origVal) => typeof origVal === 'string' && origVal === '' ? null : val;
+This is the schema AFTER hydrating to user-viewable input (id, date_added etc are stripped).
 
-/*
-Coercions happen BEFORE transformations,
-Transformations happen BEFORE validation
+Schema keys here are equal to those server-side
 */
 const BOOK_SCHEMA = {
     authors: {
-        yupSchema: yup.array(yup.number()).ensure().transform(val => val.map(e => e.id)),
+        yupSchema: yup.array(
+            yup.object({
+                name: yup.string(),
+                id: yup.number().required(),
+                notes: yup.string()
+            }))
+            .ensure(),
         defaultValue: [],
+        transformToServer: val => val.map(e => e.id),
+        transformFromServer: (val, {authors}) => val.map(id => authors.find(e => e.id === id))
     },
     genres: {
-        yupSchema: yup.array(yup.number()).ensure().transform(val => val.map(e => e.id)),
+        yupSchema: yup.array(
+            yup.object({
+                name: yup.string(),
+                id: yup.number().required(),
+                notes: yup.string()
+            }))
+            .ensure(),
         defaultValue: [],
+        transformToServer: val => val.map(e => e.id),
+        transformFromServer: (val, {genres}) => val.map(id => genres.find(e => e.id === id))
     },
     type: {
-        yupSchema: yup.mixed().transform(val => val?.id).required(),
-        defaultValue: '',
+        yupSchema: yup.object({
+            name: yup.string(),
+            id: yup.number().required(),
+            notes: yup.string()
+        }).required(),
+        defaultValue: null,
+        transformToServer: val => val.id,
+        transformFromServer: (val, {types}) => types.find(e => e.id === val)
     },
     title: {
         yupSchema: yup.string().required(),
@@ -48,26 +65,33 @@ const BOOK_SCHEMA = {
         * Necessary to check if validated date is not null prior to modifying to ISO8601*/
         yupSchema: yup.date().nullable().typeError('Date must be in dd/mm/yyyy format'),
         defaultValue: null,
-        transformBeforeSubmit: val => val ? formatISO(val, {representation: "date"}) : null
+        transformToServer: val => val ? formatISO(val, {representation: "date"}) : null,
+        transformFromServer: val => val ? parseISO(val) : null // date could be null
     },
     image_url: {
         yupSchema: yup.string().url(),
         defaultValue: '',
     },
     published: {
-        yupSchema: yup.number().integer().nullable().transform(emptyStringToNull),
+        yupSchema: yup.number().integer().nullable().transform((val, origVal) => trim(origVal) === '' ? null : val),
         defaultValue: '',
+        /* isNumber checks are needed because 0 is falsy*/
+        transformFromServer: val => isNumber(val) ? val : ''
     },
     google_id: {
-        yupSchema: yup.string().nullable().defined().transform(emptyStringToNull),
+        yupSchema: yup.string(),
         defaultValue: '',
+        transformToServer: val => trim(val) || null,
+        transformFromServer: val => val || '',
     },
     goodreads_book_id: {
-        yupSchema: yup.string().nullable().defined().transform(emptyStringToNull),
+        yupSchema: yup.string(),
         defaultValue: '',
+        transformToServer: val => trim(val) || null,
+        transformFromServer: val => val || ''
     },
     series: {
-        yupSchema: yup.string().uppercase(),
+        yupSchema: yup.string(),
         defaultValue: '',
     },
     series_position: {
@@ -75,9 +99,11 @@ const BOOK_SCHEMA = {
         defaultValue: '',
     },
     rating: {
-        yupSchema: yup.number().nullable().min(0).max(5)
-            .transform((val, origVal) => trim(origVal) === '' ? null : Math.round(val * 10) / 10),
+        yupSchema: yup.number().min(0).max(5).nullable().transform((val, origVal) => trim(origVal) === '' ? null : val),
         defaultValue: '',
+        /* isNumber checks are needed because 0 is falsy*/
+        transformToServer: val => isNumber(val) ? Math.round(val * 10) / 10 : null, //val is guaranteed to be either number or null here
+        transformFromServer: val => isNumber(val) ? val : ''
     },
     my_review: {
         yupSchema: yup.string(),
@@ -91,57 +117,38 @@ const BOOK_SCHEMA = {
 
 export const BOOK_FIELDS = Object.fromEntries(Object.keys(BOOK_SCHEMA).map(e => [e, e]));
 
-// Coercion and validation done here.
-// Further modification prior to submission is in 'onSubmit'.
 export const YUP_SCHEMA = yup.object(Object.fromEntries(Object.entries(BOOK_SCHEMA)
     .map(([k, v]) => [k, v.yupSchema]))).noUnknown();
 
 export const DEFAULT_BOOK_VALUES = Object.fromEntries(Object.entries(BOOK_SCHEMA)
     .map(([k, v]) => [k, v.defaultValue]))
 
-export const transformBeforeSubmit = data => Object.fromEntries(
+export const transformToServer = data => Object.fromEntries(
     Object.entries(data)
-        .map(([k, v]) => [k,
-            BOOK_SCHEMA[k].transformBeforeSubmit ?
-                BOOK_SCHEMA[k].transformBeforeSubmit(v) :
-                v
-        ]))
+        .map(([k, v]) =>
+            /*This is NOT the same as
+            * BOOK_SCHEMA[k].transformToServer?.(v) ?? v
+            *
+            * The above code will return v if transformToServer(v) === null, which is not intended behavior
+            * */
+            [k, BOOK_SCHEMA[k].transformToServer ?
+                BOOK_SCHEMA[k].transformToServer(v) :
+                v]
+        ))
 
-/*Transforms server json into suitable datatype for presentation
-* Will ignore and leave extraneous fields as they are (date_added, updated, id)
-*
-* For now will reverse authors, genres, type, date_read*/
-export const transformToUserInput = ({data, authors, genres, types}) => {
-    let clone = cloneDeep(data)
+export const transformFromServer = (data, dataTypes) => Object.fromEntries(
+    Object.entries(data).map(([k, v]) => [
+        /*See above for explanation why nullish coalescing/optional chaining is not used here*/
+        k, BOOK_SCHEMA[k]?.transformFromServer ?
+            BOOK_SCHEMA[k].transformFromServer(v, dataTypes) :
+            v])
+)
 
-    clone.authors = data.authors.map(id => authors.find(e => e.id === id))
-    clone.genres = data.genres.map(id => genres.find(e => e.id === id))
-    clone.type = types.find(e => e.id === data.type) || null
-    clone.date_read = new Date(data.date_read)
-    return clone
-}
-
-/*Compare user input to data prior to transformation
-* This function is expensive, so do not call on every onChange
-* Note: test only VALIDATED data!!! */
-export const isValidatedUserInputSame = (userInput, originalData) => {
-    /*First check authors, genre, types
-    * Order matters since I'm comparing arrays not sets*/
-    if (!isEqual(originalData.authors.map(e => e.id), userInput.authors)) {
-        return false
-    }
-    if (!isEqual(originalData.genres.map(e => e.id), userInput.genres)) {
-        return false
-    }
-    if (userInput.type !== originalData.type.id) {
-        return false
-    }
-    if (!isEqual(userInput.date_read, formatISO(originalData.date_read, {representation: 'date'}))) {
-        return false
-    }
-
-    // Then check the rest of the properties
-    let rest = omit(userInput, ['authors', 'genres', 'type', 'date_read'])
-    return Object.entries(rest).every(([k, v]) => v === originalData[k])
-
-}
+/**
+ * Verify if user had made changes to the fields
+ * @param originalData - from server
+ * @param userData - data from UI after transformation
+ * @returns {boolean}
+ */
+export const isBookDataEqual = (originalData, userData) =>
+    isEqual(pick(originalData, Object.keys(BOOK_FIELDS)), userData)

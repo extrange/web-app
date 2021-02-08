@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {StyledButton, StyledTextField, StyledTextFieldClearable} from "../components/common";
+import {StyledTextField, StyledTextFieldClearable} from "../components/common";
 import * as Url from "./urls";
 import {getGoodreadsBookInfo, getGoogleBookInfo} from "./urls";
 import styled from "styled-components";
@@ -9,12 +9,23 @@ import {MuiPickersUtilsProvider} from "@material-ui/pickers/MuiPickersUtilsProvi
 import DateFns from '@date-io/date-fns'
 import {Controller, useForm} from 'react-hook-form'
 import {yupResolver} from "@hookform/resolvers/yup";
-import {BOOK_FIELDS, DEFAULT_BOOK_VALUES, isValidatedUserInputSame, transformBeforeSubmit, YUP_SCHEMA} from "./schema";
+import {
+    BOOK_FIELDS,
+    DEFAULT_BOOK_VALUES,
+    isBookDataEqual,
+    transformFromServer,
+    transformToServer,
+    YUP_SCHEMA
+} from "./schema";
 import {SearchBooks} from "./searchBooks";
 import {Networking, sanitizeString} from "../util";
 import {
+    Button,
     Checkbox,
     CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogTitle,
     FormControlLabel,
     FormHelperText,
     InputAdornment,
@@ -35,6 +46,11 @@ const FieldContainer = styled.div`
   margin: 10px;
   overflow: auto;
 `;
+
+const FooterDiv = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`
 
 // Inject error, helperText into control
 const ControlHelper = ({control, errors, name, as, label, ...props}) =>
@@ -65,47 +81,61 @@ export const AddBook = ({
                             getGenres,
                             getTypes,
 
-                            editingBook,
+                            bookData,
                             onClose,
+                            setAddedSnackbar
                         }) => {
 
     const {
-        register,
         handleSubmit,
         control,
         getValues,
-        reset,
         setValue,
-        errors,
         trigger,
-        watch
+        formState: {
+            isDirty,
+            errors
+        }
     } = useForm({
         resolver: yupResolver(YUP_SCHEMA),
-        defaultValues: editingBook || DEFAULT_BOOK_VALUES,
+        defaultValues: bookData ? transformFromServer(bookData, {authors, genres, types}) : DEFAULT_BOOK_VALUES,
         mode: 'onTouched',
     });
 
     const [searchOpen, setSearchOpen] = useState(false);
     const [results, setResults] = useState([]);
     const [loadingSearch, setLoadingSearch] = useState(false);
-    const [snackbar, setSnackbar] = useState(false)
+    const [errorSnackbar, setErrorSnackbar] = useState(false);
+    const [saveDialog, setSaveDialog] = useState(false);
 
     const onClear = name => () => setValue(name, DEFAULT_BOOK_VALUES[name]);
     const setError = useAsyncError()
 
-    const onSubmit = data => {
-        // Execute any transforms
-        let transformedData = transformBeforeSubmit(data)
+    const onSubmit = handleSubmit(
+        data => {
+            if (!isDirty || /*Untouched form, guaranteed no changes*/
 
-        alert(isValidatedUserInputSame(transformedData, editingBook))
+                /*Editing book, no actual changes made*/
+                (bookData && isBookDataEqual(bookData, transformToServer(data)))) {
+                setAddedSnackbar({message: 'No changes were detected'})
+                onClose()
+                return
+            }
 
-       /* Url.submit(transformedData).then(() => {
-            getBooks();
-            reset();
-        }).catch(setError);*/
-    };
+            /*User is adding book OR changes were made in editing book*/
 
-    const onError = () => void setSnackbar(true)
+            Url.submit(transformToServer(data))
+                .then(() => {
+                    getBooks();
+                    setAddedSnackbar({message: bookData ? 'Changes saved' : 'Book added'})
+                    onClose()
+                })
+                .catch(setError);
+        },
+        () => {
+            setErrorSnackbar(true)
+        })
+
 
     const onSearch = event => {
         if (event.key !== 'Enter' || !getValues(BOOK_FIELDS.title)) return;
@@ -176,18 +206,45 @@ export const AddBook = ({
         });
     };
 
+    const handleDiscard = () => isDirty ?
+        setSaveDialog(true) :
+        onClose() //Untouched form
 
-    return <DialogBlurResponsive open onClose={onClose}>
+
+    const footer = <FooterDiv>
+        <Button onClick={handleDiscard}>Discard</Button>
+        <Button onClick={onSubmit} color={'primary'}> Save </Button>
+    </FooterDiv>
+
+    return <DialogBlurResponsive
+        open
+        footer={footer}
+        disableBackdropClick
+        onBackdropClick={handleDiscard}
+    >
         <Snackbar
-            open={snackbar}
-            onClose={() => setSnackbar(false)}
+            open={errorSnackbar}
+            onClose={() => setErrorSnackbar(false)}
             autoHideDuration={3000}>
             <Alert
                 severity={'error'}
-                onClose={() => setSnackbar(false)}>
+                onClose={() => setErrorSnackbar(false)}>
                 Check errors before submitting
             </Alert>
         </Snackbar>
+        <Dialog
+            open={saveDialog}
+            onClose={() => setSaveDialog(false)}
+        >
+            <DialogTitle>Discard changes?</DialogTitle>
+            <DialogActions>
+                <Button onClick={() => {
+                    setAddedSnackbar({message: 'Changes discarded'})
+                    onClose()
+                }}> Discard </Button>
+                <Button onClick={onSubmit} color={'primary'}> Save </Button>
+            </DialogActions>
+        </Dialog>
         <FieldContainer>
             <SearchBooks
                 open={searchOpen}
@@ -195,12 +252,6 @@ export const AddBook = ({
                 results={results}
                 handleClick={handleClick}
             />
-            <StyledButton
-                color={'primary'}
-                variant={'contained'}
-                onClick={handleSubmit(onSubmit, onError)}
-            >Submit
-            </StyledButton>
 
             <ControlHelper
                 name={BOOK_FIELDS.title}
@@ -245,12 +296,12 @@ export const AddBook = ({
                         variant: 'outlined',
 
                         error: Boolean(errors[BOOK_FIELDS.authors]),
-                        helperText: errors[BOOK_FIELDS.authors]?.message
+                        helperText: errors[BOOK_FIELDS.authors] ? 'Creating author(s)...' : null
                     }}
                     size={'small'}
                     value={value}
                 />}
-            />{JSON.stringify(watch('authors'))}
+            />
 
             <Controller
                 name={BOOK_FIELDS.genres}
@@ -273,12 +324,12 @@ export const AddBook = ({
                         variant: 'outlined',
 
                         error: Boolean(errors[BOOK_FIELDS.genres]),
-                        helperText: errors[BOOK_FIELDS.genres]?.message
+                        helperText: errors[BOOK_FIELDS.genres] ? 'Creating genre(s)...' : null
                     }}
                     size={'small'}
                     value={value}
                 />}
-            />{JSON.stringify(watch('genres'))}
+            />
 
             <Controller
                 name={BOOK_FIELDS.type}
@@ -306,7 +357,7 @@ export const AddBook = ({
                     size={'small'}
                     value={value}
                 />}
-            />{JSON.stringify(watch('type'))}
+            />
 
 
             <ControlHelper
@@ -318,19 +369,22 @@ export const AddBook = ({
 
                 multiline
             />
-
-            <FormControlLabel
-                control={<Checkbox
-                    name={BOOK_FIELDS.read_next}
-                    inputRef={register}
-                />}
-                label={'Read next?'}
-                labelPlacement={'end'}
-
+            <Controller
+                name={BOOK_FIELDS.read_next}
+                control={control}
+                render={({onChange, onBlur, value, name}) =>
+                    <FormControlLabel
+                        checked={value}
+                        control={<Checkbox/>}
+                        label={'Read next?'}
+                        labelPlacement={'end'}
+                        name={name}
+                        onBlur={onBlur}
+                        onChange={e => onChange(e.target.checked)}
+                    />}
             />
             <FormHelperText
-                error={Boolean(errors[BOOK_FIELDS.read_next])}
-            >
+                error={Boolean(errors[BOOK_FIELDS.read_next])}>
                 {errors[BOOK_FIELDS.read_next]?.message}
             </FormHelperText>
 
@@ -360,7 +414,7 @@ export const AddBook = ({
                 control={control}
                 onClear={onClear(BOOK_FIELDS.image_url)}
 
-                type={'url'} // More for browser input purposes than validation, as Yup handles that
+                type={'url'}
             />
 
             <ControlHelper
@@ -417,7 +471,7 @@ export const AddBook = ({
                 as={StyledTextFieldClearable}
                 errors={errors}
                 onClear={onClear(BOOK_FIELDS.rating)}
-            />{String(watch('rating'))}
+            />
 
             <ControlHelper
                 name={BOOK_FIELDS.my_review}

@@ -6,6 +6,7 @@ import {LiteratureModule} from "./literature/literatureModule";
 import {StyledButton} from "./components/common";
 import styled from "styled-components";
 import {BackgroundScreenRounded} from "./components/backgroundScreen";
+import CallMadeIcon from '@material-ui/icons/CallMade';
 
 const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#'
 
@@ -72,12 +73,13 @@ export const ModuleSelect = ({setLoggedIn}) => {
                         >{value.displayName}</StyledButton>
                     )
                 }
-                <StyledButton
+                {<StyledButton
                     variant={'outlined'}
                     color={'primary'}
-                    onClick={() => window.open(GDOCS_ATTRACTIONS_URL, '_blank')}>
+                    onClick={() => window.open(GDOCS_ATTRACTIONS_URL, '_blank')}
+                    endIcon={<CallMadeIcon/>}>
                     Attractions and Food
-                </StyledButton>
+                </StyledButton>}
                 <StyledButton
                     variant={'contained'}
                     color={'primary'}
