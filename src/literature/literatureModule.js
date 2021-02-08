@@ -69,6 +69,7 @@ export const LiteratureModule = ({returnToMainApp, logout}) => {
 
     const drawerContent = <List disablePadding dense>
         {Object.entries(LITERATURE_MODULES()).map(([key, value]) => <ListItem
+            key={key}
             button
             onClick={() => setCurrentSubModule(key)}>
             {value.appDrawer}</ListItem>)}
