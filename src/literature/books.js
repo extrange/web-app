@@ -8,6 +8,7 @@ import AddIcon from "@material-ui/icons/Add";
 import {AddBook} from "./addBook";
 import {formatDistanceToNow, parseISO} from 'date-fns'
 import {Alert} from "@material-ui/lab";
+import {DialogBlurResponsive} from "../components/dialogBlurResponsive";
 
 const StyledTableContainer = styled(TableContainer)`
   ${BACKGROUND_COLOR}
@@ -90,7 +91,7 @@ export const Books = ({
             }}
             setAddedSnackbar={setAddedSnackbar}
         />}
-        <Snackbar
+         <Snackbar
             open={Boolean(addedSnackbar)}
             onClose={() => setAddedSnackbar(false)}
             autoHideDuration={3000}>
