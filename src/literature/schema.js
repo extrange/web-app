@@ -41,7 +41,7 @@ const BOOK_SCHEMA = {
             name: yup.string(),
             id: yup.number().required(),
             notes: yup.string()
-        }).required(),
+        }).typeError('Required'),
         defaultValue: null,
         transformToServer: val => val.id,
         transformFromServer: (val, {types}) => types.find(e => e.id === val)

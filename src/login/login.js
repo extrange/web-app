@@ -2,8 +2,7 @@ import {useState} from 'react';
 import {Networking, NotAuthenticated, useInput} from "../util";
 import {LOGIN_URL} from "../urls";
 import styled from "styled-components";
-import {StyledTextField} from "../components/common";
-import {Button, Typography} from "@material-ui/core";
+import {Button, TextField, Typography} from "@material-ui/core";
 import {BackgroundScreenRounded} from "../components/backgroundScreen";
 
 /*If this is in the class, it is redeclared on every render
@@ -31,6 +30,10 @@ const InnerContainer = styled(BackgroundScreenRounded)`
   justify-content: center;
   padding: 10px;
 `;
+
+const StyledTextField = styled(TextField)`
+  margin: 5px 0;
+`
 
 
 export const Login = ({setLoggedIn}) => {
@@ -67,6 +70,7 @@ export const Login = ({setLoggedIn}) => {
                 fullWidth
                 required
                 autoFocus
+                variant={'outlined'}
                 autoComplete={'username'}
                 {...bind('username')}
             />
@@ -77,6 +81,7 @@ export const Login = ({setLoggedIn}) => {
                 autoComplete={'current-password'}
                 fullWidth
                 required
+                variant={'outlined'}
                 {...bind('password')}
             />
 

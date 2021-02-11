@@ -8,6 +8,7 @@ import AddIcon from "@material-ui/icons/Add";
 import {AddBook} from "./addBook";
 import {formatDistanceToNow, parseISO} from 'date-fns'
 import {Alert} from "@material-ui/lab";
+import * as Url from './urls'
 
 const StyledTableContainer = styled(TableContainer)`
   ${BACKGROUND_COLOR}
@@ -50,6 +51,11 @@ export const Books = ({
         {
             Header: 'Date added',
             accessor: row => formatDistanceToNow(parseISO(row.date_added), {addSuffix: true})
+        },
+        {
+            Header: 'Delete',
+            accessor: row => 'Delete',
+            id: 'delete'
         }
     ], [authors])
 
@@ -63,6 +69,11 @@ export const Books = ({
         columns,
         data
     })
+
+    const onDelete = (e, id) => {
+        e.stopPropagation();
+        Url.deleteBook(id).then(getBooks)
+    }
 
     return <>
         <StyledFab color={'primary'} onClick={() => setAddBookOpen(true)}>
@@ -118,9 +129,13 @@ export const Books = ({
                                 setBookData(row.original)
                             }
                         })}>
-                            {row.cells.map(cell => <TableCell {...cell.getCellProps()}>
-                                {cell.render('Cell')}
-                            </TableCell>)}
+                            {row.cells.map(cell =>
+                                <TableCell {...cell.getCellProps()}
+                                           onClick={e => cell.column.id === 'delete' ?
+                                               onDelete(e, cell.row.original.id) :
+                                               null}>
+                                    {cell.render('Cell')}
+                                </TableCell>)}
                         </TableRow>
                     })}
                 </TableBody>

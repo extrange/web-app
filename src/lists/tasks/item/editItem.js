@@ -1,7 +1,6 @@
-import {StyledTextField} from "../../../components/common";
 import styled from "styled-components";
 import {MarkdownEditor} from "../../../components/markdownEditor";
-import {Button, useMediaQuery} from "@material-ui/core";
+import {Button, TextField, useMediaQuery} from "@material-ui/core";
 import {useForm} from "react-hook-form";
 import {useTheme} from "@material-ui/core/styles";
 import {debounce} from 'lodash'
@@ -19,6 +18,16 @@ const SavingStates = {
     MODIFIED: 2,
     SAVED: 3
 };
+
+const StyledTextField = styled(TextField)`
+  margin: 5px 0;
+`
+
+const StyledDialogBlurResponsive = styled(DialogBlurResponsive)`
+  .MuiDialog-paper {
+    width: min(100vw - 32px, 800px);
+  }
+`
 
 export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listItems, currentList, deleteTask}) => {
 
@@ -94,7 +103,7 @@ export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listIt
     };
 
 
-    return <DialogBlurResponsive
+    return <StyledDialogBlurResponsive
         open
         onClose={handleClose}
         footer={<ButtonContainer>
@@ -119,6 +128,7 @@ export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listIt
             name={'title'}
             autoFocus={!initialTitle && !initialNotes}
             defaultValue={initialTitle}
+            variant={'outlined'}
             onChange={e => {
                 setValue('title', e.target.value);
                 autoSave()
@@ -130,6 +140,7 @@ export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listIt
                 multiline
                 fullWidth
                 defaultValue={getValues('notes')}
+                variant={'outlined'}
                 onChange={e => {
                     setValue('notes', e.target.value);
                     autoSave()
@@ -142,5 +153,5 @@ export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listIt
                     autoSave()
                 }}/>
         }
-    </DialogBlurResponsive>
+    </StyledDialogBlurResponsive>
 };

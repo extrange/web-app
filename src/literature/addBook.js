@@ -1,5 +1,4 @@
-import {useState} from 'react';
-import {StyledTextField, StyledTextFieldClearable} from "../components/common";
+import React, {useState} from 'react';
 import * as Url from "./urls";
 import {getGoodreadsBookInfo, getGoogleBookInfo} from "./urls";
 import styled from "styled-components";
@@ -36,13 +35,15 @@ import {DialogBlurResponsive} from "../components/dialogBlurResponsive";
 import {Alert} from "@material-ui/lab";
 import {useAsyncError} from "../components/useAsyncError";
 import {AutocompleteWithCreate} from "../components/autocompleteWithCreate";
+import {TextFieldClearable} from "../components/textFieldClearable";
+import {TextFieldMultilineEllipsis} from "../components/textFieldMultilineEllipsis";
+import {ControlHelper} from "../components/controlHelper";
 
 const FieldContainer = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  max-width: 500px;
   margin: 10px;
   overflow: auto;
 `;
@@ -52,19 +53,27 @@ const FooterDiv = styled.div`
   justify-content: flex-end;
 `
 
-// Inject error, helperText into control
-const ControlHelper = ({control, errors, name, as, label, ...props}) =>
-    <Controller
-        {...props}
-        name={name}
-        control={control}
-        label={label}
-        error={Boolean(errors[name])}
-        helperText={errors[name]?.message}
-        size={'small'}
-        fullWidth
-        as={as}
-    />;
+const StyledTextFieldClearable = styled(TextFieldClearable)`
+  margin: 5px 0;
+`
+
+const StyledAutocompleteWithCreate = styled(AutocompleteWithCreate)`
+  margin: 5px 0;
+`
+
+const StyledKeyboardDatePicker = styled(KeyboardDatePicker)`
+  margin: 5px 0;
+`
+
+const StyledTextFieldMultilineEllipsis = styled(TextFieldMultilineEllipsis)`
+  margin: 5px 0;
+`
+
+const StyledDialogBlurResponsive = styled(DialogBlurResponsive)`
+  .MuiDialog-paper {
+    width: min(100vw - 32px, 800px);
+  }
+`
 
 
 export const AddBook = ({
@@ -113,7 +122,8 @@ export const AddBook = ({
 
     const onSubmit = handleSubmit(
         data => {
-            if (!isDirty || /*Untouched form, guaranteed no changes*/
+            if (!isDirty ||
+                /*Untouched form, guaranteed no changes*/
 
                 /*Editing book, no actual changes made*/
                 (bookData && isBookDataEqual(bookData, transformToServer(data)))) {
@@ -122,15 +132,27 @@ export const AddBook = ({
                 return
             }
 
-            /*User is adding book OR changes were made in editing book*/
+            let transformedData = transformToServer(data)
 
-            Url.submit(transformToServer(data))
-                .then(() => {
-                    getBooks();
-                    setAddedSnackbar({message: bookData ? 'Changes saved' : 'Book added'})
-                    onClose()
-                })
-                .catch(setError);
+            if (bookData) {
+                /* Changes were made in editing book*/
+                Url.updateBook(transformedData, bookData['id'])
+                    .then(() => {
+                        getBooks();
+                        setAddedSnackbar({message: 'Changes saved'})
+                        onClose()
+                    })
+                    .catch(setError);
+            } else {
+                /*User is adding book*/
+                Url.addBook(transformedData)
+                    .then(() => {
+                        getBooks();
+                        setAddedSnackbar({message: 'Book added'})
+                        onClose()
+                    })
+                    .catch(setError);
+            }
         },
         () => {
             setErrorSnackbar(true)
@@ -216,7 +238,7 @@ export const AddBook = ({
         <Button onClick={onSubmit} color={'primary'}> Save </Button>
     </FooterDiv>
 
-    return <DialogBlurResponsive
+    return <StyledDialogBlurResponsive
         open
         footer={footer}
         disableBackdropClick
@@ -255,11 +277,11 @@ export const AddBook = ({
 
             <ControlHelper
                 name={BOOK_FIELDS.title}
-                label={'Title'}
                 control={control}
-                as={StyledTextFieldClearable}
-                errors={errors}
+                Component={StyledTextFieldMultilineEllipsis}
 
+                errors={errors}
+                label={'Title'}
                 placeholder={'Search or enter book title'}
                 onKeyPress={onSearch}
                 InputProps={{
@@ -273,12 +295,13 @@ export const AddBook = ({
                         </InputAdornment>
                 }}
                 onClear={onClear(BOOK_FIELDS.title)}
+                variant={'outlined'}
             />
 
             <Controller
                 name={BOOK_FIELDS.authors}
                 control={control}
-                render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
+                render={({onChange, onBlur, value, name}) => <StyledAutocompleteWithCreate
                     autoComplete
                     autoHighlight
                     createOption={e => Url.addAuthor({name: e})}
@@ -306,7 +329,7 @@ export const AddBook = ({
             <Controller
                 name={BOOK_FIELDS.genres}
                 control={control}
-                render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
+                render={({onChange, onBlur, value, name}) => <StyledAutocompleteWithCreate
                     autoComplete
                     autoHighlight
                     createOption={e => Url.addGenre({name: e})}
@@ -334,7 +357,7 @@ export const AddBook = ({
             <Controller
                 name={BOOK_FIELDS.type}
                 control={control}
-                render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
+                render={({onChange, onBlur, value, name}) => <StyledAutocompleteWithCreate
                     autoComplete
                     autoHighlight
                     createOption={e => Url.addType({name: e})}
@@ -348,7 +371,7 @@ export const AddBook = ({
                     onChange={onChange}
                     options={types}
                     renderProps={{
-                        label: 'Types',
+                        label: 'Type',
                         variant: 'outlined',
 
                         error: Boolean(errors[BOOK_FIELDS.type]),
@@ -359,16 +382,15 @@ export const AddBook = ({
                 />}
             />
 
-
             <ControlHelper
                 name={BOOK_FIELDS.description}
                 label={'Description'}
                 errors={errors}
-                as={StyledTextField}
+                Component={StyledTextFieldMultilineEllipsis}
                 control={control}
-
-                multiline
+                variant={'outlined'}
             />
+
             <Controller
                 name={BOOK_FIELDS.read_next}
                 control={control}
@@ -395,7 +417,7 @@ export const AddBook = ({
                     label={'Date Read'}
                     control={control}
                     errors={errors}
-                    as={KeyboardDatePicker}
+                    Component={StyledKeyboardDatePicker}
 
                     autoOk
                     disableFuture
@@ -410,91 +432,100 @@ export const AddBook = ({
                 name={BOOK_FIELDS.image_url}
                 errors={errors}
                 label={'Image URL'}
-                as={StyledTextFieldClearable}
+                Component={StyledTextFieldClearable}
                 control={control}
                 onClear={onClear(BOOK_FIELDS.image_url)}
 
                 type={'url'}
+                variant={'outlined'}
             />
 
             <ControlHelper
                 name={BOOK_FIELDS.published}
                 label={'Year Published'}
                 control={control}
-                as={StyledTextFieldClearable}
+                Component={StyledTextFieldClearable}
                 errors={errors}
 
                 type={'tel'}
                 onClear={onClear(BOOK_FIELDS.published)}
+                variant={'outlined'}
             />
 
             <ControlHelper
                 name={BOOK_FIELDS.google_id}
                 label={'Google ID'}
                 control={control}
-                as={StyledTextFieldClearable}
+                Component={StyledTextFieldClearable}
                 errors={errors}
                 onClear={onClear(BOOK_FIELDS.google_id)}
+                variant={'outlined'}
             />
 
             <ControlHelper
                 name={BOOK_FIELDS.goodreads_book_id}
                 label={'Goodreads ID'}
                 control={control}
-                as={StyledTextFieldClearable}
+                Component={StyledTextFieldClearable}
                 errors={errors}
                 onClear={onClear(BOOK_FIELDS.goodreads_book_id)}
+                variant={'outlined'}
             />
 
             <ControlHelper
                 name={BOOK_FIELDS.series}
                 label={'Series Name'}
                 control={control}
-                as={StyledTextFieldClearable}
+                Component={StyledTextFieldClearable}
                 errors={errors}
                 onClear={onClear(BOOK_FIELDS.series)}
+                variant={'outlined'}
             />
 
             <ControlHelper
                 name={BOOK_FIELDS.series_position}
                 label={'Series Position'}
                 control={control}
-                as={StyledTextFieldClearable}
+                Component={StyledTextFieldClearable}
                 errors={errors}
                 onClear={onClear(BOOK_FIELDS.series_position)}
+                variant={'outlined'}
             />
 
             <ControlHelper
                 name={BOOK_FIELDS.rating}
                 label={'Rating'}
                 control={control}
-                as={StyledTextFieldClearable}
+                Component={StyledTextFieldClearable}
                 errors={errors}
                 onClear={onClear(BOOK_FIELDS.rating)}
+                variant={'outlined'}
             />
 
             <ControlHelper
                 name={BOOK_FIELDS.my_review}
                 label={'My Review'}
                 control={control}
-                as={StyledTextField}
+                Component={StyledTextFieldMultilineEllipsis}
                 errors={errors}
 
                 placeholder={'Not good, read others, highlight specific chapters, etc'}
                 multiline
+                variant={'outlined'}
             />
 
             <ControlHelper
                 name={BOOK_FIELDS.notes}
                 label={'Notes'}
                 control={control}
-                as={StyledTextField}
+                Component={StyledTextFieldMultilineEllipsis}
                 errors={errors}
 
                 placeholder={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}
                 multiline
+                variant={'outlined'}
             />
 
         </FieldContainer>
-    </DialogBlurResponsive>
+    </StyledDialogBlurResponsive>
 };

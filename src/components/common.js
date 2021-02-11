@@ -1,7 +1,5 @@
-import {styled} from "@material-ui/core/styles"
-import {Button, InputAdornment, Slide, useScrollTrigger} from "@material-ui/core";
-import ClearIcon from "@material-ui/icons/Clear";
-import TextField from "@material-ui/core/TextField";
+import styled from 'styled-components'
+import {Button, Slide, useScrollTrigger} from "@material-ui/core";
 
 export const HideOnScroll = ({children, target}) => {
     const trigger = useScrollTrigger({threshold: 50, target});
@@ -24,37 +22,3 @@ export const StyledButton = ({variant, color, onClick, ...props}) => <MuiStyledB
     onClick={onClick}
     {...props}
 />;
-
-const MuiStyledTextField = styled(TextField)({
-    margin: '5px 0',
-});
-
-/**
- * Textfield with margin, variant='outlined'
- * @param props
- * @returns {JSX.Element}
- * @constructor
- */
-export const StyledTextField = props =>
-    <MuiStyledTextField
-        variant={'outlined'}
-        {...props}
-    />
-;
-
-export const StyledTextFieldClearable = ({onClear, ...props}) =>
-    <MuiStyledTextField
-        {...props}
-        variant={'outlined'}
-        InputProps={{
-            ...props.InputProps,
-            endAdornment:
-                <InputAdornment position={'end'}>
-                    {props.value &&
-                    <ClearIcon style={{cursor: 'pointer'}} onClick={onClear}/>}
-                    {props.InputProps?.endAdornment}
-                </InputAdornment>
-        }}
-    />
-;
-

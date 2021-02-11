@@ -9,15 +9,9 @@ import styled from 'styled-components'
 import {Autocomplete} from "@material-ui/lab";
 import PropTypes from 'prop-types'
 
-
-const StyledAutocomplete = styled(Autocomplete)`
-  margin: 10px 0;
-`
-
 const StyledCircularProgress = styled(CircularProgress)`
   cursor: default;
 `
-
 const propTypes = {
     createOption: PropTypes.func.isRequired,
     getOptionLabel: PropTypes.func,
@@ -146,15 +140,16 @@ export const AutocompleteWithCreate = ({
             }
 
             /* Setting newValue here will result in some options having _name, _justAdded, _isNew properties.
-            * Submission should be prevented while in such a state, possibly by Yup schema validation.*/
+            * Submission is prevented while in such a state, by Yup schema validation.*/
             onChange(newValue)
         };
 
-        return <StyledAutocomplete
-            clearOnBlur
+        return <Autocomplete
+
+            clearOnBlur // Used together with freeSolo
             disabled={!multiple && loading}
             filterOptions={filterOptions}
-            freeSolo
+            freeSolo // This fixes the 'none of the options match with ...' error
             getOptionLabel={_getOptionLabel}
             getOptionSelected={_getOptionSelected}
             loading={loading}

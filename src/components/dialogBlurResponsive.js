@@ -3,11 +3,6 @@ import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {Dialog} from "@material-ui/core";
 import {OverlayScrollbarOptions, theme} from "../theme";
 
-
-const StyledOverlayScrollbars = styled(OverlayScrollbarsComponent)`
-  width: min(100vw - 32px, 800px);
-`;
-
 const StyledDialog = styled(Dialog)`
   // Blur effect only if supported
   @supports (backdrop-filter: blur(5px)) {
@@ -50,10 +45,10 @@ const StyledDialog = styled(Dialog)`
 
 /* Dialog with overlayscrollbars (does not scroll footer component)*/
 export const DialogBlurResponsive = ({children, footer, ...props}) => <StyledDialog maxWidth={false} {...props}>
-    <StyledOverlayScrollbars
+    <OverlayScrollbarsComponent
             options={OverlayScrollbarOptions}
             className={'os-host-flexbox'}>
         {children}
-    </StyledOverlayScrollbars>
+    </OverlayScrollbarsComponent>
     {footer}
 </StyledDialog>
