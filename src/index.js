@@ -4,17 +4,17 @@ import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
-import '@fontsource/source-sans-pro' //For codemirror in markdownEditor.js
-import './components/starcraft.css' //Stylized font for menu
+import '@fontsource/source-sans-pro' //For codemirror in MarkdownEditor.js
+import './fonts/starcraft/starcraft.css' //Stylized font for menu
 import {MuiThemeProvider} from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import {LoadServiceWorker} from "./loadServiceWorker";
-import {ErrorBoundary} from "./components/errorBoundary";
+import {LoadServiceWorker} from "./LoadServiceWorker";
+import {ErrorBoundary} from "./shared/errorBoundary";
 import 'overlayscrollbars/css/OverlayScrollbars.css'
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
-import {OverlayScrollbarOptions, theme} from "./theme";
-import {RandomBackground} from "./components/randomBackground";
-import {LoginCheck} from "./loginCheck";
+import {OverlayScrollbarOptions, theme} from "./globals/theme";
+import {RandomBackground} from "./shared/randomBackground";
+import {LoginCheck} from "./LoginCheck";
 
 /*Largest index of background images, inclusive*/
 const numImages = 26;
@@ -22,7 +22,7 @@ const numImages = 26;
 /*Decide whether to run mock service worker for debugging*/
 const USE_MOCK_SERVICE_WORKER = false;
 if (process.env.NODE_ENV === 'development' && USE_MOCK_SERVICE_WORKER) {
-    const {worker} = require('./mocks/browser')
+    const {worker} = require('./test/mocks/browser')
     worker.start()
 }
 
