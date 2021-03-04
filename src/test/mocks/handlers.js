@@ -1,12 +1,12 @@
 import {rest} from 'msw'
 import {AUTHORS, BOOKS, GENRES, TYPES} from "../../modules/Literature/urls";
-import {generateFakeBookData, staticFakeBookData} from "./fakeBookData";
+import {staticFakeBookData} from "./fakeBookData";
 
 let id = 100
 const authors = [...Array(20)].map((val, id) => ({id, name: `Author${id}`, notes: `notes${id}`}))
 const genres = [...Array(20)].map((val, id) => ({id, name: `Genre${id}`, notes: `notes${id}`}))
 const types = [...Array(20)].map((val, id) => ({id, name: `Type${id}`, notes: `notes${id}`}))
-const fakeBooks = generateFakeBookData(authors, genres, types)
+// const fakeBooks = generateFakeBookData(authors, genres, types)
 
 export const handlers = [
     /*Literature: Books*/

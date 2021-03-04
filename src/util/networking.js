@@ -47,7 +47,7 @@ export class Networking {
                 throw new BadRequest(`BadRequest: ${resp.status}:${resp.statusText}
             ${JSON.stringify(json, undefined, 2)}`)
             })
-        } else if (399 < resp.status < 500) {
+        } else if (resp.status === 401 || resp.status === 403) {
             throw new NotAuthenticated(`NotAuthenticated: ${resp.status}:${resp.statusText}`)
             //todo reauth
         } else throw new ServerError(`ServerError: ${resp.status}:${resp.statusText}`)

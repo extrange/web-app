@@ -7,6 +7,8 @@ import styled from "styled-components";
 import {BackgroundScreenRounded} from "./shared/backgroundScreen";
 import CallMadeIcon from '@material-ui/icons/CallMade';
 import {Networking} from "./util/networking";
+import {HomeAutomation} from "./modules/HomeAutomation/HomeAutomation";
+import {DVR} from "./modules/Dvr/DVR";
 
 const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#'
 
@@ -23,6 +25,14 @@ const modules = props => ({
         displayName: 'Literature',
         jsx: <Literature {...props}/>
     },
+    HOME_AUTOMATION: {
+        displayName: 'Home Automation',
+        jsx: <HomeAutomation {...props}/>
+    },
+    DVR: {
+        displayName: 'DVR',
+        jsx: <DVR {...props}/>
+    }
 });
 
 const FlexContainer = styled.div`

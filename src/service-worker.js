@@ -1,4 +1,6 @@
 /* eslint-disable no-restricted-globals */
+/*This file MUST be named service-worker.js or else the service worker file will not be generated!!
+* This is because 'swSrc' passed to InjectManifest in webpack.config.js is hardcoded to look for src/service-worker*/
 
 // This service worker can be customized!
 // See https://developers.google.com/web/tools/workbox/modules
@@ -78,4 +80,4 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
-console.log('SW: serviceWorker.js executed');
+console.log('SW: service-worker.js executed');

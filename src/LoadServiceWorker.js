@@ -10,7 +10,7 @@ import {isLocalhost, noop} from "./util/util";
 const hasServiceWorker = () => 'serviceWorker' in navigator;
 
 // Workbox() calls navigator.serviceWorker which is undefined in Firefox private browsing.
-const wb = hasServiceWorker() ? new Workbox('./serviceWorker.js') : null;
+const wb = hasServiceWorker() ? new Workbox('./service-worker.js') : null;
 
 const NoServiceWorker = () => {
     const [sbOpen, setSbOpen] = useState(true);
