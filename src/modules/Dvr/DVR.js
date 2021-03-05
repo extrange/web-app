@@ -33,7 +33,7 @@ export const DVR = ({logout, returnToMainApp}) => {
         getOrRefreshChannel(channel)
             .then(({stream_uuid, timeout}) =>
                 getChannelUrl(stream_uuid, channel))
-            .then(url => player.current.load(url))
+            .then(url => player.current?.load(url))
 
         let intervalId = setInterval(() => {
             getOrRefreshChannel(channel)
@@ -54,35 +54,38 @@ export const DVR = ({logout, returnToMainApp}) => {
         }
     }, [])
 
-    // Attach to video element
-    const initPlayer = videoEl => {
+    // Init and attach to video element
+    const attachPlayer = videoEl => {
         /*Do not reinitialize video element if a null element is passed, or player already exists*/
         if (!videoEl || player.current) return
-        if (shaka.Player.isBrowserSupported()) {
-            player.current = new shaka.Player(videoEl)
-            player.current.addEventListener('error', e => console.error('Shaka player error: ', e.detail))
-
-            /* Set up video controls
-            videoEl.parentNode is guaranteed to have been mounted, if videoEl itself was mounted*/
-            let ui = new shaka.ui.Overlay(player.current, videoEl.parentNode, videoEl);
-            ui.getControls();
-
-        } else {
-            console.error('Browser not supported by Shaka Player')
+        if (!shaka.Player.isBrowserSupported()) {
+            console.error('Shaka player not supported')
+            return
         }
-    }
 
-    const switchChannel = channel => {
-        player.current.unload()
-        setChannel(channel)
+        player.current = new shaka.Player(videoEl)
+        player.current.addEventListener('error', e => console.error('Shaka player error: ', e.detail))
+
+        /* Set up video controls
+        videoEl.parentNode is guaranteed to have been mounted, if videoEl itself was mounted*/
+        let ui = new shaka.ui.Overlay(player.current, videoEl.parentNode, videoEl);
+        let controls = ui.getControls();
+        controls.addEventListener('UIError', e => console.error('Shaka UI error: ', e.detail))
     }
+    const switchChannel = channel =>
+        void player.current?.unload()
+            .then(setChannel(channel))
 
     const drawerContent =
         <List>
             {CHANNELS.map(e =>
                 <ListItem
+                    key={e}
                     button
-                    onClick={() => switchChannel(e)}>
+                    onClick={() => {
+                        setDrawerOpen(false)
+                        switchChannel(e)
+                    }}>
                     <ListItemText primary={e}/>
                 </ListItem>)}
         </List>
@@ -99,9 +102,8 @@ export const DVR = ({logout, returnToMainApp}) => {
         <VideoDiv data-shaka-player-container>
             <StyledVideo
                 data-shaka-player
-                ref={initPlayer}
+                ref={attachPlayer}
                 id="video"
-                controls
                 autoPlay/>
         </VideoDiv>
     </AppBarResponsive>
