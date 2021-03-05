@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {AppBarResponsive} from "../../shared/AppBarResponsive";
-import {List, ListItem, ListItemText, Typography} from "@material-ui/core";
+import {CircularProgress, List, ListItem, ListItemText, Typography} from "@material-ui/core";
 import shaka from 'shaka-player/dist/shaka-player.ui'
 import {getChannelUrl, getOrRefreshChannel} from "./urls";
 import styled from 'styled-components'
@@ -26,6 +26,7 @@ const StyledVideo = styled.video`
 export const DVR = ({logout, returnToMainApp}) => {
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [channel, setChannel] = useState(CHANNELS[0]);
+    const [loading, setLoading] = useState(false);
     const player = useRef();
 
     // Load channel and keep refreshing every REFRESH_INTERVAL seconds
@@ -34,6 +35,7 @@ export const DVR = ({logout, returnToMainApp}) => {
             .then(({stream_uuid, timeout}) =>
                 getChannelUrl(stream_uuid, channel))
             .then(url => player.current?.load(url))
+            .then(() => setLoading(false))
 
         let intervalId = setInterval(() => {
             getOrRefreshChannel(channel)
@@ -83,6 +85,7 @@ export const DVR = ({logout, returnToMainApp}) => {
                     key={e}
                     button
                     onClick={() => {
+                        setLoading(true)
                         setDrawerOpen(false)
                         switchChannel(e)
                     }}>
@@ -92,7 +95,10 @@ export const DVR = ({logout, returnToMainApp}) => {
 
     return <AppBarResponsive
         appName={'DVR'}
-        titleContent={<Typography variant={"h6"} noWrap>DVR: {channel}</Typography>}
+        titleContent={<>
+            <Typography variant={"h6"} noWrap>DVR: {channel}</Typography>
+            {loading && <CircularProgress color="inherit" size={20} style={{margin: '12px'}}/>}
+        </>}
         setDrawerOpen={setDrawerOpen}
         logout={logout}
         returnToMainApp={returnToMainApp}
