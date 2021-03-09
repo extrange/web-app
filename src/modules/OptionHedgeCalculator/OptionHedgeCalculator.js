@@ -66,40 +66,24 @@ Note: As I am only hedging CSPX and IWDA, beta for my portfolio is 1
 Take beta of IWDA to be 0.89 for now (see 'Finance and Investing' doc)
 Beta of DPYA = IWDP = 0.99
 5yr beta of ISAC = 1
-Move more than how much then to sell?
+
+Rehedge in first month ONLY if SPY has moved > 3% from the previous long put strike
 `
 
-const formatNoDecimals = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 })
+const formatNoDecimals = new Intl.NumberFormat(undefined, {maximumFractionDigits: 0})
 const formatDecimals = new Intl.NumberFormat(undefined, {maximumFractionDigits: 1})
-const formatDollars = new Intl.NumberFormat(undefined, {style: 'currency', currency: 'USD', currencyDisplay: 'narrowSymbol'})
+const formatDollars = new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: 'USD',
+    currencyDisplay: 'narrowSymbol'
+})
 
-const PutStrike = ({control}) => {
-    const {spyPrice} = useWatch({
+const FieldUseWatch = ({control, fields: userFields, Component}) => {
+    const fields = useWatch({
         control,
-        name: [FIELDS.spyPrice],
+        name: userFields,
     })
-    return <Typography variant={'body1'}>
-        8.6% OTM Put strike to sell: {formatNoDecimals.format(0.914 * spyPrice)}
-    </Typography>
-}
-
-const NotionalAmount = ({control}) => {
-    const {portfolioValue, hedgeRatio} = useWatch({
-        control,
-        name: [FIELDS.portfolioValue, FIELDS.hedgeRatio]
-    })
-    return <Typography variant={'body1'}>Notional amount: {formatDollars.format(portfolioValue * hedgeRatio)}</Typography>
-}
-
-const Contracts = ({control}) => {
-    const {portfolioValue, hedgeRatio, delta, spyPrice} = useWatch({
-        control,
-        name: [FIELDS.portfolioValue, FIELDS.hedgeRatio, FIELDS.delta, FIELDS.spyPrice]
-    })
-
-    return <Typography variant={'body1'}>Number of spreads required (i.e. option
-        contracts): {formatDecimals.format((portfolioValue * hedgeRatio) / (delta * spyPrice * 100))}</Typography>
-
+    return <Component fields={fields}/>
 }
 
 export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
@@ -178,7 +162,13 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
                 onClear={onClear(FIELDS.spyPrice)}
             />
 
-            <PutStrike control={control}/>
+            <FieldUseWatch
+                control={control}
+                fields={[FIELDS.spyPrice]}
+                Component={({fields}) => <Typography variant={'body1'}>
+                    8.6% OTM Put strike to sell: {formatNoDecimals.format(0.914 * fields[FIELDS.spyPrice])}
+                </Typography>}
+            />
 
 
             <ControlHelper
@@ -193,7 +183,14 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
                 onClear={onClear(FIELDS.hedgeRatio)}
             />
 
-            <NotionalAmount control={control}/>
+            <FieldUseWatch
+                control={control}
+                fields={[FIELDS.hedgeRatio, FIELDS.portfolioValue]}
+                Component={({fields}) =>
+                    <Typography variant={'body1'}>Notional
+                        amount: {formatDollars.format(fields[FIELDS.portfolioValue] * fields[FIELDS.hedgeRatio])}</Typography>}
+
+            />
 
             <ControlHelper
                 label={'Delta'}
@@ -207,8 +204,16 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
                 onClear={onClear(FIELDS.delta)}
             />
 
-            <Contracts control={control}/>
-
+            <FieldUseWatch
+                control={control}
+                fields={[FIELDS.portfolioValue, FIELDS.hedgeRatio, FIELDS.delta, FIELDS.spyPrice]}
+                Component={({fields}) =>
+                    <Typography variant={'body1'}>
+                        Number of spreads required (i.e. standard option contracts):
+                        {formatDecimals.format((fields[FIELDS.portfolioValue] * fields[FIELDS.hedgeRatio]) /
+                            (fields[FIELDS.delta] * fields[FIELDS.spyPrice] * 100))}
+                    </Typography>}
+            />
 
         </Container>
     </AppBarResponsive>

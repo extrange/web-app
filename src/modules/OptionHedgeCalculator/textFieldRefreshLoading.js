@@ -1,7 +1,7 @@
 import TextField from "@material-ui/core/TextField";
 import {CircularProgress, IconButton, InputAdornment, Tooltip} from "@material-ui/core";
 import ClearIcon from "@material-ui/icons/Clear";
-import RefreshIcon from '@material-ui/icons/Refresh';
+import CachedIcon from '@material-ui/icons/Cached';
 import {noop} from "../../util/util";
 import React from "react";
 
@@ -13,7 +13,6 @@ export const TextFieldRefreshLoading = ({onRefresh, onClear, loading, tooltipTex
             ...props.InputProps,
             endAdornment:
                 <InputAdornment position={'end'}>
-                    {loading && <CircularProgress size={20}/>}
                     {props.value &&
                     <ClearIcon style={{cursor: 'pointer'}} onClick={onClear}/>}
                     <InputAdornment position={'end'}>
@@ -24,7 +23,7 @@ export const TextFieldRefreshLoading = ({onRefresh, onClear, loading, tooltipTex
                             interactive
                             title={tooltipText}>
                             <IconButton onClick={onRefresh}>
-                                <RefreshIcon/>
+                                {loading ? <CircularProgress size={20}/> : <CachedIcon/>}
                             </IconButton>
                         </Tooltip>
                     </InputAdornment>
