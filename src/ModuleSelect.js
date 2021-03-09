@@ -9,6 +9,7 @@ import CallMadeIcon from '@material-ui/icons/CallMade';
 import {Networking} from "./util/networking";
 import {HomeAutomation} from "./modules/HomeAutomation/HomeAutomation";
 import {DVR} from "./modules/Dvr/DVR";
+import {OptionHedgeCalculator} from "./modules/OptionHedgeCalculator/OptionHedgeCalculator";
 
 const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#'
 
@@ -32,7 +33,11 @@ const modules = props => ({
     DVR: {
         displayName: 'DVR',
         jsx: <DVR {...props}/>
-    }
+    },
+    OPTION_HEDGE_CALCULATOR: {
+        displayName: 'Option Hedge Calculator',
+        jsx: <OptionHedgeCalculator {...props}/>
+    },
 });
 
 const FlexContainer = styled.div`

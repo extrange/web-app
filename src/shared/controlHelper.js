@@ -2,8 +2,7 @@ import {useController} from "react-hook-form";
 import React from "react";
 
 /*Helper component for react-hook-form.
-Injects error, helperText into the component,
-together with some useful props for TextFields.
+Injects error, helperText into the component.
 Also fixes the onClear not revalidating issue.*/
 export const ControlHelper = ({control, errors, name, Component, onClear, ...props}) => {
 
@@ -19,13 +18,11 @@ export const ControlHelper = ({control, errors, name, Component, onClear, ...pro
         onBlur,
 
         error: Boolean(errors[name]),
-        fullWidth: true,
         helperText: errors[name]?.message,
         name,
-        size: 'small',
     }
 
-    // Needed to force re-validation after clearing input
+    /*onBlur() must be called after onClean() to force re-validation after clearing input*/
     if (onClear) {
         controlProps.onClear = () => {
             onClear();

@@ -20,7 +20,9 @@ I'm making a dashboard of my tasks, investments and booklists using ReactJS and 
     - urls.js
     
 - modules
-    - module1: No subdirectories
+    - Module1
+        - Module1.js
+        - No subdirectories
     
 - shared: Shared React Components
 

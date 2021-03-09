@@ -118,7 +118,7 @@ export const AddBook = ({
     const [errorSnackbar, setErrorSnackbar] = useState(false);
     const [saveDialog, setSaveDialog] = useState(false);
 
-    const onClear = name => () => setValue(name, DEFAULT_BOOK_VALUES[name]);
+    const onClear = name => () => setValue(name, DEFAULT_BOOK_VALUES[name], { shouldDirty: true });
     const setError = useAsyncError()
 
     const onSubmit = handleSubmit(
@@ -322,7 +322,6 @@ export const AddBook = ({
                         error: Boolean(errors[BOOK_FIELDS.authors]),
                         helperText: errors[BOOK_FIELDS.authors] ? 'Creating author(s)...' : null
                     }}
-                    size={'small'}
                     value={value}
                 />}
             />
@@ -350,7 +349,6 @@ export const AddBook = ({
                         error: Boolean(errors[BOOK_FIELDS.genres]),
                         helperText: errors[BOOK_FIELDS.genres] ? 'Creating genre(s)...' : null
                     }}
-                    size={'small'}
                     value={value}
                 />}
             />
@@ -378,7 +376,6 @@ export const AddBook = ({
                         error: Boolean(errors[BOOK_FIELDS.type]),
                         helperText: errors[BOOK_FIELDS.type]?.message
                     }}
-                    size={'small'}
                     value={value}
                 />}
             />
