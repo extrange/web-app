@@ -310,6 +310,7 @@ export const AddBook = ({
                     getOptionLabel={e => e.name}
                     getOptions={getAuthors}
                     getOptionSelected={(option, value) => option.id === value.id}
+                    getValue={() => getValues(BOOK_FIELDS.authors)}
                     multiple={true}
                     name={name}
                     onBlur={onBlur}
@@ -337,6 +338,7 @@ export const AddBook = ({
                     getOptionLabel={e => e.name}
                     getOptions={getGenres}
                     getOptionSelected={(option, value) => option.id === value.id}
+                    getValue={() => getValues(BOOK_FIELDS.genres)}
                     multiple={true}
                     name={name}
                     onBlur={onBlur}

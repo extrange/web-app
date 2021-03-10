@@ -17,6 +17,7 @@ const propTypes = {
     getOptionLabel: PropTypes.func,
     getOptions: PropTypes.func.isRequired,
     getOptionSelected: PropTypes.func,
+    getValue: PropTypes.func, // Required if multiple=true (to get the current state in a callback)
     multiple: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     options: PropTypes.array.isRequired,
@@ -29,6 +30,7 @@ export const AutocompleteWithCreate = ({
                                            getOptionLabel = e => e,
                                            getOptions,
                                            getOptionSelected = (a, b) => a === b,
+                                           getValue,
                                            multiple = false,
                                            onChange,
                                            options,
@@ -118,7 +120,9 @@ export const AutocompleteWithCreate = ({
                         .then(obj => {
                             // Refresh options with newly added option
                             getOptions()
-                            onChange(state => state.map(e => e._name === el._name ? obj : e))
+
+                            // Get current state and then replace new option with server returned object (it now has id)
+                            onChange(getValue().map(e => e._name === el._name ? obj : e))
                         })
 
                 }
@@ -139,7 +143,8 @@ export const AutocompleteWithCreate = ({
                     })
             }
 
-            /* Setting newValue here will result in some options having _name, _justAdded, _isNew properties.
+            /*No new options were created.
+            * Setting newValue here will result in some options having _name, _justAdded, _isNew properties.
             * Submission is prevented while in such a state, by Yup schema validation.*/
             onChange(newValue)
         };

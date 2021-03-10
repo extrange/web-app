@@ -25,6 +25,7 @@ I'm making a dashboard of my tasks, investments and booklists using ReactJS and 
         - No subdirectories
     
 - shared: Shared React Components
+    - Component1
 
 - test: Mocks, MSW/Jest etc
 

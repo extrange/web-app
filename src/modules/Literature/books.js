@@ -1,5 +1,5 @@
 //Books in a series should be collapsible
-import {useMemo, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {useTable} from 'react-table'
 import {Fab, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
 import styled from 'styled-components'
@@ -74,6 +74,9 @@ export const Books = ({
         e.stopPropagation();
         Url.deleteBook(id).then(getBooks)
     }
+
+    /*Refetch booklist on initial render*/
+    useEffect(() => void getBooks(), [getBooks])
 
     return <>
         <StyledFab color={'primary'} onClick={() => setAddBookOpen(true)}>

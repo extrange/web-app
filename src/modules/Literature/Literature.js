@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {Books} from "./books";
 import * as Url from "./urls";
 import {capitalize} from "lodash";
@@ -77,18 +77,18 @@ export const Literature = ({returnToMainApp, logout}) => {
     const [genres, setGenres] = useState([]);
     const [types, setTypes] = useState([]);
 
-    const getBooks = () => Url.getBooks().then(json => setBooks(json));
+    const getBooks = useCallback(() => Url.getBooks().then(json => setBooks(json)), []);
 
-    const getAuthors = () => Url.getAuthors().then(result => setAuthors(result))
-    const getGenres = () => Url.getGenres().then(result => setGenres(result));
-    const getTypes = () => Url.getTypes().then(result => setTypes(result));
+    const getAuthors = useCallback(() => Url.getAuthors().then(result => setAuthors(result)),[])
+    const getGenres = useCallback(() => Url.getGenres().then(result => setGenres(result)),[]);
+    const getTypes = useCallback(() => Url.getTypes().then(result => setTypes(result)),[]);
 
     useEffect(() => {
         void getBooks();
         void getAuthors();
         void getGenres();
         void getTypes();
-    }, []);
+    }, [getAuthors, getBooks, getGenres, getTypes]);
 
     const drawerContent = <List disablePadding dense>
         {Object.entries(LITERATURE_MODULES()).map(([key, value]) => <ListItem
