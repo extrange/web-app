@@ -5,6 +5,7 @@ import {Button, TextField, Typography} from "@material-ui/core";
 import {BackgroundScreenRounded} from "./shared/backgroundScreen";
 import {Networking, NotAuthenticated} from "./util/networking";
 import {useInput} from "./util/useInput";
+import {useAsyncError} from "./util/useAsyncError";
 
 /*If this is in the class, it is redeclared on every render
 In switch statements, this will cause LOGIN_STATES.AUTHENTICATED to be unequal to other instances
@@ -14,6 +15,7 @@ const LOGIN_STATES = {
     LOADING: {name: 'loading', message: 'Awaiting server reply...'},
     FORBIDDEN: {name: 'forbidden', message: 'Invalid username/password!'},
     NOT_AUTHENTICATED: {name: 'sign_in', message: 'Sign In'},
+    SERVER_ERROR: {name: 'server_error', message: 'Server Error'}
 };
 
 const StyledContainer = styled.form`
@@ -41,6 +43,7 @@ export const Login = ({setLoggedIn}) => {
 
     const [loginState, setLoginState] = useState(LOGIN_STATES.NOT_AUTHENTICATED);
     const {values, bind} = useInput();
+    const setError = useAsyncError();
 
     const handleSubmit = event => {
         event.preventDefault();
@@ -55,7 +58,7 @@ export const Login = ({setLoggedIn}) => {
         }).catch(error => {
             if (error instanceof NotAuthenticated) {
                 setLoginState(LOGIN_STATES.FORBIDDEN);
-            } else throw new Error(error.message)
+            } else setError(error.message)
         });
     };
 

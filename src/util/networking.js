@@ -25,10 +25,10 @@ export class Networking {
      * Wrap fetch request with authentication headers and todo manage reauth automatically
      * Throws errors if response status code is not between 200-299.
      * @param url
-     * @param obj Parameters for the fetch() request. Must include 'method'.
+     * @param obj Parameters for the fetch() request. Defaults to 'GET'.
      * @returns {Promise<Response>}
      */
-    static send = async (url, {method, headers, body = null,}) => {
+    static send = async (url, {method=Networking.GET, headers, body = null,}) => {
         let resp = await fetch(url, {
                 method: method,
                 credentials: 'include',

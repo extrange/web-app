@@ -1,15 +1,21 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {LOGIN_URL} from "./globals/urls";
 import {Login} from "./Login";
 import {ModuleSelect} from "./ModuleSelect";
 import {Loading} from "./shared/loading";
 import {NotificationProvider} from "./shared/NotificationProvider/NotificationProvider";
-import {Networking, NotAuthenticated, ServerError} from "./util/networking";
+import {Networking, NotAuthenticated} from "./util/networking";
+import {useAsyncError} from "./util/useAsyncError";
+import {RefreshSession} from "./RefreshSession";
+import {Alert} from "@material-ui/lab";
+import {Button, Snackbar} from "@material-ui/core";
 
 export const LoginCheck = () => {
 
     const [loggedIn, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loggedOutSb, setLoggedOutSb] = useState(false);
+    const setError = useAsyncError();
 
     const checkIfLoggedIn = () => {
         setLoading(true);
@@ -24,12 +30,12 @@ export const LoginCheck = () => {
                 if (error instanceof NotAuthenticated) {
                     setLoggedIn(false)
                 } else {
-                    throw new ServerError(error.message)
+                    setError(error.message)
                 }
             })
     };
 
-    useEffect(checkIfLoggedIn, []);
+    useEffect(checkIfLoggedIn, [setError]);
 
     if (loading) return <Loading
         open={true}
@@ -40,8 +46,20 @@ export const LoginCheck = () => {
         return <Login
             setLoggedIn={setLoggedIn}/>;
     else
-        return <NotificationProvider>
-            <ModuleSelect
-            setLoggedIn={setLoggedIn}/>
-    </NotificationProvider>;
+        return <>
+            <Snackbar
+                open={loggedOutSb}>
+                <Alert
+                    severity={'error'}
+                    action={<Button color={'primary'} onClick={() => setLoggedIn(false)}>
+                        Login
+                    </Button>}>
+                    You are logged out.
+                </Alert>
+            </Snackbar>
+            <RefreshSession setLoggedOutSb={setLoggedOutSb}/>
+            <NotificationProvider>
+                <ModuleSelect setLoggedIn={setLoggedIn}/>
+            </NotificationProvider>
+        </>;
 };

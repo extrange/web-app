@@ -9,7 +9,7 @@ import './fonts/starcraft/starcraft.css' //Stylized font for menu
 import {MuiThemeProvider} from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {LoadServiceWorker} from "./LoadServiceWorker";
-import {ErrorBoundary} from "./shared/errorBoundary";
+import {ErrorBoundary} from "./ErrorBoundary";
 import 'overlayscrollbars/css/OverlayScrollbars.css'
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {OverlayScrollbarOptions, theme} from "./globals/theme";
