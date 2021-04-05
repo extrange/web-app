@@ -1,10 +1,12 @@
 import {Fab, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText} from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
 import AddIcon from "@material-ui/icons/Add";
-import {GenericAddDeleteCreateDialog} from "./genericAddDeleteCreateDialog";
+import * as Url from './urls'
+import {addPassword, updatePassword} from './urls'
+import {PasswordDialog} from "./PasswordDialog";
 
 const StyledList = styled(List)`
   max-width: 600px;
@@ -18,59 +20,52 @@ const StyledFab = styled(Fab)`
   right: 20px;
 `;
 
+export const PasswordList = ({
+                                 passwords,
+                                 setPasswords
+                             }) => {
 
-/*Generic CRUD display for Authors/Genres/Types (for now)
-* Assumes keys id, name and notes are present on the object*/
-export const GenericAddDeleteCreate = ({
-                                           types,
-                                           getType,
-                                           addType,
-                                           updateType,
-                                           deleteType,
-                                       }) => {
     const [editingItem, setEditingItem] = useState(false)
 
-    const onDelete = id => deleteType(id).then(getType)
-
     const onClose = () => setEditingItem(null)
-
-
     const onClickItem = item => setEditingItem(item)
+
+    const getPasswords = useCallback(() => Url.getPasswords().then(r => setPasswords(r)), [setPasswords])
+    const onDelete = id => Url.deletePassword(id).then(getPasswords)
 
     const onSubmit = (data, id) => {
         if (id) {
             // Editing item
-            updateType(data, id).then(getType)
+            updatePassword(data, id).then(getPasswords)
             setEditingItem(null)
         } else {
             // Adding item
-            addType(data).then(getType)
+            addPassword(data).then(getPasswords)
             setEditingItem(null)
         }
     }
 
     /*Refetch on initial render*/
-    useEffect(() => void getType(), [getType])
+    useEffect(() => void getPasswords(), [getPasswords])
 
 
     return <>
         <StyledFab color={'primary'} onClick={() => setEditingItem(true)}>
             <AddIcon/>
         </StyledFab>
-        {editingItem && <GenericAddDeleteCreateDialog
-            editingItem={editingItem}
+        {editingItem && <PasswordDialog
             onClose={onClose}
             onSubmit={onSubmit}
+            editingItem={editingItem}
         />}
         <StyledList>
-            {types.map(item => <ListItem
+            {passwords.map(item => <ListItem
                 button
                 key={item.id}
                 onClick={() => onClickItem(item)}
             >
                 <ListItemText
-                    primary={item.name}
-                    secondary={item.notes}
+                    primary={item.title}
                 />
                 <ListItemSecondaryAction>
                     <IconButton onClick={() => onDelete(item.id)}>

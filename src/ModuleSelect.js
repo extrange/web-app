@@ -10,6 +10,7 @@ import {Networking} from "./util/networking";
 import {HomeAutomation} from "./modules/HomeAutomation/HomeAutomation";
 import {DVR} from "./modules/Dvr/DVR";
 import {OptionHedgeCalculator} from "./modules/OptionHedgeCalculator/OptionHedgeCalculator";
+import {Passwords} from './modules/Passwords/Passwords'
 
 const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#'
 
@@ -25,6 +26,10 @@ const modules = props => ({
     LITERATURE: {
         displayName: 'Literature',
         jsx: <Literature {...props}/>
+    },
+    PASSWORDS: {
+        displayName: 'Passwords',
+        jsx: <Passwords {...props}/>
     },
     HOME_AUTOMATION: {
         displayName: 'Home Automation',
