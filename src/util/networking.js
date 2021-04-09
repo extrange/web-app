@@ -1,13 +1,25 @@
 export class NotAuthenticated extends Error {
+    constructor(message, data) {
+        super(message);
+        this.data = data
+    }
 }
 
 export class ServerError extends Error {
+    constructor(message, data) {
+        super(message);
+        this.data = data
+    }
 }
 
 /**
  * Returned when invalid/missing values are given for fields
  */
 export class BadRequest extends Error {
+    constructor(message, data) {
+        super(message);
+        this.data = data
+    }
 }
 
 /**
@@ -28,7 +40,7 @@ export class Networking {
      * @param obj Parameters for the fetch() request. Defaults to 'GET'.
      * @returns {Promise<Response>}
      */
-    static send = async (url, {method=Networking.GET, headers, body = null,}) => {
+    static send = async (url, {method = Networking.GET, headers, body = null,}={}) => {
         let resp = await fetch(url, {
                 method: method,
                 credentials: 'include',

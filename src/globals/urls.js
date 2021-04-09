@@ -11,3 +11,4 @@ export const FILES_URL = 'https://files.nicholaslyz.com';
 // Login/Logout
 export const LOGIN_URL = `${API_URL}/login/`;
 export const LOGOUT_URL = `${API_URL}/logout/`;
+export const RECAPTCHA_KEY_URL = `${API_URL}/recaptcha-key/`

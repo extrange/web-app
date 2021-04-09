@@ -8,8 +8,6 @@ import {useInput} from "./util/useInput";
 import {useAsyncError} from "./util/useAsyncError";
 import ReCAPTCHA from "react-google-recaptcha";
 
-const SITE_RECAPTCHA_KEY = "6LeqZqIaAAAAAAO03xwyC8SrpGSRWbFqD-vpMe72"
-
 /*If this is in the class, it is redeclared on every render
 In switch statements, this will cause LOGIN_STATES.AUTHENTICATED to be unequal to other instances
 of itself. Declaring this once here ensures that the objects are definitely equal.*/
@@ -41,9 +39,10 @@ const StyledTextField = styled(TextField)`
   margin: 5px 0;
 `
 
-export const Login = ({setLoggedIn}) => {
+export const Login = ({setLoggedIn, recaptchaKey}) => {
 
     const [loginState, setLoginState] = useState(LOGIN_STATES.NOT_AUTHENTICATED);
+
     const {values, bind} = useInput();
     const setError = useAsyncError();
 
@@ -56,7 +55,6 @@ export const Login = ({setLoggedIn}) => {
 
     const submit = (token) => {
         setLoginState(LOGIN_STATES.LOADING);
-
 
         Networking.send(LOGIN_URL, {
             method: 'POST',
@@ -71,7 +69,6 @@ export const Login = ({setLoggedIn}) => {
             } else setError(error.message)
         });
     }
-
 
     return <StyledForm onSubmit={checkCaptcha}>
         <InnerContainer>
@@ -110,7 +107,7 @@ export const Login = ({setLoggedIn}) => {
             <ReCAPTCHA
                 ref={recaptchaRef}
                 size={'invisible'}
-                sitekey={SITE_RECAPTCHA_KEY}
+                sitekey={recaptchaKey}
                 onChange={submit}
             />
 

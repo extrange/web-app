@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {LOGIN_URL} from "./globals/urls";
+import {LOGIN_URL, RECAPTCHA_KEY_URL} from "./globals/urls";
 import {Login} from "./Login";
 import {ModuleSelect} from "./ModuleSelect";
 import {Loading} from "./shared/loading";
@@ -15,8 +15,10 @@ export const LoginCheck = () => {
     const [loggedIn, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
     const [loggedOutSb, setLoggedOutSb] = useState(false);
+    const [recaptchaKey, setRecaptchaKey] = useState('')
     const setError = useAsyncError();
 
+    /*Check if user is logged in*/
     useEffect(() => {
         Networking
             .send(LOGIN_URL, {method: 'GET'})
@@ -27,20 +29,22 @@ export const LoginCheck = () => {
             .catch(error => {
                 setLoading(false);
                 if (error instanceof NotAuthenticated) {
-                    setLoggedIn(false)
+                    Networking.send(RECAPTCHA_KEY_URL)
+                        .then(r => r.json())
+                        .then(r => void setRecaptchaKey(r['key']))
                 } else {
                     setError(error.message)
                 }
             })
     }, [setError]);
 
-    if (loading) return <Loading
+    if (loading || (!loggedIn && !recaptchaKey)) return <Loading
         open={true}
         message={'Checking authentication...'}
         fullscreen={true}/>;
 
     if (!loggedIn) {
-        return <Login setLoggedIn={setLoggedIn}/>
+        return <Login setLoggedIn={setLoggedIn} recaptchaKey={recaptchaKey}/>
     } else
         return <>
             <Snackbar
