@@ -7,6 +7,7 @@ import AddIcon from "@material-ui/icons/Add";
 import * as Url from './urls'
 import {addPassword, updatePassword} from './urls'
 import {PasswordDialog} from "./PasswordDialog";
+import {compareDesc, parseJSON} from 'date-fns'
 
 const StyledList = styled(List)`
   max-width: 600px;
@@ -59,20 +60,22 @@ export const PasswordList = ({
             editingItem={editingItem}
         />}
         <StyledList>
-            {passwords.map(item => <ListItem
-                button
-                key={item.id}
-                onClick={() => onClickItem(item)}
-            >
-                <ListItemText
-                    primary={item.title}
-                />
-                <ListItemSecondaryAction>
-                    <IconButton onClick={() => onDelete(item.id)}>
-                        <DeleteIcon/>
-                    </IconButton>
-                </ListItemSecondaryAction>
-            </ListItem>)}
+            {passwords.sort((a, b) =>
+                compareDesc(parseJSON(a.date_added), parseJSON(b.date_added)))
+                .map(item => <ListItem
+                    button
+                    key={item.id}
+                    onClick={() => onClickItem(item)}
+                >
+                    <ListItemText
+                        primary={item.title}
+                    />
+                    <ListItemSecondaryAction>
+                        <IconButton onClick={() => onDelete(item.id)}>
+                            <DeleteIcon/>
+                        </IconButton>
+                    </ListItemSecondaryAction>
+                </ListItem>)}
         </StyledList>
     </>
 }

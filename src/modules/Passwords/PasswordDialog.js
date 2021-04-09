@@ -82,6 +82,7 @@ export const PasswordDialog = ({
                 name={'notes'}
                 inputRef={register}
                 variant={'outlined'}
+                multiline
             />
         </FormContainer>
 

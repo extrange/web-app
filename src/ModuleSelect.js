@@ -70,7 +70,6 @@ export const ModuleSelect = ({setLoggedIn}) => {
     };
 
     const logout = () => {
-        /*Todo optionally display a loading element*/
         Networking
             .send(LOGOUT_URL, {method: 'POST'})
             .then(() => setLoggedIn(false));

@@ -13,12 +13,11 @@ import {Button, Snackbar} from "@material-ui/core";
 export const LoginCheck = () => {
 
     const [loggedIn, setLoggedIn] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [loggedOutSb, setLoggedOutSb] = useState(false);
     const setError = useAsyncError();
 
-    const checkIfLoggedIn = () => {
-        setLoading(true);
+    useEffect(() => {
         Networking
             .send(LOGIN_URL, {method: 'GET'})
             .then(() => {
@@ -33,19 +32,16 @@ export const LoginCheck = () => {
                     setError(error.message)
                 }
             })
-    };
-
-    useEffect(checkIfLoggedIn, [setError]);
+    }, [setError]);
 
     if (loading) return <Loading
         open={true}
         message={'Checking authentication...'}
         fullscreen={true}/>;
 
-    if (!loggedIn)
-        return <Login
-            setLoggedIn={setLoggedIn}/>;
-    else
+    if (!loggedIn) {
+        return <Login setLoggedIn={setLoggedIn}/>
+    } else
         return <>
             <Snackbar
                 open={loggedOutSb}>
