@@ -26,6 +26,7 @@ export const LoginCheckAndNetworkState = () => {
     const logout = () => void Networking
         .send(LOGOUT_URL, {method: 'POST'})
         .then(() => {
+            setHttpState(undefined)
             setLoggedIn(false)
             fetchRecaptchaKey()
         })
@@ -68,7 +69,7 @@ export const LoginCheckAndNetworkState = () => {
     return <>
         {httpState &&
         <NetworkStateSnackbar
-            setLoggedIn={setLoggedIn}
+            logout={logout}
             httpState={httpState}
             setHttpState={setHttpState}
         />}

@@ -17,7 +17,7 @@ export const NetworkState = {
 
 /*Displays appropriate snackbars informing users of network state/errors,
 * with remediation options*/
-export const NetworkStateSnackbar = ({httpState, setHttpState, setLoggedIn}) => {
+export const NetworkStateSnackbar = ({httpState, setHttpState, logout}) => {
 
     const [message, setMessage] = useState('')
 
@@ -30,7 +30,7 @@ export const NetworkStateSnackbar = ({httpState, setHttpState, setLoggedIn}) => 
         return <AlertSnackbarWithDialog
             dialogTitle={`HTTP Error ${httpState.httpError.status}: ${httpState.httpError.statusText}`}
             actions={<Button color={'primary'}
-                             onClick={() => setLoggedIn(false)}>
+                             onClick={logout}>
                 Login </Button>}
             dialogText={message}
             severity={'warning'}
