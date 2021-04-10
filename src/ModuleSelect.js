@@ -1,12 +1,10 @@
 import {useState} from "react";
-import {LOGOUT_URL} from "./globals/urls";
 import {Lists} from "./modules/Lists/Lists";
 import {Literature} from "./modules/Literature/Literature";
 import {StyledButton} from "./shared/common";
 import styled from "styled-components";
 import {BackgroundScreenRounded} from "./shared/backgroundScreen";
 import CallMadeIcon from '@material-ui/icons/CallMade';
-import {Networking} from "./util/networking";
 import {HomeAutomation} from "./modules/HomeAutomation/HomeAutomation";
 import {DVR} from "./modules/Dvr/DVR";
 import {OptionHedgeCalculator} from "./modules/OptionHedgeCalculator/OptionHedgeCalculator";
@@ -61,18 +59,12 @@ const InnerContainer = styled(BackgroundScreenRounded)`
 `;
 
 
-export const ModuleSelect = ({setLoggedIn}) => {
+export const ModuleSelect = ({logout}) => {
     const [currentModule, setCurrentModule] = useState(localStorage.getItem(CURRENT_MODULE));
 
     const returnToMainApp = () => {
         localStorage.removeItem(CURRENT_MODULE);
         setCurrentModule(null);
-    };
-
-    const logout = () => {
-        Networking
-            .send(LOGOUT_URL, {method: 'POST'})
-            .then(() => setLoggedIn(false));
     };
 
     return currentModule

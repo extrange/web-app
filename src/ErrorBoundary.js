@@ -31,10 +31,6 @@ export class ErrorBoundary extends Component {
         return {error: error};
     }
 
-    reloadPage = () => {
-        window.location.reload()
-    };
-
     setDialogOpen = state => this.setState({dialogOpen: state});
 
     componentDidCatch(error, errorInfo) {
@@ -77,7 +73,8 @@ export class ErrorBoundary extends Component {
                         <Button
                             variant={'text'}
                             color={'primary'}
-                            onClick={this.reloadPage}
+                            onClick={() => window.location.reload()
+                            }
                         >Reload</Button>
                     </>
                     }>

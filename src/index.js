@@ -14,7 +14,7 @@ import 'overlayscrollbars/css/OverlayScrollbars.css'
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {OverlayScrollbarOptions, theme} from "./globals/theme";
 import {RandomBackground} from "./shared/randomBackground";
-import {LoginCheck} from "./LoginCheck";
+import {LoginCheckAndNetworkState} from "./LoginCheckAndNetworkState";
 
 /*Largest index of background images, inclusive*/
 const numImages = 26;
@@ -35,7 +35,7 @@ ReactDOM.render(
                 <LoadServiceWorker/>
                 <OverlayScrollbarsComponent
                     options={OverlayScrollbarOptions}>
-                    <LoginCheck/>
+                    <LoginCheckAndNetworkState/>
                 </OverlayScrollbarsComponent>
             </ErrorBoundary>
         </MuiThemeProvider>

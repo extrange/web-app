@@ -1,21 +1,7 @@
+import {NetworkState} from "../NetworkStateSnackbar";
+
+
 export class NotAuthenticated extends Error {
-    constructor(message, data) {
-        super(message);
-        this.data = data
-    }
-}
-
-export class ServerError extends Error {
-    constructor(message, data) {
-        super(message);
-        this.data = data
-    }
-}
-
-/**
- * Returned when invalid/missing values are given for fields
- */
-export class BadRequest extends Error {
     constructor(message, data) {
         super(message);
         this.data = data
@@ -34,37 +20,39 @@ export class Networking {
     static PUT = 'PUT';
 
     /**
-     * Wrap fetch request with authentication headers and todo manage reauth automatically
-     * Throws errors if response status code is not between 200-299.
+     * Wrap fetch request with authentication headers.
+     * By default, notifies user and silences 4xx/5xx errors (promise is NOT resolved)
+     *
+     * Sample usage:
+     * ```
+     * Networking.send(LOGIN_URL, {method: Networking.POST, body: {...}})
+     * .then(resp => //code to deal with response)
+     * ```
+     *
      * @param url
      * @param obj Parameters for the fetch() request. Defaults to 'GET'.
      * @returns {Promise<Response>}
      */
-    static send = async (url, {method = Networking.GET, headers, body = null,}={}) => {
-        let resp = await fetch(url, {
-                method: method,
-                credentials: 'include',
-                headers: {
-                    Accept: 'application/json',
-                    ...headers
-                },
-                body: body
-            }
-        );
+    static send = (url, {method = Networking.GET, headers, body = null} = {}) =>
+        new Promise((resolve, reject) => {
+            fetch(url, {
+                    method: method,
+                    credentials: 'include',
+                    headers: {
+                        Accept: 'application/json',
+                        ...headers
+                    },
+                    body: body
+                }
+            ).then(resp => {
+                if (resp.ok) {
+                    resolve(resp)
+                } else {
+                    NetworkState.httpError(resp)
+                }
+            }).catch(NetworkState.fetchError)
+        })
 
-        if (resp.ok) {
-            return resp
-        } else if (resp.status === 400) {
-            return resp.json().then(json => {
-                throw new BadRequest(`BadRequest: ${resp.status}:${resp.statusText}
-            ${JSON.stringify(json, undefined, 2)}`)
-            })
-        } else if (resp.status === 401 || resp.status === 403) {
-            throw new NotAuthenticated(`NotAuthenticated: ${resp.status}:${resp.statusText}`)
-            //todo reauth
-        } else throw new ServerError(`ServerError: ${resp.status}:${resp.statusText}`)
-
-    };
 
     /**
      * Convenience methods for obtaining get, add, update and delete methods from a URL
