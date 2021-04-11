@@ -1,8 +1,7 @@
 import {useContext, useEffect, useRef} from "react";
 import {NotificationContext} from "../../shared/NotificationProvider/notificationContext";
-import {checkMail} from "./checkMail";
+import {CHECK_MAIL_FREQUENCY_MS, checkMailThrottled} from "./checkMailThrottled";
 
-const CHECK_MAIL_FREQUENCY_MS = 5 * 1000
 
 export const Mail = () => {
 
@@ -10,16 +9,12 @@ export const Mail = () => {
     const intervalId = useRef()
 
     useEffect(() => {
-            const checkMailOnInterval = () =>
-                setInterval(
-                    () => checkMail(notificationParams),
-                    CHECK_MAIL_FREQUENCY_MS)
-
-            /*Set event listener to handle focus/blur events
-             * Note: Not consistent in the browser.*/
-            const onFocus = () => {
+            const checkMailAndSetInterval = () => {
+                checkMailThrottled(notificationParams)
                 if (!intervalId.current)
-                    intervalId.current = checkMailOnInterval()
+                    intervalId.current = setInterval(
+                        () => checkMailThrottled(notificationParams),
+                        CHECK_MAIL_FREQUENCY_MS);
             }
 
             const onBlur = () => {
@@ -27,21 +22,18 @@ export const Mail = () => {
                     clearInterval(intervalId.current)
                     intervalId.current = undefined
                 }
-
             }
 
-            /*Setup event listener on first run and run once*/
-            intervalId.current = checkMailOnInterval()
-            checkMail(notificationParams)
+            /*Run once on mount*/
+            checkMailAndSetInterval()
 
-            window.addEventListener('focus', onFocus)
+            window.addEventListener('focus', checkMailAndSetInterval)
             window.addEventListener('blur', onBlur)
 
             // Remove all listeners/sync on unmount
             return () => {
-                clearInterval(intervalId.current)
-                intervalId.current = undefined
-                window.removeEventListener('focus', onFocus)
+                onBlur()
+                window.removeEventListener('focus', checkMailAndSetInterval)
                 window.removeEventListener('blur', onBlur)
             }
         }
