@@ -87,7 +87,7 @@ export const ModuleSelect = ({logout}) => {
                 {<StyledButton
                     variant={'outlined'}
                     color={'primary'}
-                    onClick={() => window.open(GDOCS_ATTRACTIONS_URL, '_blank')}
+                    onClick={() => window.open(GDOCS_ATTRACTIONS_URL, '_blank', 'noopener,noreferrer')}
                     endIcon={<CallMadeIcon/>}>
                     Attractions and Food
                 </StyledButton>}

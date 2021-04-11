@@ -21,7 +21,8 @@ export class Networking {
 
     /**
      * Wrap fetch request with authentication headers.
-     * By default, notifies user and silences 4xx/5xx errors (promise is NOT resolved)
+     * Throws on fetch/4xx/5xx errors (promise is NOT resolved)
+     * User will be notified via snackbar.
      *
      * Sample usage:
      * ```
@@ -34,7 +35,7 @@ export class Networking {
      * @returns {Promise<Response>}
      */
     static send = (url, {method = Networking.GET, headers, body = null} = {}) =>
-        new Promise((resolve, reject) => {
+        new Promise(resolve =>
             fetch(url, {
                     method: method,
                     credentials: 'include',
@@ -48,10 +49,10 @@ export class Networking {
                 if (resp.ok) {
                     resolve(resp)
                 } else {
-                    NetworkState.httpError(resp)
+                    NetworkState.throwError(resp)
                 }
-            }).catch(NetworkState.fetchError)
-        })
+            }).catch(NetworkState.throwError)
+        )
 
 
     /**

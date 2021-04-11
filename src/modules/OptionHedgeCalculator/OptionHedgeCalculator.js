@@ -75,7 +75,7 @@ const formatDecimals = new Intl.NumberFormat(undefined, {maximumFractionDigits: 
 const formatDollars = new Intl.NumberFormat(undefined, {
     style: 'currency',
     currency: 'USD',
-    currencyDisplay: 'narrowSymbol'
+    currencyDisplay: 'symbol'
 })
 
 const FieldUseWatch = ({control, fields: userFields, Component}) => {

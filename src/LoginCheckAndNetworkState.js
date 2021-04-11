@@ -14,7 +14,7 @@ export const LoginCheckAndNetworkState = () => {
 
     const [loggedIn, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [httpState, setHttpState] = useState();
+    const [httpState, setNetworkError] = useState();
     const [recaptchaKey, setRecaptchaKey] = useState('')
     const setError = useAsyncError();
 
@@ -26,7 +26,7 @@ export const LoginCheckAndNetworkState = () => {
     const logout = () => void Networking
         .send(LOGOUT_URL, {method: 'POST'})
         .then(() => {
-            setHttpState(undefined)
+            setNetworkError(undefined)
             setLoggedIn(false)
 
             /*If the user refreshed the page while logged in, the recaptcha key
@@ -39,8 +39,7 @@ export const LoginCheckAndNetworkState = () => {
     useEffect(() => {
 
         /*Setup global callback to notify user of 4xx/5xx errors.*/
-        NetworkState.httpError = httpError => setHttpState({httpError})
-        NetworkState.fetchError = fetchError => setHttpState({fetchError})
+        NetworkState.throwError = error => setNetworkError(error)
 
         /*Check if user is logged in*/
         fetch(LOGIN_URL, {
@@ -74,10 +73,10 @@ export const LoginCheckAndNetworkState = () => {
         {httpState &&
         <NetworkStateSnackbar
             logout={logout}
-            httpState={httpState}
-            setHttpState={setHttpState}
+            networkError={httpState}
+            setNetworkError={setNetworkError}
         />}
-        <RefreshSession setLoggedOutSb={setHttpState}/>
+        <RefreshSession setLoggedOutSb={setNetworkError}/>
         <NotificationProvider>
             <ModuleSelect logout={logout}/>
         </NotificationProvider>
