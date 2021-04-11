@@ -28,7 +28,11 @@ export const LoginCheckAndNetworkState = () => {
         .then(() => {
             setHttpState(undefined)
             setLoggedIn(false)
-            fetchRecaptchaKey()
+
+            /*If the user refreshed the page while logged in, the recaptcha key
+            * would not have been fetched*/
+            if (!recaptchaKey)
+                fetchRecaptchaKey()
         })
 
 

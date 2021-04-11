@@ -1,78 +1,52 @@
-import {debounce} from 'lodash'
-import {useContext, useEffect} from "react";
-import {getIhisMail, getMohhMail, HMAIL_URL} from "./urls";
-import {useAsyncError} from "../../util/useAsyncError";
+import {useContext, useEffect, useRef} from "react";
 import {NotificationContext} from "../../shared/NotificationProvider/notificationContext";
-import {NotAuthenticated} from "../../util/networking";
+import {checkMail} from "./checkMail";
 
-const [IHIS, MOHH] = ['IHIS', 'MOHH'];
-const MAIL_UPDATE_FREQUENCY = 60 * 1000
+const CHECK_MAIL_FREQUENCY_MS = 5 * 1000
 
 export const Mail = () => {
 
-    const setError = useAsyncError();
     const notificationParams = useContext(NotificationContext)
-
-    const notifyMailDebounced = debounce(({addNotification, removeNotificationBySource}) => {
-
-        const ihisPromise = getIhisMail().then(json => {
-            removeNotificationBySource(IHIS);
-            if (json.length > 0) {
-                addNotification({
-                    source: IHIS,
-                    title: `Unread Mail (${json.length})`,
-                    content: [json[0]['from'].join(', '), json[0]['preview']].join(' - '),
-                    count: json.length,
-                    action: () => window.open(HMAIL_URL, '_blank')
-                })
-            }
-        })
-
-        const mohhPromise = getMohhMail().then(json => {
-            removeNotificationBySource(MOHH);
-            if (json.length > 0) {
-                addNotification({
-                    source: 'MOHH',
-                    title: `Unread Mail (${json.length})`,
-                    content: [json[0]['from'].join(', '), json[0]['preview']].join(' - '),
-                    count: json.length,
-                    action: () => window.open(HMAIL_URL, '_blank')
-                })
-            }
-
-        })
-
-        return Promise.all([ihisPromise, mohhPromise])
-
-    }, MAIL_UPDATE_FREQUENCY, {leading: true, trailing: true, maxWait: MAIL_UPDATE_FREQUENCY})
+    const intervalId = useRef()
 
     useEffect(() => {
-            const notifyMailDebouncedWithError = () =>
-                notifyMailDebounced(notificationParams).catch(e => (e instanceof NotAuthenticated) ? console.log(e) : setError(e.message))
+            const checkMailOnInterval = () =>
+                setInterval(
+                    () => checkMail(notificationParams),
+                    CHECK_MAIL_FREQUENCY_MS)
 
-            // Run once on startup
-            notifyMailDebouncedWithError()
-
-            // Set event listener for window
-            let intervalId;
-            const onFocusListener = () => {
-                notifyMailDebouncedWithError()
-                intervalId = setInterval(() => notifyMailDebouncedWithError(), 30 * 1000)
+            /*Set event listener to handle focus/blur events
+             * Note: Not consistent in the browser.*/
+            const onFocus = () => {
+                if (!intervalId.current)
+                    intervalId.current = checkMailOnInterval()
             }
 
-            // Don't actively check for mail when window is blurred
-            const onBlurListener = () => {
-                clearInterval(intervalId)
+            const onBlur = () => {
+                if (intervalId.current) {
+                    clearInterval(intervalId.current)
+                    intervalId.current = undefined
+                }
+
             }
 
-            window.addEventListener('focus', onFocusListener)
-            window.addEventListener('blur', onBlurListener)
+            /*Setup event listener on first run and run once*/
+            intervalId.current = checkMailOnInterval()
+            checkMail(notificationParams)
 
-            // Be nice and tidy on unmounting
-            return () => window.removeEventListener('focus', onFocusListener)
+            window.addEventListener('focus', onFocus)
+            window.addEventListener('blur', onBlur)
+
+            // Remove all listeners/sync on unmount
+            return () => {
+                clearInterval(intervalId.current)
+                intervalId.current = undefined
+                window.removeEventListener('focus', onFocus)
+                window.removeEventListener('blur', onBlur)
+            }
         }
 
-        // eslint-disable-next-line
+        //eslint-disable-next-line
         , [])
 
     return null
