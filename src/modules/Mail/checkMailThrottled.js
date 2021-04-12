@@ -1,7 +1,7 @@
 import {getIhisMail, getMohhMail, HMAIL_URL} from "./urls";
 import {throttle} from 'lodash'
 
-export const CHECK_MAIL_FREQUENCY_MS = 10 * 1000
+export const CHECK_MAIL_FREQUENCY_MS = 30 * 1000
 
 const [IHIS, MOHH] = ['IHIS', 'MOHH'];
 

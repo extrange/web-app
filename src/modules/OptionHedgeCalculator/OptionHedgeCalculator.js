@@ -61,7 +61,6 @@ const StyledTextFieldClearableInfoCurrency = styled(TextFieldClearableInfoCurren
 const explanatoryText = `Hedge instrument: SPY puts
 NOTE: This calculates a 1:1 put spread, not the 1:1.1 as described in the 'Options Edge' book
 
-Market value of portfolio (that is what is hedged, not invested amount)
 Note: As I am only hedging CSPX and IWDA, beta for my portfolio is 1
 Take beta of IWDA to be 0.89 for now (see 'Finance and Investing' doc)
 Beta of DPYA = IWDP = 0.99
@@ -136,9 +135,9 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
             <StyledTypography variant={'body1'}>{explanatoryText}</StyledTypography>
 
             <ControlHelper
-                label={'Portfolio Value (USD)'}
+                label={'Beta-weighted Portfolio Value (USD)'}
                 variant={'outlined'}
-                info={'Beta-weighted portfolio value in USD'}
+                info={'Take beta of IWDA to be 0.89 and exclude bonds e.g. AGGU'}
 
                 name={FIELDS.portfolioValue}
                 Component={StyledTextFieldClearableInfoCurrency}
@@ -166,7 +165,7 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
                 control={control}
                 fields={[FIELDS.spyPrice]}
                 Component={({fields}) => <Typography variant={'body1'}>
-                    8.6% OTM Put strike to sell: {formatNoDecimals.format(0.914 * fields[FIELDS.spyPrice])}
+                    Strike price for short 8.6% delta OTM, 90-day put: {formatNoDecimals.format(0.914 * fields[FIELDS.spyPrice])}
                 </Typography>}
             />
 
@@ -188,7 +187,7 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
                 fields={[FIELDS.hedgeRatio, FIELDS.portfolioValue]}
                 Component={({fields}) =>
                     <Typography variant={'body1'}>Notional
-                        amount: {formatDollars.format(fields[FIELDS.portfolioValue] * fields[FIELDS.hedgeRatio])}</Typography>}
+                        amount to hedge: {formatDollars.format(fields[FIELDS.portfolioValue] * fields[FIELDS.hedgeRatio])}</Typography>}
 
             />
 
