@@ -41,6 +41,7 @@ export class Networking {
                     credentials: 'include',
                     headers: {
                         Accept: 'application/json',
+                        'Content-Type': 'application/json',
                         ...headers
                     },
                     body: body
@@ -84,7 +85,6 @@ export class Networking {
             {
                 method: Networking.POST,
                 body: JSON.stringify(object),
-                headers: {'Content-Type': 'application/json',}
             })
             .then(resp => resp.json());
 
@@ -93,7 +93,6 @@ export class Networking {
             {
                 method: Networking.PUT,
                 body: JSON.stringify(object),
-                headers: {'Content-Type': 'application/json',}
             })
             .then(resp => resp.json());
 

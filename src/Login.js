@@ -55,7 +55,7 @@ export const Login = ({setLoggedIn, recaptchaKey}) => {
                 method: Networking.POST,
                 credentials: 'include',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `username=${values.username}&password=${values.password}&token=${token}`
+                body: `username=${values.username}&password=${values.password}&token=${token}&otp=${values.otp}`
             }))
             .then(r => {
                 if (r.ok) {
@@ -99,6 +99,14 @@ export const Login = ({setLoggedIn, recaptchaKey}) => {
                 required
                 variant={'outlined'}
                 {...bind('password')}
+            />
+
+             <StyledTextField
+                type={'password'}
+                label={'OTP'}
+                fullWidth
+                variant={'outlined'}
+                {...bind('otp')}
             />
 
             <Button

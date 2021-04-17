@@ -9,6 +9,7 @@ import {HomeAutomation} from "./modules/HomeAutomation/HomeAutomation";
 import {DVR} from "./modules/Dvr/DVR";
 import {OptionHedgeCalculator} from "./modules/OptionHedgeCalculator/OptionHedgeCalculator";
 import {Passwords} from './modules/Passwords/Passwords'
+import {Account} from "./modules/Account/Account";
 
 const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#'
 
@@ -17,13 +18,17 @@ const CURRENT_MODULE = 'CURRENT_MODULE';
 
 /*Add new modules here*/
 const modules = props => ({
-    TASKS: {
+    LISTS: {
         displayName: 'Lists',
         jsx: <Lists {...props}/>
     },
     LITERATURE: {
         displayName: 'Literature',
         jsx: <Literature {...props}/>
+    },
+    ACCOUNT: {
+        displayName: 'Account',
+        jsx: <Account {...props}/>
     },
     PASSWORDS: {
         displayName: 'Passwords',
@@ -67,7 +72,7 @@ export const ModuleSelect = ({logout}) => {
         setCurrentModule(null);
     };
 
-    return currentModule
+    return currentModule in modules()
         ? modules({returnToMainApp, logout})[currentModule].jsx
         : <FlexContainer>
             <InnerContainer>
