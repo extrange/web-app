@@ -3,7 +3,7 @@ import React from "react";
 import {Button, TextField} from "@material-ui/core";
 import styled from "styled-components";
 import {useForm} from "react-hook-form";
-
+import {generatePassword, getEntropy} from "./passwordUtil";
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -35,7 +35,7 @@ export const PasswordDialog = ({
                                    editingItem: {id, title, username, password, notes}
                                }) => {
 
-    const {register, handleSubmit} = useForm({
+    const {register, handleSubmit, watch} = useForm({
         defaultValues: {
             title,
             username,
@@ -50,6 +50,8 @@ export const PasswordDialog = ({
             Submit
         </Button>
     </StyledFooter>
+
+
 
     return <StyledDialogBlurResponsive
         open
@@ -76,7 +78,8 @@ export const PasswordDialog = ({
                 inputRef={register}
                 variant={'outlined'}
             />
-
+            <pre>{watch('password') && JSON.stringify(getEntropy(watch('password')), undefined, 2)}</pre>
+            <pre>Password: {generatePassword(4)}</pre>
             <StyledTextField
                 label={'Notes'}
                 name={'notes'}

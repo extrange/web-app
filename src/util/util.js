@@ -49,3 +49,38 @@ export const isLocalhost = Boolean(
 
 export const noop = () => {
 };
+
+let arr = new Uint32Array(1)
+const max = 2 ** 32
+
+/**
+ * Cryptographically secure random number generator.
+ * Assumes window.crypto exists.
+ */
+export const getSecureRandom = () => {
+    if (!window.crypto) throw new Error('window.crypto not supported on browser')
+
+    /*Will generate random numbers between 0 and 1 (exclusive) with 32 bit maximum precision
+    * Rejection sampling.*/
+    const random = () => {
+        let val = crypto.getRandomValues(arr)[0] / max
+        if (val >= 1) return random()
+        return val
+    }
+
+    /*Random integer between min (inclusive) and max (exclusive)*/
+    const randint = (min, max) => {
+        let floor_min = Math.floor(min)
+        let floor_max = Math.floor(max)
+        return Math.floor(random() * (floor_max - floor_min)) + floor_min
+    }
+
+    /*Select random element of an array*/
+    const choice = arr => arr[randint(0, arr.length)]
+
+    return {
+        random,
+        randint,
+        choice,
+    }
+}

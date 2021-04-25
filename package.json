@@ -39,6 +39,7 @@
     "shaka-player": "^3.0.10",
     "source-map-explorer": "^2.5.2",
     "styled-components": "^5.2.1",
+    "ua-parser-js": "^0.7.28",
     "worker-loader": "^3.0.7",
     "yup": "^0.32.8"
   },

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {LOGIN_URL} from "./globals/urls";
 import styled from "styled-components";
-import {Button, CircularProgress, TextField, Typography} from "@material-ui/core";
+import {Button, Checkbox, CircularProgress, FormControlLabel, TextField, Typography} from "@material-ui/core";
 import {BackgroundScreenRounded} from "./shared/backgroundScreen";
 import {Networking} from "./util/networking";
 import {useInput} from "./util/useInput";
@@ -41,7 +41,7 @@ export const Login = ({setLoggedIn, recaptchaKey}) => {
     const [loginMessage, setLoginMessage] = useState('Sign In');
     const [loading, setLoading] = useState(false)
 
-    const {values, bind} = useInput();
+    const {values, bind, setValue} = useInput();
     const setError = useAsyncError();
     const recaptchaRef = React.useRef()
 
@@ -54,8 +54,17 @@ export const Login = ({setLoggedIn, recaptchaKey}) => {
             .then(token => fetch(LOGIN_URL, {
                 method: Networking.POST,
                 credentials: 'include',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `username=${values.username}&password=${values.password}&token=${token}&otp=${values.otp}`
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: values.username,
+                    password: values.password,
+                    token: token,
+                    otp: values.otp,
+                    save_browser: values.saveBrowser
+                })
             }))
             .then(r => {
                 if (r.ok) {
@@ -101,12 +110,24 @@ export const Login = ({setLoggedIn, recaptchaKey}) => {
                 {...bind('password')}
             />
 
-             <StyledTextField
+            <StyledTextField
                 type={'password'}
                 label={'OTP'}
+                autoComplete={'off'}
                 fullWidth
                 variant={'outlined'}
                 {...bind('otp')}
+            />
+
+            <FormControlLabel
+                control={<Checkbox
+                    checked={values.saveBrowser}
+                    onChange={e => setValue({
+                        name: 'saveBrowser',
+                        value: e.target.checked
+                    })}
+                />}
+                label={'Remember browser'}
             />
 
             <Button
