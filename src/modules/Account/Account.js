@@ -4,7 +4,8 @@ import {Button, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typ
 import QRCode from 'qrcode.react'
 import {Networking} from "../../util/networking";
 import {BROWSERS_URL, getBrowserDetail, TWOFACTOR_URL} from "./urls";
-import {compareDesc, formatDistanceToNowStrict, parseJSON} from "date-fns";
+import {compareDesc, parseJSON} from "date-fns";
+import {formatDistanceToNowPretty} from "../../util/util";
 import {BackgroundScreen} from "../../shared/backgroundScreen";
 import CheckIcon from '@material-ui/icons/Check';
 import UAParser from 'ua-parser-js'
@@ -85,9 +86,9 @@ export const Account = ({returnToMainApp, logout}) => {
                 value={secret}
             /></a>}
             <p>OTP is {Boolean(otpStatus) ? 'enabled' : 'disabled'}.</p>
-            <p>Created: {otpStats['created'] && formatDistanceToNowStrict(parseJSON(otpStats['created']), {addSuffix: true})}</p>
+            <p>Created: {otpStats['created'] && formatDistanceToNowPretty(parseJSON(otpStats['created']))}</p>
             <p>Last
-                verified: {otpStats['last_verification'] && formatDistanceToNowStrict(parseJSON(otpStats['last_verification']), {addSuffix: true})}</p>
+                verified: {otpStats['last_verification'] && formatDistanceToNowPretty(parseJSON(otpStats['last_verification']))}</p>
             <Button color={'primary'} variant={'contained'} onClick={register}>Register</Button>
             <Button color={'primary'} variant={'contained'} onClick={enable}>Enable</Button>
             <Button color={'secondary'} variant={'contained'} onClick={disable}>Disable</Button>
@@ -102,6 +103,7 @@ export const Account = ({returnToMainApp, logout}) => {
                         <TableCell>IP</TableCell>
                         <TableCell>User-Agent</TableCell>
                         <TableCell>Last Activity</TableCell>
+                        <TableCell>First Login</TableCell>
                         <TableCell>This browser?</TableCell>
                         <TableCell>Country Code</TableCell>
                         <TableCell>Saved?</TableCell>
@@ -113,7 +115,8 @@ export const Account = ({returnToMainApp, logout}) => {
                         <TableRow key={e.id}>
                             <TableCell>{e.ip}</TableCell>
                             <TableCell>{prettifyUAString(e.user_agent).prettified}</TableCell>
-                            <TableCell>{formatDistanceToNowStrict(parseJSON(e.last_activity), {addSuffix: true})}</TableCell>
+                            <TableCell>{formatDistanceToNowPretty(parseJSON(e.last_activity), new Date())}</TableCell>
+                            <TableCell>{formatDistanceToNowPretty(parseJSON(e.first_login), new Date())}</TableCell>
                             <TableCell>{e.is_current_session ? <CheckIcon/> : null}</TableCell>
                             <TableCell>{e.country_code}</TableCell>
                             <TableCell>{e.is_saved ? <CheckIcon/> : null}</TableCell>
@@ -129,6 +132,7 @@ export const Account = ({returnToMainApp, logout}) => {
                         <TableCell>IP</TableCell>
                         <TableCell>User-Agent</TableCell>
                         <TableCell>Last Activity</TableCell>
+                        <TableCell>First Login</TableCell>
                         <TableCell>This browser?</TableCell>
                         <TableCell>Country Code</TableCell>
                         <TableCell>Saved?</TableCell>
@@ -140,7 +144,8 @@ export const Account = ({returnToMainApp, logout}) => {
                         <TableRow key={e.id}>
                             <TableCell>{e.ip}</TableCell>
                             <TableCell>{prettifyUAString(e.user_agent).prettified}</TableCell>
-                            <TableCell>{formatDistanceToNowStrict(parseJSON(e.last_activity), {addSuffix: true})}</TableCell>
+                            <TableCell>{formatDistanceToNowPretty(parseJSON(e.last_activity))}</TableCell>
+                            <TableCell>{formatDistanceToNowPretty(parseJSON(e.first_login))}</TableCell>
                             <TableCell>{e.is_current_session ? <CheckIcon/> : null}</TableCell>
                             <TableCell>{e.country_code}</TableCell>
                             <TableCell>{e.is_saved ? <CheckIcon/> : null}</TableCell>

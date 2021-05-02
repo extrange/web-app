@@ -40,13 +40,14 @@ export const Login = ({setLoggedIn, recaptchaKey}) => {
 
     const [loginMessage, setLoginMessage] = useState('Sign In');
     const [loading, setLoading] = useState(false)
+    const [otpRequired, setOtpRequired] = useState(false)
 
     const {values, bind, setValue} = useInput();
     const setError = useAsyncError();
     const recaptchaRef = React.useRef()
 
 
-    const checkCaptcha = event => {
+    const onSubmit = event => {
         setLoading(true)
         event.preventDefault();
         recaptchaRef.current
@@ -67,68 +68,77 @@ export const Login = ({setLoggedIn, recaptchaKey}) => {
                 })
             }))
             .then(r => {
-                if (r.ok) {
-                    setLoggedIn(true)
-                } else {
-                    if ([401, 403].includes(r.status)) {
-
-                        /*Authentication error. Reset captcha to allow user to retry*/
-                        r.json().then(s => setLoginMessage(s.message))
-                        recaptchaRef.current.reset()
-                        setLoading(false)
-                    } else {
-
-                        /*Throw on other, non 401/403 errors*/
-                        setError(`HTTP Error ${r.status}: ${r.statusText}`)
-                    }
+                if (r.ok) setLoggedIn(true)
+                else if (![401, 403].includes(r.status)) {
+                    /*Throw on other, non 401/403 errors*/
+                    setError(`HTTP Error ${r.status}: ${r.statusText}`)
                 }
+                return r.json()
+            })
+            .then(r => {
+                /*401/403 errors*/
+                if (r.otp_required && !otpRequired) {
+                    /*Prompt for OTP*/
+                    setOtpRequired(true)
+                } else {
+                    /*Invalid OTP*/
+                    setLoginMessage(r.message)
+                }
+                /*Reset captcha to allow user to retry*/
+                recaptchaRef.current?.reset()
+                setLoading(false)
             })
     };
-    return <StyledForm onSubmit={checkCaptcha}>
+    return <StyledForm onSubmit={onSubmit}>
         <InnerContainer>
             <Typography variant={'h6'} gutterBottom align={"center"}>
                 {loginMessage}
             </Typography>
-            <StyledTextField
-                type='text'
-                label={'Username'}
-                fullWidth
-                required
-                autoFocus
-                variant={'outlined'}
-                autoComplete={'username'}
-                {...bind('username')}
-            />
+            {!otpRequired && <>
+                <StyledTextField
+                    type='text'
+                    label={'Username'}
+                    fullWidth
+                    required
+                    autoFocus
+                    variant={'outlined'}
+                    autoComplete={'username'}
+                    {...bind('username')}
+                />
 
-            <StyledTextField
-                type={'password'}
-                label={'Password'}
-                autoComplete={'current-password'}
-                fullWidth
-                required
-                variant={'outlined'}
-                {...bind('password')}
-            />
+                <StyledTextField
+                    type={'password'}
+                    label={'Password'}
+                    autoComplete={'current-password'}
+                    fullWidth
+                    required
+                    variant={'outlined'}
+                    {...bind('password')}
+                />
+            </>}
 
-            <StyledTextField
-                type={'password'}
-                label={'OTP'}
-                autoComplete={'off'}
-                fullWidth
-                variant={'outlined'}
-                {...bind('otp')}
-            />
-
-            <FormControlLabel
-                control={<Checkbox
-                    checked={values.saveBrowser}
-                    onChange={e => setValue({
-                        name: 'saveBrowser',
-                        value: e.target.checked
-                    })}
-                />}
-                label={'Remember browser'}
-            />
+            {otpRequired && <>
+                <StyledTextField
+                    type={'password'}
+                    label={'OTP'}
+                    autoComplete={'one-time-code'}
+                    fullWidth
+                    variant={'outlined'}
+                    inputmode={"numeric"}
+                    pattern={"[0-9]*"}
+                    {...bind('otp')}
+                />
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={values.saveBrowser}
+                        onChange={e => setValue({
+                            name: 'saveBrowser',
+                            value: e.target.checked
+                        })}
+                    />}
+                    label={'Remember browser'}
+                />
+            </>}
 
             <Button
                 variant={'contained'}
@@ -136,9 +146,7 @@ export const Login = ({setLoggedIn, recaptchaKey}) => {
                 color={'primary'}
                 fullWidth
             >
-                <Spacer/>
-                Login
-                {loading ? <StyledCircularProgress color={"inherit"} size={20}/> : <Spacer/>}
+                <Spacer/>Login{loading ? <StyledCircularProgress color={"inherit"} size={20}/> : <Spacer/>}
             </Button>
             <ReCAPTCHA
                 ref={recaptchaRef}
