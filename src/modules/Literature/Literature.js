@@ -90,7 +90,7 @@ export const Literature = ({returnToMainApp, logout}) => {
         void getTypes();
     }, [getAuthors, getBooks, getGenres, getTypes]);
 
-    const drawerContent = <List disablePadding dense>
+    const drawerContent = <List disablePadding>
         {Object.entries(LITERATURE_MODULES()).map(([key, value]) => <ListItem
             key={key}
             button

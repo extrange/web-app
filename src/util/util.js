@@ -4,7 +4,15 @@
  */
 import removeAccents from "remove-accents"
 import seedrandom from 'seedrandom'
-import {differenceInCalendarDays, differenceInCalendarYears, format, formatDistanceToNow} from "date-fns";
+import {
+    differenceInCalendarDays,
+    differenceInCalendarYears,
+    differenceInMinutes,
+    format,
+    formatDistanceToNow,
+    formatDistanceToNowStrict
+} from "date-fns";
+import UAParser from "ua-parser-js";
 
 /**
  * Strip accents, empty spaces and lowercase a string (for comparison purposes)
@@ -40,17 +48,21 @@ export const getDaysSinceEpoch = date => date ?
     differenceInCalendarDays(new Date(), new Date(0));
 
 /**
- * Returns formatDateToNow if within the same calendar day, otherwise
- * returns date like 18 Apr if same calendar year, otherwise
- * like Apr 2021
+ * Returns formatDateToNow if within the same minute,
+ * otherwise returns formatDistanceToNowStrict if within same calendar day,
+ * otherwise returns date like 18 Apr if same calendar year,
+ * otherwise like Apr 2021
  * @param date
  */
-export const formatDistanceToNowPretty = date =>
-    differenceInCalendarDays(new Date(), date) < 1 ?
-        formatDistanceToNow(date, {addSuffix: true}) :
-        differenceInCalendarYears(date, new Date()) < 1 ?
-            format(date, 'd MMM') :
-            format(date, 'MMM y')
+export const formatDistanceToNowPretty = date => {
+    if (differenceInMinutes(new Date(), date) < 1)
+        return formatDistanceToNow(date, {addSuffix: true})
+    if (differenceInCalendarDays(new Date(), date) < 1)
+        return formatDistanceToNowStrict(date, {addSuffix: true})
+    if (differenceInCalendarYears(date, new Date()) < 1)
+        return format(date, 'd MMM')
+    return format(date, 'MMM y')
+}
 
 export const isLocalhost = Boolean(
     window.location.hostname === 'localhost' ||
@@ -95,5 +107,23 @@ export const getSecureRandom = () => {
         random,
         randint,
         choice,
+    }
+}
+
+export const prettifyUAString = uaString => {
+    let ua = UAParser(uaString)
+    let {
+        browser: {
+            name: browserName,
+        },
+        // if type is set, it is mobile
+        device: {model, type},
+        os: {name: osName, version: osVersion}
+    } = ua
+
+    return {
+        name: `${browserName} on ${osName} ${osVersion}${model ? ` (${model})` : ''}`,
+        isMobile: Boolean(type),
+        browserName
     }
 }
