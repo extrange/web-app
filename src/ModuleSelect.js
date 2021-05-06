@@ -8,7 +8,7 @@ import CallMadeIcon from '@material-ui/icons/CallMade';
 import {HomeAutomation} from "./modules/HomeAutomation/HomeAutomation";
 import {DVR} from "./modules/Dvr/DVR";
 import {OptionHedgeCalculator} from "./modules/OptionHedgeCalculator/OptionHedgeCalculator";
-import {Passwords} from './modules/Passwords/Passwords'
+import {PasswordTools} from './modules/PasswordTools/PasswordTools'
 import {Account} from "./modules/Account/Account";
 
 const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#'
@@ -31,8 +31,8 @@ const modules = props => ({
         jsx: <Account {...props}/>
     },
     PASSWORDS: {
-        displayName: 'Passwords',
-        jsx: <Passwords {...props}/>
+        displayName: 'Password Tools',
+        jsx: <PasswordTools {...props}/>
     },
     HOME_AUTOMATION: {
         displayName: 'Home Automation',

@@ -6,12 +6,16 @@ import {compareDesc, parseJSON} from "date-fns";
 import styled from 'styled-components'
 import {BrowserCard} from "./BrowserCard";
 
-const FlexContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 20px 20px;
+  margin: 20px;
 `
-
+const GridContainer = styled.div`
+  max-width: 1000px;
+`
 
 export const Browsers = () => {
     const [browsers, setDevices] = useState([])
@@ -27,9 +31,9 @@ export const Browsers = () => {
 
     useEffect(() => void getBrowsers(), [])
 
-    return <>
+    return <GridContainer>
         <Typography variant={'h5'} style={{marginLeft: '10px'}}>Active Browsers</Typography>
-        <FlexContainer>
+        <Grid>
             {browsers
                 .filter(e => e.is_active)
                 .sort((a, b) => compareDesc(parseJSON(a.last_activity), parseJSON(b.last_activity)))
@@ -37,10 +41,11 @@ export const Browsers = () => {
                     browser={browser}
                     forgetAndLogoutBrowser={forgetAndLogoutBrowser}
                 />)}
-        </FlexContainer>
+        </Grid>
 
         <Typography variant={'h5'} style={{marginLeft: '10px'}}>Inactive Browsers</Typography>
-        <FlexContainer>
+
+        <Grid>
             {browsers
                 .filter(e => !e.is_active)
                 .sort((a, b) => compareDesc(parseJSON(a.last_activity), parseJSON(b.last_activity)))
@@ -48,6 +53,6 @@ export const Browsers = () => {
                     browser={browser}
                     forgetAndLogoutBrowser={forgetAndLogoutBrowser}
                 />)}
-        </FlexContainer>
-    </>
+        </Grid>
+    </GridContainer>
 }

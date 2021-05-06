@@ -14,11 +14,7 @@ import {useState} from "react";
 import {getName} from "country-list";
 
 const StyledCard = styled(Card)`
-  width: 200px;
-  min-height: 245px;
-  margin: 10px;
   outline: ${props => props.$thisDevice ? '2px solid ' + theme.palette.primary.main : 'none'};
-  flex-grow: 0;
 `
 
 const StyledTypography = styled(Typography)`
@@ -35,7 +31,7 @@ const SavedBrowserDiv = styled.div`
   width: 100%;
   height: 32px;
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 `
 
 const BrowserLogoDiv = styled.div`
@@ -115,14 +111,12 @@ export const BrowserCard = ({
                     </CardContent>
                 </CardActionArea>
                 <CardActions>
-                    {is_current_session ?
-                        <Button color={'primary'} disabled>This device</Button> :
-                        (is_active || is_saved) ?
-                            <Button color={'primary'}
-                                    onClick={() => forgetAndLogoutBrowser(id)}>
-                                {is_active ? 'Logout' : 'Forget'}
-                            </Button> :
-                            null}
+                    {(is_active || is_saved) ?
+                        <Button color={'primary'}
+                                onClick={() => forgetAndLogoutBrowser(id)}>
+                            {is_active ? 'Logout' : 'Forget'}
+                        </Button> :
+                        null}
                 </CardActions>
             </CardContainer>
         </StyledCard>

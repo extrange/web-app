@@ -19,9 +19,12 @@ const StyledContainer = styled.form`
 export const HomeAutomation = ({logout, returnToMainApp}) => {
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [snackbar, setSnackbar] = useState()
+    const [disabled, setDisabled] = useState(false)
 
     const handleSubmit = e => {
         e.preventDefault();
+        setDisabled(true)
+        setTimeout(() => setDisabled(false), 2000)
         sendCommand(e.target.command.value).then(() => setSnackbar(true));
     }
 
@@ -33,10 +36,12 @@ export const HomeAutomation = ({logout, returnToMainApp}) => {
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}>
         <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             open={snackbar}
             onClose={() => setSnackbar(false)}
-            autoHideDuration={1000}>
+            autoHideDuration={3000}>
             <Alert
+                variant={'filled'}
                 severity={'success'}>
                 Command sent
             </Alert>
@@ -54,6 +59,7 @@ export const HomeAutomation = ({logout, returnToMainApp}) => {
                 </Select>
             </FormControl>
             <Button
+                disabled={disabled}
                     variant={'contained'}
                     color={'primary'}
                     type={'submit'}

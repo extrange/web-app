@@ -1,7 +1,7 @@
 import QRCode from "qrcode.react";
 import {formatDistanceToNowPretty} from "../../util/util";
 import {parseJSON} from "date-fns";
-import {Button, TextField} from "@material-ui/core";
+import {Button, TextField, Typography} from "@material-ui/core";
 import {useEffect, useState} from "react";
 import {Networking} from "../../util/networking";
 import {TWOFACTOR_URL} from "./urls";
@@ -41,11 +41,10 @@ export const TwoFactor = () => {
         body: JSON.stringify({action: 'disable', otp})
     }).then(getOtpStatus)
 
-    return <>{secret && <a href={secret}><QRCode
-        value={secret}
-    /></a>}
-        <p>OTP is {Boolean(otpStatus) ? 'enabled' : 'disabled'}.</p>
-        <p>Created: {otpStats['created'] && formatDistanceToNowPretty(parseJSON(otpStats['created']))}</p>
+    return <>
+        {secret && <a href={secret}><QRCode value={secret}/></a>}
+        <Typography variant={'body1'}>OTP is {Boolean(otpStatus) ? 'enabled' : 'disabled'}.</Typography>
+        <Typography variant={'body1'}>Created: {otpStats['created'] && formatDistanceToNowPretty(parseJSON(otpStats['created']))}</Typography>
         <Button color={'primary'} variant={'contained'} onClick={register}>Register</Button>
         <Button color={'primary'} variant={'contained'} onClick={enable}>Enable</Button>
         <Button color={'secondary'} variant={'contained'} onClick={disable}>Disable</Button>
