@@ -13,7 +13,7 @@ const StyledCircularProgress = styled(CircularProgress)`
   cursor: default;
 `
 const propTypes = {
-    createOption: PropTypes.func.isRequired,
+    createOption: PropTypes.func,
     getOptionLabel: PropTypes.func,
     getOptions: PropTypes.func.isRequired,
     getOptionSelected: PropTypes.func,
@@ -57,21 +57,25 @@ export const AutocompleteWithCreate = ({
             value._name ? value._name === option._name : false
 
         const filterOptions = (options, state) => {
-            //Remove accents, spaces and convert to lowercase before filtering
-            let input = sanitizeString(state.inputValue);
+            let input = state.inputValue;
+            //matchSorter already removes accents, spaces and converts to lowercase
             let filtered = matchSorter(options, input, {keys: [getOptionLabel]});
 
-            //Do not suggest blank inputs or existing options (comparing with diacritics stripped)
-            if (!input || sanitizedOptionLabels.includes(input))
-                return filtered;
+            /*Suggest adding option ONLY if input is NOT blank,
+            NOT in existing options (comparing with diacritics stripped),
+            AND createOption is provided*/
+            if (createOption &&
+                input &&
+                !sanitizedOptionLabels.includes(input)) {
+                createOption && filtered.push({
+                    _name: state.inputValue.trim(),
+                    _isNew: true,
+                    _justAdded: true,
+                })
+            }
 
-            // Suggest adding option (keeping diacritics)
-            filtered.push({
-                _name: state.inputValue.trim(),
-                _isNew: true,
-                _justAdded: true,
-            })
-            return filtered;
+            // Limit to 10 for performance
+            return filtered.slice(0, 10); //todo add 'Scroll for more' functionality
         };
 
         const renderInput = params => <TextField

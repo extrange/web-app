@@ -59,7 +59,7 @@ export const formatDistanceToNowPretty = date => {
         return formatDistanceToNow(date, {addSuffix: true})
     if (differenceInCalendarDays(new Date(), date) < 1)
         return formatDistanceToNowStrict(date, {addSuffix: true})
-    if (differenceInCalendarYears(date, new Date()) < 1)
+    if (differenceInCalendarYears(new Date(), date) < 1)
         return format(date, 'd MMM')
     return format(date, 'MMM y')
 }

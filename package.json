@@ -21,6 +21,7 @@
     "dompurify": "^2.2.2",
     "lodash": "^4.17.20",
     "match-sorter": "^6.2.0",
+    "mui-datatables": "^3.7.7",
     "overlayscrollbars": "^1.13.1",
     "overlayscrollbars-react": "^0.2.2",
     "prop-types": "^15.7.2",
