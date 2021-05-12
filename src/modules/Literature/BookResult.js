@@ -1,58 +1,78 @@
 import styled from "styled-components";
 import {capitalize} from "lodash"
+import {Button, Card, CardActionArea, CardActions, CardContent, CircularProgress, Typography} from "@material-ui/core";
+import {useEffect, useState} from "react";
 
-const Card = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    height: 400px;
-    border: 2px solid black;
-    border-radius: 10px;
-    margin: 5px;
-    padding: 5px;
-    cursor: pointer;
+
+const StyledCard = styled(Card)`
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
-const Header = styled.div`
-    text-align: right;
-    color: grey;
-    font-size: smaller;
-    flex-shrink: 0;
-`;
+const StyledCardContent = styled(CardContent)`
+  height: 100%;
+`
+
+const Description = styled(CardContent)`
+  display: ${({$empty}) => $empty ? 'flex': 'block'};
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  height: ${({$maxHeight}) => `${$maxHeight}px` || 'initial'};
+`
+
+const StyledActionArea = styled(CardActionArea)`
+  height: 100%;
+`
 
 const Image = styled.div`
-    display: flex;
-    justify-content: center;
-    height: 200px;
-    flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  flex-shrink: 0;
+  margin: 10px 0;
+`;
+const Title = styled(Typography)`
+  line-height: 1rem;
+`
+
+const Authors = styled(Typography)`
+  font-style: italic;
 `;
 
-const Title = styled.div`
-    font-weight: bold;
-    text-align: center;
-    overflow: hidden;
-    flex-shrink: 0;
-`;
+export const BookResult = ({onSearchResultClick, result, key, searchLoading}) => {
+    let {authors=[], from, image_url, published, title, description} = result
 
-const Authors = styled.div`
-    flex-shrink: 0;
-    text-align: center;
-    font-style: italic;
-`;
+    const [detailView, setDetailView] = useState(false)
+    const [maxHeight, setMaxHeight] = useState()
+    const [loading, setLoading] = useState(false)
 
-const Description = styled.div`
-    overflow: hidden;
-    text-align: justify;
-    text-justify: auto;
-`;
+    const onClick = () => {
+        setLoading(true)
+        onSearchResultClick(result)
+    }
 
-export const BookResult = ({handleClick, result}) => {
+    useEffect(() => void setDetailView(false), [result])
 
-    return <Card onClick={handleClick}>
-        <Header>{capitalize(result.from)}</Header>
-        <Image><img src={result.image_url} alt={'Loading'}/></Image>
-        <Title>{result.title} {result.published ? `(${result.published})`: null}</Title>
-        <Authors>by {result.authors?.map(e => `${e},`)}</Authors>
-        <Description>{result.description}</Description>
-    </Card>
+    return <StyledCard key={key}>
+        <StyledActionArea onClick={() => setDetailView(!detailView)}>
+            {detailView ?
+                <Description $maxHeight={maxHeight} $empty={!Boolean(description)}>
+                    <Typography variant={'body2'}>{description ? description : 'No description provided'}</Typography>
+                </Description> :
+                <StyledCardContent ref={ref => ref && setMaxHeight(ref.offsetHeight)}>
+                    <Typography align={'right'} color={'textSecondary'} variant={'body2'}>{capitalize(from)}</Typography>
+                    <Image>{image_url ? <img src={image_url} alt={''}/> : <Typography variant={'body2'}>No cover</Typography>}</Image>
+                    <Title align={'center'} variant={'subtitle2'}>{title} {published ? `(${published})` : null}</Title>
+                    <Authors align={'center'} variant={'body2'}>{authors.length ? authors.reduce((acc, cur) => acc + `, ${cur}`) : ''}</Authors>
+                </StyledCardContent>}
+        </StyledActionArea>
+        <CardActions>
+            <Button onClick={onClick} disabled={searchLoading}>Select</Button>
+            {loading && <CircularProgress size={20}/>}
+        </CardActions>
+    </StyledCard>
 };

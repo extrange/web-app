@@ -1,17 +1,27 @@
 import styled from "styled-components";
 import {MarkdownEditor} from "../../shared/MarkdownEditor/MarkdownEditor";
-import {Button, TextField, useMediaQuery} from "@material-ui/core";
+import {Button, CircularProgress, TextField, Tooltip, Typography, useMediaQuery, Zoom} from "@material-ui/core";
 import {useForm} from "react-hook-form";
 import {useTheme} from "@material-ui/core/styles";
 import {debounce} from 'lodash'
 import {useCallback, useRef, useState} from "react";
-import {isEmpty} from "../../util/util";
+import {formatDistanceToNowPretty, isEmpty} from "../../util/util";
 import {DialogBlurResponsive} from "../../shared/dialogBlurResponsive";
+import CheckIcon from '@material-ui/icons/Check';
+import {parseJSON} from "date-fns";
 
-const ButtonContainer = styled.div`
+const FooterRight = styled.div`
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 `;
+
+const Footer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 10px;
+`
 
 const SavingStates = {
     UNCHANGED: 1,
@@ -21,12 +31,6 @@ const SavingStates = {
 
 const StyledTextField = styled(TextField)`
   margin: 5px 0;
-`
-
-const StyledDialogBlurResponsive = styled(DialogBlurResponsive)`
-  .MuiDialog-paper {
-    width: min(100vw - 32px, 800px);
-  }
 `
 
 export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listItems, currentList, deleteTask}) => {
@@ -103,23 +107,40 @@ export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listIt
     };
 
 
-    return <StyledDialogBlurResponsive
+    return <DialogBlurResponsive
         open
         onClose={handleClose}
-        footer={<ButtonContainer>
-            {{
-                [SavingStates.UNCHANGED]: '',
-                [SavingStates.MODIFIED]: 'Saving...',
-                [SavingStates.SAVED]: 'Changes saved'
-            }[saving]}
-            <Button
-                variant={'text'}
-                color={'primary'}
-                onClick={handleClose}
-            > Close
-            </Button>
-
-        </ButtonContainer>}
+        footer={<Footer>
+            <Tooltip
+                arrow
+                enterTouchDelay={100}
+                interactive
+                title={`Created ${formatDistanceToNowPretty(parseJSON(editingTask.created))}`}>
+                <Typography variant={'body2'} color={'textSecondary'}>
+                    Edited {saving === SavingStates.UNCHANGED ?
+                    formatDistanceToNowPretty(parseJSON(editingTask.updated)) :
+                    'just now'}
+                </Typography>
+            </Tooltip>
+            <FooterRight>
+                {{
+                    [SavingStates.UNCHANGED]: null,
+                    [SavingStates.MODIFIED]: <CircularProgress color="inherit" size={20}/>,
+                    [SavingStates.SAVED]:
+                        <Zoom
+                            in={saving === SavingStates.SAVED}
+                            timeout={{enter: '500ms', exit: '500ms'}}>
+                            <CheckIcon/>
+                        </Zoom>,
+                }[saving]}
+                <Button
+                    variant={'text'}
+                    color={'primary'}
+                    onClick={handleClose}>
+                    Close
+                </Button>
+            </FooterRight>
+        </Footer>}
     >
         <StyledTextField
             label='Title'
@@ -153,5 +174,5 @@ export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listIt
                     autoSave()
                 }}/>
         }
-    </StyledDialogBlurResponsive>
+    </DialogBlurResponsive>
 };

@@ -56,8 +56,8 @@ export const Tasks = ({currentList, items, listItems}) => {
 
     const closeEdit = () => void setEditingTask(null);
 
-    const handleEditTask = (id, title, notes) => {
-        setEditingTask({id, title, notes});
+    const handleEditTask = task => {
+        setEditingTask(task);
     };
 
     const handleCreateTask = () => void setEditingTask({
@@ -69,7 +69,7 @@ export const Tasks = ({currentList, items, listItems}) => {
 
     const list = items.map(e => (
         <Item
-            handleEditTask={() => handleEditTask(e.id, e.title, e.notes)}
+            handleEditTask={handleEditTask}
             deleteTask={() => deleteTask(e.id, e.tasklist)}
             key={e.id}
             task={e}/>

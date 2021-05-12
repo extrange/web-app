@@ -11,13 +11,9 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import {LoadServiceWorker} from "./LoadServiceWorker";
 import {ErrorBoundary} from "./ErrorBoundary";
 import 'overlayscrollbars/css/OverlayScrollbars.css'
-import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
-import {OverlayScrollbarOptions, theme} from "./globals/theme";
+import {theme} from "./globals/theme";
 import {RandomBackground} from "./shared/randomBackground";
 import {LoginCheckAndNetworkState} from "./LoginCheckAndNetworkState";
-
-/*Largest index of background images, inclusive*/
-const numImages = 26;
 
 /*Decide whether to run mock service worker for debugging*/
 const USE_MOCK_SERVICE_WORKER = false;
@@ -30,13 +26,10 @@ ReactDOM.render(
     <StrictMode>
         <MuiThemeProvider theme={theme}>
             <CssBaseline/>
-            <RandomBackground numImages={numImages}/>
+            <RandomBackground/>
             <ErrorBoundary>
                 <LoadServiceWorker/>
-                <OverlayScrollbarsComponent
-                    options={OverlayScrollbarOptions}>
-                    <LoginCheckAndNetworkState/>
-                </OverlayScrollbarsComponent>
+                <LoginCheckAndNetworkState/>
             </ErrorBoundary>
         </MuiThemeProvider>
     </StrictMode>

@@ -6,7 +6,7 @@ import {StyledListItem, StyledListItemSecondaryAction} from "../../shared/styled
 export const Item = ({deleteTask, handleEditTask, task}) =>
     <StyledListItem
         button
-        onClick={handleEditTask}
+        onClick={() => handleEditTask(task)}
         $reserveSpace={true}
     >
         <ListItemText

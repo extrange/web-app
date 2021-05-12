@@ -43,9 +43,8 @@ export const getRandomInt = (min, max, seed) => {
  * Works properly so far (i.e. day count changes at 0000hrs of current locale)
  * @returns {number}
  */
-export const getDaysSinceEpoch = date => date ?
-    differenceInCalendarDays(date, new Date(0)) :
-    differenceInCalendarDays(new Date(), new Date(0));
+export const getDaysSinceEpoch = () =>
+    differenceInCalendarDays(new Date(), new Date(0))
 
 /**
  * Returns formatDateToNow if within the same minute,

@@ -23,17 +23,20 @@ export const LoginCheckAndNetworkState = () => {
         .then(r => void setRecaptchaKey(r['key']))
 
 
-    const logout = () => void Networking
-        .send(LOGOUT_URL, {method: 'POST'})
-        .then(() => {
-            setNetworkError(undefined)
-            setLoggedIn(false)
+    const logout = () => {
+        localStorage.clear() // Clear localStorage if called
+        Networking
+            .send(LOGOUT_URL, {method: 'POST'})
+            .then(() => {
+                setNetworkError(undefined)
+                setLoggedIn(false)
 
-            /*If the user refreshed the page while logged in, the recaptcha key
-            * would not have been fetched*/
-            if (!recaptchaKey)
-                fetchRecaptchaKey()
-        })
+                /*If the user refreshed the page while logged in, the recaptcha key
+                * would not have been fetched*/
+                if (!recaptchaKey)
+                    fetchRecaptchaKey()
+            })
+    }
 
 
     useEffect(() => {

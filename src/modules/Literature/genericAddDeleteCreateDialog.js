@@ -23,12 +23,6 @@ const StyledDiv = styled.div`
   flex: 1
 `
 
-const StyledDialogBlurResponsive = styled(DialogBlurResponsive)`
-  .MuiDialog-paper {
-    width: min(100vw - 32px, 800px);
-  }
-`
-
 export const GenericAddDeleteCreateDialog = ({
                                                  onClose,
                                                  onSubmit,
@@ -48,7 +42,7 @@ export const GenericAddDeleteCreateDialog = ({
         }>Submit</Button>
     </StyledFooter>
 
-    return <StyledDialogBlurResponsive
+    return <DialogBlurResponsive
         open
         onClose={onClose}
         footer={footer}
@@ -69,5 +63,5 @@ export const GenericAddDeleteCreateDialog = ({
             />
         </FormContainer>
 
-    </StyledDialogBlurResponsive>
+    </DialogBlurResponsive>
 }

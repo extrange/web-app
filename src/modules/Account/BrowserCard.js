@@ -103,7 +103,7 @@ export const BrowserCard = ({
 
                                 <StyledTypography variant={'body1'}>{prettifiedUserAgent.name}</StyledTypography>
                                 <Typography variant={'body2'}>{getName(country_code)}</Typography>
-                                <Typography variant={'body2'}>{ip}</Typography>
+                                <Typography variant={'body2'} style={{overflowWrap: 'break-word'}}>{ip}</Typography>
                                 <StyledTypography variant={'body2'}
                                                   color={'textSecondary'}>{formatDistanceToNowPretty(parseJSON(last_activity))}</StyledTypography>
                             </>
