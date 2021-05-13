@@ -46,14 +46,27 @@ export class Networking {
                     },
                     body: body
                 }
-            ).then(resp => {
-                if (resp.ok) {
-                    resolve(resp)
-                } else {
-                    NetworkState.throwError(resp)
-                }
-            }).catch(NetworkState.throwError)
-        )
+            ).then(resp => resp.ok ?
+                void typeof resolve(resp) :
+                resp.text().then(r => NetworkState.throwError({
+                    message: <>
+                        <p>{method}: {url}</p>
+                        <p>{r}</p>
+                    </>,
+                    name: `HTTP Error ${resp.status}: ${resp.statusText}`,
+                    object: resp,
+                    status: resp.status
+                }))
+            ).catch(e => NetworkState.throwError({
+                message: <>
+                    <p>{method}: {url}</p>
+                    <p>{e.message}</p>
+                </>,
+                name: e.name,
+                object: e,
+                status: null
+            }))
+        );
 
 
     /**

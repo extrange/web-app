@@ -14,35 +14,35 @@ export const LoginCheckAndNetworkState = () => {
 
     const [loggedIn, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [httpState, setNetworkError] = useState();
-    const [recaptchaKey, setRecaptchaKey] = useState('')
+    const [networkError, setNetworkError] = useState();
+    const [recaptchaKey, setRecaptchaKey] = useState('');
     const setError = useAsyncError();
 
     const fetchRecaptchaKey = () => void Networking.send(RECAPTCHA_KEY_URL)
         .then(r => r.json())
-        .then(r => void setRecaptchaKey(r['key']))
+        .then(r => void setRecaptchaKey(r['key']));
 
 
     const logout = () => {
-        localStorage.clear() // Clear localStorage if called
+        localStorage.clear(); // Clear localStorage if called
         Networking
             .send(LOGOUT_URL, {method: 'POST'})
             .then(() => {
-                setNetworkError(undefined)
-                setLoggedIn(false)
+                setNetworkError(undefined);
+                setLoggedIn(false);
 
                 /*If the user refreshed the page while logged in, the recaptcha key
                 * would not have been fetched*/
                 if (!recaptchaKey)
                     fetchRecaptchaKey()
             })
-    }
+    };
 
 
     useEffect(() => {
 
         /*Setup global callback to notify user of 4xx/5xx errors.*/
-        NetworkState.throwError = error => setNetworkError(error)
+        NetworkState.throwError = error => setNetworkError(error);
 
         /*Check if user is logged in*/
         fetch(LOGIN_URL, {
@@ -69,17 +69,17 @@ export const LoginCheckAndNetworkState = () => {
             fullscreen={true}/>;
 
     if (!loggedIn)
-        return <Login setLoggedIn={setLoggedIn} recaptchaKey={recaptchaKey}/>
+        return <Login setLoggedIn={setLoggedIn} recaptchaKey={recaptchaKey}/>;
 
     /*User is authenticated*/
     return <>
-        {httpState &&
+        {networkError &&
         <NetworkStateSnackbar
             logout={logout}
-            networkError={httpState}
+            networkError={networkError}
             setNetworkError={setNetworkError}
         />}
-        <RefreshSession setLoggedOutSb={setNetworkError}/>
+        <RefreshSession/>
         <NotificationProvider>
             <ModuleSelect logout={logout}/>
         </NotificationProvider>

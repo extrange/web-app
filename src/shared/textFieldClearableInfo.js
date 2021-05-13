@@ -29,4 +29,4 @@ export const TextFieldClearableInfo = ({info, onClear, ...props}) => {
                 </InputAdornment>
         }}
     />
-}
+};

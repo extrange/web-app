@@ -9,7 +9,7 @@ Only executed after successful login.
 */
 export const NotificationProvider = ({children}) => {
 
-    const [notifications, setNotifications] = useState([])
+    const [notifications, setNotifications] = useState([]);
     const nextId = useRef(0);
 
     const addNotification = ({source, title, content, count = 1, action = noop()}) => {
@@ -21,12 +21,12 @@ export const NotificationProvider = ({children}) => {
             count,
             timestamp: Date.now(),
             action,
-        }])
+        }]);
         return nextId.current++;
-    }
+    };
 
-    const removeNotification = id => setNotifications(state => state.filter(e => e.id !== id))
-    const removeNotificationBySource = source => setNotifications(state => state.filter(e => e.source !== source))
+    const removeNotification = id => setNotifications(state => state.filter(e => e.id !== id));
+    const removeNotificationBySource = source => setNotifications(state => state.filter(e => e.source !== source));
 
     const notificationParams = {
         nextId: nextId.current,
@@ -34,10 +34,10 @@ export const NotificationProvider = ({children}) => {
         addNotification,
         removeNotification,
         removeNotificationBySource
-    }
+    };
 
     return <NotificationContext.Provider value={notificationParams}>
         <Mail/>
         {children}
     </NotificationContext.Provider>
-}
+};

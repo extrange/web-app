@@ -21,7 +21,7 @@ const Footer = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-left: 10px;
-`
+`;
 
 const SavingStates = {
     UNCHANGED: 1,
@@ -31,7 +31,7 @@ const SavingStates = {
 
 const StyledTextField = styled(TextField)`
   margin: 5px 0;
-`
+`;
 
 export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listItems, currentList, deleteTask}) => {
 

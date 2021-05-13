@@ -12,24 +12,24 @@ const Grid = styled.div`
   grid-auto-rows: 1fr;
   gap: 20px 20px;
   margin: 20px;
-`
+`;
 const GridContainer = styled.div`
   max-width: 1000px;
-`
+`;
 
 export const Browsers = () => {
-    const [browsers, setDevices] = useState([])
+    const [browsers, setDevices] = useState([]);
 
     const forgetAndLogoutBrowser = id =>
         Networking.send(getBrowserDetail(id), {method: Networking.DELETE})
-            .then(getBrowsers)
+            .then(getBrowsers);
 
     const getBrowsers = () =>
         Networking.send(BROWSERS_URL)
             .then(r => r.json())
-            .then(r => setDevices(r))
+            .then(r => setDevices(r));
 
-    useEffect(() => void getBrowsers(), [])
+    useEffect(() => void getBrowsers(), []);
 
     return <GridContainer>
         <Typography variant={'h5'} style={{marginLeft: '10px'}}>Active Browsers</Typography>
@@ -55,4 +55,4 @@ export const Browsers = () => {
                 />)}
         </Grid>
     </GridContainer>
-}
+};

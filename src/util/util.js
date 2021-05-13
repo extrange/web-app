@@ -44,7 +44,7 @@ export const getRandomInt = (min, max, seed) => {
  * @returns {number}
  */
 export const getDaysSinceEpoch = () =>
-    differenceInCalendarDays(new Date(), new Date(0))
+    differenceInCalendarDays(new Date(), new Date(0));
 
 /**
  * Returns formatDateToNow if within the same minute,
@@ -55,13 +55,13 @@ export const getDaysSinceEpoch = () =>
  */
 export const formatDistanceToNowPretty = date => {
     if (differenceInMinutes(new Date(), date) < 1)
-        return formatDistanceToNow(date, {addSuffix: true})
+        return formatDistanceToNow(date, {addSuffix: true});
     if (differenceInCalendarDays(new Date(), date) < 1)
-        return formatDistanceToNowStrict(date, {addSuffix: true})
+        return formatDistanceToNowStrict(date, {addSuffix: true});
     if (differenceInCalendarYears(new Date(), date) < 1)
-        return format(date, 'd MMM')
+        return format(date, 'd MMM');
     return format(date, 'MMM y')
-}
+};
 
 export const isLocalhost = Boolean(
     window.location.hostname === 'localhost' ||
@@ -74,43 +74,43 @@ export const isLocalhost = Boolean(
 export const noop = () => {
 };
 
-let arr = new Uint32Array(1)
-const max = 2 ** 32
+let arr = new Uint32Array(1);
+const max = 2 ** 32;
 
 /**
  * Cryptographically secure random number generator.
  * Assumes window.crypto exists.
  */
 export const getSecureRandom = () => {
-    if (!window.crypto) throw new Error('window.crypto not supported on browser')
+    if (!window.crypto) throw new Error('window.crypto not supported on browser');
 
     /*Will generate random numbers between 0 and 1 (exclusive) with 32 bit maximum precision
     * Rejection sampling.*/
     const random = () => {
-        let val = crypto.getRandomValues(arr)[0] / max
-        if (val >= 1) return random()
+        let val = crypto.getRandomValues(arr)[0] / max;
+        if (val >= 1) return random();
         return val
-    }
+    };
 
     /*Random integer between min (inclusive) and max (exclusive)*/
     const randint = (min, max) => {
-        let floor_min = Math.floor(min)
-        let floor_max = Math.floor(max)
+        let floor_min = Math.floor(min);
+        let floor_max = Math.floor(max);
         return Math.floor(random() * (floor_max - floor_min)) + floor_min
-    }
+    };
 
     /*Select random element of an array*/
-    const choice = arr => arr[randint(0, arr.length)]
+    const choice = arr => arr[randint(0, arr.length)];
 
     return {
         random,
         randint,
         choice,
     }
-}
+};
 
 export const prettifyUAString = uaString => {
-    let ua = UAParser(uaString)
+    let ua = UAParser(uaString);
     let {
         browser: {
             name: browserName,
@@ -118,11 +118,11 @@ export const prettifyUAString = uaString => {
         // if type is set, it is mobile
         device: {model, type},
         os: {name: osName, version: osVersion}
-    } = ua
+    } = ua;
 
     return {
         name: `${browserName} on ${osName} ${osVersion}${model ? ` (${model})` : ''}`,
         isMobile: Boolean(type),
         browserName
     }
-}
+};

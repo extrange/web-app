@@ -44,7 +44,7 @@ const Container = styled.div`
   flex-direction: column;
   padding: 10px;
   ${BACKGROUND_COLOR};
-`
+`;
 
 const StyledTextField = styled(TextField)`
   .MuiInputBase-input {
@@ -52,21 +52,21 @@ const StyledTextField = styled(TextField)`
   }
 
   margin: 10px 0;
-`
+`;
 
 const TextFieldContainer = styled.div`
   display: flex;
   align-items: flex-start;
-`
+`;
 
 const StyledIconButton = styled(IconButton)`
   margin-top: 14px;
-`
+`;
 
 const OptionsFormGroup = styled(FormGroup)`
   display: flex;
   flex-direction: column;
-`
+`;
 
 const PasswordDetailGrid = styled.div`
   display: grid;
@@ -75,28 +75,28 @@ const PasswordDetailGrid = styled.div`
   gap: 10px 10px;
   align-items: center;
   margin: 5px 0 15px;
-`
+`;
 
 const GreenCheck = styled(CheckIcon)`
   color: chartreuse;
   margin-right: 10px;
-`
+`;
 
 const GreyCross = styled(ClearIcon)`
   color: grey;
   margin-right: 10px;
-`
+`;
 
 
-const formatNumber = new Intl.NumberFormat(undefined, {maximumFractionDigits: 0})
-const formatDecimal = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2})
+const formatNumber = new Intl.NumberFormat(undefined, {maximumFractionDigits: 0});
+const formatDecimal = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2});
 
-const DEFAULT_USERNAME_LENGTH = 10
-const DEFAULT_PASSWORD_LENGTH = 24
+const DEFAULT_USERNAME_LENGTH = 10;
+const DEFAULT_PASSWORD_LENGTH = 24;
 
 export const PasswordTools = ({returnToMainApp, logout}) => {
-    const [drawerOpen, setDrawerOpen] = useState(false)
-    const [hashCount, setHashCount] = useState(0)
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [hashCount, setHashCount] = useState(0);
     const [settings, setSettings] = useState({
         dialogOpen: false,
         dialogType: null,
@@ -110,28 +110,28 @@ export const PasswordTools = ({returnToMainApp, logout}) => {
         usernameSettings: {
             length: DEFAULT_USERNAME_LENGTH
         }
-    })
+    });
 
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [snackbarOpen, setSnackbarOpen] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [entropy, setEntropy] = useState({})
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [entropy, setEntropy] = useState({});
 
-    let secondsToBruteforce = (2 ** entropy.totalEntropy / (200 * 10 ** 18))
+    let secondsToBruteforce = (2 ** entropy.totalEntropy / (200 * 10 ** 18));
 
     useEffect(() => {
-        if (!password) return
+        if (!password) return;
 
-        let generatedPassword = generatePassword(settings.passwordSettings)
-        setPassword(generatedPassword)
+        let generatedPassword = generatePassword(settings.passwordSettings);
+        setPassword(generatedPassword);
         setEntropy(getEntropy(generatedPassword))
         // eslint-disable-next-line
     }, [settings.passwordSettings]);
 
     useEffect(() => {
         setUsername(generateUsername(settings.usernameSettings))
-    }, [settings.usernameSettings])
+    }, [settings.usernameSettings]);
 
     // eslint-disable-next-line
     const checkHibp = useCallback(debounce(
@@ -139,29 +139,29 @@ export const PasswordTools = ({returnToMainApp, logout}) => {
             .then(r => Networking.send(HIBP_LOOKUP(r)))
             .then(r => r.json())
             .then(r => {
-                setHashCount(r.count)
+                setHashCount(r.count);
                 setLoading(false)
             })
         , 500)
-        , [])
+        , []);
 
     const copyToClipboard = text => navigator.clipboard.writeText(text)
         .then(() => {
             if (snackbarOpen) {
-                setSnackbarOpen(false)
+                setSnackbarOpen(false);
                 setTimeout(() => setSnackbarOpen(true), 100)
             } else
                 setSnackbarOpen(true);
-        })
+        });
 
     const onPasswordChange = text => {
-        setLoading(true)
-        setPassword(text)
-        checkHibp(text)
+        setLoading(true);
+        setPassword(text);
+        checkHibp(text);
         setEntropy(getEntropy(text))
-    }
+    };
 
-    const closeSettings = () => setSettings(current => ({...current, dialogOpen: false}))
+    const closeSettings = () => setSettings(current => ({...current, dialogOpen: false}));
 
     return <AppBarResponsive
         drawerOpen={drawerOpen}
@@ -364,4 +364,4 @@ export const PasswordTools = ({returnToMainApp, logout}) => {
     </AppBarResponsive>
 
 
-}
+};

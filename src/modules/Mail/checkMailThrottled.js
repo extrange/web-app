@@ -1,7 +1,7 @@
 import {getIhisMail, getMohhMail, HMAIL_URL} from "./urls";
 import {throttle} from 'lodash'
 
-export const CHECK_MAIL_FREQUENCY_MS = 30 * 1000
+export const CHECK_MAIL_FREQUENCY_MS = 30 * 1000;
 
 const [IHIS, MOHH] = ['IHIS', 'MOHH'];
 
@@ -32,7 +32,7 @@ const checkMail = ({addNotification, removeNotificationBySource}) => Promise.all
         }
 
     })
-])
+]);
 
 /*Throttling reduces network calls when the user repeatedly switches tabs*/
-export const checkMailThrottled = throttle(checkMail, CHECK_MAIL_FREQUENCY_MS, {trailing: false})
+export const checkMailThrottled = throttle(checkMail, CHECK_MAIL_FREQUENCY_MS, {trailing: false});

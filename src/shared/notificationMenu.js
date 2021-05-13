@@ -8,28 +8,28 @@ import {formatDistanceToNowStrict} from 'date-fns'
 const StyledChip = styled(Chip)`
   margin-right: 5px;
   cursor: pointer;
-`
+`;
 
 const StyledPopover = styled(Popover)`
   .MuiPopover-paper {
     max-width: min(calc(100% - 32px), 600px);
   }
-`
+`;
 
 const StyledSpan = styled.div`
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-`
+`;
 
 export const NotificationMenu = () => {
 
     const [anchorEl, setAnchorEl] = useState();
-    const context = useContext(NotificationContext)
+    const context = useContext(NotificationContext);
 
-    const handleNotificationClick = e => setAnchorEl(e.currentTarget)
-    const onClose = () => setAnchorEl(null)
+    const handleNotificationClick = e => setAnchorEl(e.currentTarget);
+    const onClose = () => setAnchorEl(null);
 
     return <>
         <IconButton
@@ -80,4 +80,4 @@ export const NotificationMenu = () => {
         </StyledPopover>
     </>
 
-}
+};

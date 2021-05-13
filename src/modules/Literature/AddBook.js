@@ -19,9 +19,12 @@ import {
     Checkbox,
     Dialog,
     DialogActions,
+    DialogContent,
+    DialogContentText,
     DialogTitle,
     FormControlLabel,
     FormHelperText,
+    IconButton,
     Snackbar
 } from "@material-ui/core";
 import {isEmpty} from "lodash";
@@ -32,37 +35,30 @@ import {AutocompleteWithCreate} from "../../shared/autocompleteWithCreate";
 import {TextFieldClearable} from "../../shared/textFieldClearable";
 import {TextFieldMultilineEllipsis} from "../../shared/textFieldMultilineEllipsis";
 import {ControlHelper} from "../../shared/controlHelper";
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 const FieldContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: 
+    "${BOOK_FIELDS.title} ${BOOK_FIELDS.title}"
+    "${BOOK_FIELDS.authors} ${BOOK_FIELDS.type}"
+    "${BOOK_FIELDS.description} ${BOOK_FIELDS.description}"
+    "${BOOK_FIELDS.genres} ${BOOK_FIELDS.read_next}"
+    "${BOOK_FIELDS.rating} ${BOOK_FIELDS.date_read} "
+    "${BOOK_FIELDS.image_url} ${BOOK_FIELDS.published}"
+    "${BOOK_FIELDS.google_id} ${BOOK_FIELDS.goodreads_book_id}"
+    "${BOOK_FIELDS.series} ${BOOK_FIELDS.series_position}"
+    "${BOOK_FIELDS.my_review} ${BOOK_FIELDS.my_review}"
+    "${BOOK_FIELDS.notes} ${BOOK_FIELDS.notes}";
+  gap: 20px 10px;
   margin: 10px;
-  overflow: auto;
 `;
 
-const FooterDiv = styled.div`
+const ButtonFlexDiv = styled.div`
   display: flex;
   justify-content: flex-end;
-`
-
-const StyledTextFieldClearable = styled(TextFieldClearable)`
-  margin: 5px 0;
-`
-
-const StyledAutocompleteWithCreate = styled(AutocompleteWithCreate)`
-  margin: 5px 0;
-`
-
-const StyledKeyboardDatePicker = styled(KeyboardDatePicker)`
-  margin: 5px 0;
-`
-
-const StyledTextFieldMultilineEllipsis = styled(TextFieldMultilineEllipsis)`
-  margin: 5px 0;
-`
-
+`;
 
 export const AddBook = ({
                             books,
@@ -104,9 +100,10 @@ export const AddBook = ({
 
     const [errorSnackbar, setErrorSnackbar] = useState(false);
     const [saveDialog, setSaveDialog] = useState(false);
+    const [infoDialog, setInfoDialog] = useState(false);
 
     const onClear = name => () => setValue(name, DEFAULT_BOOK_VALUES[name], {shouldDirty: true});
-    const setError = useAsyncError()
+    const setError = useAsyncError();
 
     const onSubmit = handleSubmit(
         data => {
@@ -115,19 +112,19 @@ export const AddBook = ({
 
                 /*Editing book, no actual changes made*/
                 (!isEmpty(bookData) && isBookDataEqual(bookData, transformToServer(data)))) {
-                setAddedSnackbar({message: 'No changes were detected'})
-                onClose()
+                setAddedSnackbar({message: 'No changes were detected'});
+                onClose();
                 return
             }
 
-            let transformedData = transformToServer(data)
+            let transformedData = transformToServer(data);
 
             if (isEmpty(bookData) || !('id' in bookData)) {
                 /*User is adding book*/
                 Url.addBook(transformedData)
                     .then(() => {
                         getBooks();
-                        setAddedSnackbar({message: 'Book added'})
+                        setAddedSnackbar({message: 'Book added'});
                         onClose()
                     })
                     .catch(setError);
@@ -136,7 +133,7 @@ export const AddBook = ({
                 Url.updateBook(transformedData, bookData['id'])
                     .then(() => {
                         getBooks();
-                        setAddedSnackbar({message: 'Changes saved'})
+                        setAddedSnackbar({message: 'Changes saved'});
                         onClose()
                     })
                     .catch(setError);
@@ -144,18 +141,22 @@ export const AddBook = ({
         },
         () => {
             setErrorSnackbar(true)
-        })
+        });
 
 
     const handleDiscard = () => isDirty ?
         setSaveDialog(true) :
-        onClose() //Untouched form
+        onClose(); //Untouched form
 
 
-    const footer = <FooterDiv>
+    const footer = <ButtonFlexDiv>
+        <IconButton
+            onClick={() => setInfoDialog(true)}>
+            <InfoOutlinedIcon/>
+        </IconButton>
         <Button onClick={handleDiscard}>Discard</Button>
         <Button onClick={onSubmit} color={'primary'}> Save </Button>
-    </FooterDiv>
+    </ButtonFlexDiv>;
 
     return <>
         <Dialog
@@ -164,11 +165,49 @@ export const AddBook = ({
             <DialogTitle>Discard changes?</DialogTitle>
             <DialogActions>
                 <Button onClick={() => {
-                    setAddedSnackbar({message: 'Changes discarded'})
+                    setAddedSnackbar({message: 'Changes discarded'});
                     onClose()
                 }}> Discard </Button>
                 <Button onClick={onSubmit} color={'primary'}> Save </Button>
             </DialogActions>
+        </Dialog>
+        <Dialog
+            open={infoDialog}
+            onClose={() => setInfoDialog(false)}>
+            <DialogTitle>Notes on fields</DialogTitle>
+            <DialogContent>
+                <DialogContentText component={'div'}>
+                    Series:
+                    <ul>
+                        <li>For new ones I wish to read, just store the first book.</li>
+                        <li>If I like it, add just the next book (read_next=true)</li>
+                        <li>As I complete each book in the series, it is added.</li>
+                        <li>If I don't like it halfway, I don't add any further books (i.e. the series is left
+                            hanging)
+                        </li>
+                        <li>Series which I have completed should have all books added.</li>
+                    </ul>
+
+                    Authors with many works:
+                    <ul>
+                        <li>The anthology is listed, if I plan to read it</li>
+                        <li>All works I have read/wish to read are also listed.</li>
+                        <li>I could also make comments in the author object's notes.</li>
+                    </ul>
+
+                    Unknown read date
+                    <ul>
+                        <li>put as 01/01/2000</li>
+                    </ul>
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={() => setInfoDialog(false)}>
+                    Close
+                </Button>
+            </DialogActions>
+
         </Dialog>
         <Snackbar
             open={errorSnackbar}
@@ -189,18 +228,20 @@ export const AddBook = ({
                 <ControlHelper
                     name={BOOK_FIELDS.title}
                     control={control}
-                    Component={StyledTextFieldMultilineEllipsis}
+                    Component={TextFieldMultilineEllipsis}
 
                     errors={errors}
                     label={'Title'}
                     onClear={onClear(BOOK_FIELDS.title)}
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.title}}
                     variant={'outlined'}
                 />
 
                 <Controller
                     name={BOOK_FIELDS.authors}
                     control={control}
-                    render={({onChange, onBlur, value, name}) => <StyledAutocompleteWithCreate
+                    render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
                         autoComplete
                         autoHighlight
                         createOption={e => Url.addAuthor({name: e})}
@@ -221,6 +262,8 @@ export const AddBook = ({
                             error: Boolean(errors[BOOK_FIELDS.authors]),
                             helperText: errors[BOOK_FIELDS.authors] ? 'Creating author(s)...' : null
                         }}
+                        size={'small'}
+                        style={{gridArea: BOOK_FIELDS.authors}}
                         value={value}
                     />}
                 />
@@ -228,7 +271,7 @@ export const AddBook = ({
                 <Controller
                     name={BOOK_FIELDS.genres}
                     control={control}
-                    render={({onChange, onBlur, value, name}) => <StyledAutocompleteWithCreate
+                    render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
                         autoComplete
                         autoHighlight
                         createOption={e => Url.addGenre({name: e})}
@@ -249,6 +292,8 @@ export const AddBook = ({
                             error: Boolean(errors[BOOK_FIELDS.genres]),
                             helperText: errors[BOOK_FIELDS.genres] ? 'Creating genre(s)...' : null
                         }}
+                        size={'small'}
+                        style={{gridArea: BOOK_FIELDS.genres}}
                         value={value}
                     />}
                 />
@@ -256,7 +301,7 @@ export const AddBook = ({
                 <Controller
                     name={BOOK_FIELDS.type}
                     control={control}
-                    render={({onChange, onBlur, value, name}) => <StyledAutocompleteWithCreate
+                    render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
                         autoComplete
                         autoHighlight
                         createOption={e => Url.addType({name: e})}
@@ -276,6 +321,8 @@ export const AddBook = ({
                             error: Boolean(errors[BOOK_FIELDS.type]),
                             helperText: errors[BOOK_FIELDS.type]?.message
                         }}
+                        size={'small'}
+                        style={{gridArea: BOOK_FIELDS.type}}
                         value={value}
                     />}
                 />
@@ -284,8 +331,10 @@ export const AddBook = ({
                     name={BOOK_FIELDS.description}
                     label={'Description'}
                     errors={errors}
-                    Component={StyledTextFieldMultilineEllipsis}
+                    Component={TextFieldMultilineEllipsis}
                     control={control}
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.description}}
                     variant={'outlined'}
                 />
 
@@ -301,6 +350,7 @@ export const AddBook = ({
                             name={name}
                             onBlur={onBlur}
                             onChange={e => onChange(e.target.checked)}
+                            style={{gridArea: BOOK_FIELDS.read_next}}
                         />}
                 />
                 <FormHelperText
@@ -315,13 +365,15 @@ export const AddBook = ({
                         label={'Date Read'}
                         control={control}
                         errors={errors}
-                        Component={StyledKeyboardDatePicker}
+                        Component={KeyboardDatePicker}
 
                         autoOk
                         disableFuture
                         format={'dd/MM/yyyy'}
                         placeholder={'dd/mm/yyyy'}
                         inputVariant={'outlined'}
+                        size={'small'}
+                        style={{gridArea: BOOK_FIELDS.date_read}}
                         variant={'inline'}
                     />
                 </MuiPickersUtilsProvider>
@@ -330,10 +382,12 @@ export const AddBook = ({
                     name={BOOK_FIELDS.image_url}
                     errors={errors}
                     label={'Image URL'}
-                    Component={StyledTextFieldClearable}
+                    Component={TextFieldClearable}
                     control={control}
                     onClear={onClear(BOOK_FIELDS.image_url)}
 
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.image_url}}
                     type={'url'}
                     variant={'outlined'}
                 />
@@ -342,9 +396,11 @@ export const AddBook = ({
                     name={BOOK_FIELDS.published}
                     label={'Year Published'}
                     control={control}
-                    Component={StyledTextFieldClearable}
+                    Component={TextFieldClearable}
                     errors={errors}
 
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.published}}
                     type={'tel'}
                     onClear={onClear(BOOK_FIELDS.published)}
                     variant={'outlined'}
@@ -354,9 +410,11 @@ export const AddBook = ({
                     name={BOOK_FIELDS.google_id}
                     label={'Google ID'}
                     control={control}
-                    Component={StyledTextFieldClearable}
+                    Component={TextFieldClearable}
                     errors={errors}
                     onClear={onClear(BOOK_FIELDS.google_id)}
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.google_id}}
                     variant={'outlined'}
                 />
 
@@ -364,9 +422,11 @@ export const AddBook = ({
                     name={BOOK_FIELDS.goodreads_book_id}
                     label={'Goodreads ID'}
                     control={control}
-                    Component={StyledTextFieldClearable}
+                    Component={TextFieldClearable}
                     errors={errors}
                     onClear={onClear(BOOK_FIELDS.goodreads_book_id)}
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.goodreads_book_id}}
                     variant={'outlined'}
                 />
 
@@ -374,9 +434,11 @@ export const AddBook = ({
                     name={BOOK_FIELDS.series}
                     label={'Series Name'}
                     control={control}
-                    Component={StyledTextFieldClearable}
+                    Component={TextFieldClearable}
                     errors={errors}
                     onClear={onClear(BOOK_FIELDS.series)}
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.series}}
                     variant={'outlined'}
                 />
 
@@ -384,9 +446,11 @@ export const AddBook = ({
                     name={BOOK_FIELDS.series_position}
                     label={'Series Position'}
                     control={control}
-                    Component={StyledTextFieldClearable}
+                    Component={TextFieldClearable}
                     errors={errors}
                     onClear={onClear(BOOK_FIELDS.series_position)}
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.series_position}}
                     variant={'outlined'}
                 />
 
@@ -394,9 +458,11 @@ export const AddBook = ({
                     name={BOOK_FIELDS.rating}
                     label={'Rating'}
                     control={control}
-                    Component={StyledTextFieldClearable}
+                    Component={TextFieldClearable}
                     errors={errors}
                     onClear={onClear(BOOK_FIELDS.rating)}
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.rating}}
                     variant={'outlined'}
                 />
 
@@ -404,11 +470,13 @@ export const AddBook = ({
                     name={BOOK_FIELDS.my_review}
                     label={'My Review'}
                     control={control}
-                    Component={StyledTextFieldMultilineEllipsis}
+                    Component={TextFieldMultilineEllipsis}
                     errors={errors}
 
                     placeholder={'Not good, read others, highlight specific chapters, etc'}
                     multiline
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.my_review}}
                     variant={'outlined'}
                 />
 
@@ -416,11 +484,13 @@ export const AddBook = ({
                     name={BOOK_FIELDS.notes}
                     label={'Notes'}
                     control={control}
-                    Component={StyledTextFieldMultilineEllipsis}
+                    Component={TextFieldMultilineEllipsis}
                     errors={errors}
 
                     placeholder={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}
                     multiline
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.notes}}
                     variant={'outlined'}
                 />
 

@@ -31,4 +31,4 @@ export const TextFieldRefreshLoading = ({onRefresh, onClear, loading, tooltipTex
                 </InputAdornment>
         }}
     />
-}
+};

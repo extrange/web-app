@@ -30,7 +30,7 @@ export const getGoodreadsBookInfo = (work_id, book_id) => Networking.send(`${BOO
     .then(resp => resp.json());
 
 //Convenience methods
-export const [getBooks, addBook, updateBook, deleteBook] = Networking.crudMethods(BOOKS, getBookDetail)
+export const [getBooks, addBook, updateBook, deleteBook] = Networking.crudMethods(BOOKS, getBookDetail);
 export const [getAuthors, addAuthor, updateAuthor, deleteAuthor] = Networking.crudMethods(AUTHORS, getAuthorDetail);
 export const [getGenres, addGenre, updateGenre, deleteGenre] = Networking.crudMethods(GENRES, getGenreDetail);
 export const [getTypes, addType, updateType, deleteType] = Networking.crudMethods(TYPES, getTypeDetail);

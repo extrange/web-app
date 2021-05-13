@@ -20,23 +20,23 @@ import {useEffect, useState} from "react";
 
 const TableContainer = styled.div`
   max-width: 1000px;
-`
+`;
 
 const SearchDiv = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 0 10px;
-`
+`;
 
 const StyledPopover = styled(Popover)`
   .MuiPopover-paper {
     max-width: min(calc(100% - 32px), 600px);
   }
-`
+`;
 
 export const DataTable = ({columns, data, defaultColumns, onRowClick}) => {
 
-    const [filterAnchor, setFilterAnchor] = useState()
+    const [filterAnchor, setFilterAnchor] = useState();
 
     const {
         allColumns,
@@ -49,10 +49,10 @@ export const DataTable = ({columns, data, defaultColumns, onRowClick}) => {
     } = useTable({
         columns,
         data
-    })
+    });
 
     useEffect(() => setHiddenColumns(allColumns.filter(e => !defaultColumns.includes(e.id)).map(e => e.id))
-        , [allColumns, defaultColumns, setHiddenColumns])
+        , [allColumns, defaultColumns, setHiddenColumns]);
 
 
     return <TableContainer>
@@ -95,7 +95,7 @@ export const DataTable = ({columns, data, defaultColumns, onRowClick}) => {
             </TableHead>
             <TableBody {...getTableBodyProps()}>
                 {rows.map(row => {
-                    prepareRow(row)
+                    prepareRow(row);
                     return <TableRow {...row.getRowProps({
                         hover: true,
                         onClick: () => onRowClick(row)
@@ -109,4 +109,4 @@ export const DataTable = ({columns, data, defaultColumns, onRowClick}) => {
             </TableBody>
         </Table>
     </TableContainer>
-}
+};

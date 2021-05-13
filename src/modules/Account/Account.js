@@ -28,11 +28,11 @@ const SUBMODULES = {
         </>,
         jsx: <TwoFactor/>
     }
-}
+};
 
 export const Account = ({returnToMainApp, logout}) => {
-    const [drawerOpen, setDrawerOpen] = useState(false)
-    const [submodule, setSubmodule] = useState(Object.keys(SUBMODULES)[0])
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [submodule, setSubmodule] = useState(Object.keys(SUBMODULES)[0]);
 
     const drawerContent = <List disablePadding>
         {Object.entries(SUBMODULES).map(([k, v]) =>
@@ -40,7 +40,7 @@ export const Account = ({returnToMainApp, logout}) => {
                       button
                       onClick={() => setSubmodule(k)}
             >{v.appDrawer}</ListItem>)}
-    </List>
+    </List>;
 
     return <AppBarResponsive
         appName={'Account'}
@@ -56,4 +56,4 @@ export const Account = ({returnToMainApp, logout}) => {
         </BackgroundScreen>
 
     </AppBarResponsive>
-}
+};

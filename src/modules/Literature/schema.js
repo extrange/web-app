@@ -113,7 +113,7 @@ const BOOK_SCHEMA = {
         yupSchema: yup.string(),
         defaultValue: '',
     },
-}
+};
 
 export const BOOK_FIELDS = Object.fromEntries(Object.keys(BOOK_SCHEMA).map(e => [e, e]));
 
@@ -121,7 +121,7 @@ export const YUP_SCHEMA = yup.object(Object.fromEntries(Object.entries(BOOK_SCHE
     .map(([k, v]) => [k, v.yupSchema]))).noUnknown();
 
 export const DEFAULT_BOOK_VALUES = Object.fromEntries(Object.entries(BOOK_SCHEMA)
-    .map(([k, v]) => [k, v.defaultValue]))
+    .map(([k, v]) => [k, v.defaultValue]));
 
 export const transformToServer = data => Object.fromEntries(
     Object.entries(data)
@@ -134,7 +134,7 @@ export const transformToServer = data => Object.fromEntries(
             [k, BOOK_SCHEMA[k].transformToServer ?
                 BOOK_SCHEMA[k].transformToServer(v) :
                 v]
-        ))
+        ));
 
 export const transformFromServer = (data, dataTypes) => Object.fromEntries(
     Object.entries(data).map(([k, v]) => [
@@ -142,7 +142,7 @@ export const transformFromServer = (data, dataTypes) => Object.fromEntries(
         k, BOOK_SCHEMA[k]?.transformFromServer ?
             BOOK_SCHEMA[k].transformFromServer(v, dataTypes) :
             v])
-)
+);
 
 /**
  * Verify if user had made changes to the fields
@@ -151,4 +151,4 @@ export const transformFromServer = (data, dataTypes) => Object.fromEntries(
  * @returns {boolean}
  */
 export const isBookDataEqual = (originalData, userData) =>
-    isEqual(pick(originalData, Object.keys(BOOK_FIELDS)), userData)
+    isEqual(pick(originalData, Object.keys(BOOK_FIELDS)), userData);

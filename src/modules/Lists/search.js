@@ -6,7 +6,7 @@ import {TextField} from "@material-ui/core";
 
 const StyledTextField = styled(TextField)`
   margin: 5px 0;
-`
+`;
 
 export const Search = ({filter}) => {
     let {bind, onChange} = useInput();

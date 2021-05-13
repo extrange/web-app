@@ -10,7 +10,7 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import TitleIcon from '@material-ui/icons/Title';
 import {GenericAddDeleteCreate} from "./genericAddDeleteCreate";
 
-const LITERATURE_CURRENT_SUBMODULE = 'LITERATURE_CURRENT_SUBMODULE'
+const LITERATURE_CURRENT_SUBMODULE = 'LITERATURE_CURRENT_SUBMODULE';
 
 const LITERATURE_MODULES = (props = {}) => ({
     BOOKS: {
@@ -60,16 +60,16 @@ const LITERATURE_MODULES = (props = {}) => ({
             updateType={Url.updateType}
         />
     }
-})
+});
 
 export const Literature = ({returnToMainApp, logout}) => {
 
-    const storedSubModule = sessionStorage.getItem(LITERATURE_CURRENT_SUBMODULE)
+    const storedSubModule = sessionStorage.getItem(LITERATURE_CURRENT_SUBMODULE);
 
-    const saveCurrentSubModule = key => sessionStorage.setItem(LITERATURE_CURRENT_SUBMODULE, key)
+    const saveCurrentSubModule = key => sessionStorage.setItem(LITERATURE_CURRENT_SUBMODULE, key);
 
     // Default to first module in LITERATURE_MODULES
-    const [currentSubModule, setCurrentSubModule] = useState(storedSubModule ?? Object.keys(LITERATURE_MODULES())[0])
+    const [currentSubModule, setCurrentSubModule] = useState(storedSubModule ?? Object.keys(LITERATURE_MODULES())[0]);
 
     const [books, setBooks] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -79,7 +79,7 @@ export const Literature = ({returnToMainApp, logout}) => {
 
     const getBooks = useCallback(() => Url.getBooks().then(json => setBooks(json)), []);
 
-    const getAuthors = useCallback(() => Url.getAuthors().then(result => setAuthors(result)),[])
+    const getAuthors = useCallback(() => Url.getAuthors().then(result => setAuthors(result)),[]);
     const getGenres = useCallback(() => Url.getGenres().then(result => setGenres(result)),[]);
     const getTypes = useCallback(() => Url.getTypes().then(result => setTypes(result)),[]);
 
@@ -95,12 +95,12 @@ export const Literature = ({returnToMainApp, logout}) => {
             key={key}
             button
             onClick={() => {
-                setCurrentSubModule(key)
-                saveCurrentSubModule(key)
+                setCurrentSubModule(key);
+                saveCurrentSubModule(key);
                 setDrawerOpen(false)
             }}>
             {value.appDrawer}</ListItem>)}
-    </List>
+    </List>;
 
     return (
         <AppBarResponsive

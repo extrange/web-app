@@ -9,37 +9,37 @@ import {TWOFACTOR_URL} from "./urls";
 
 export const TwoFactor = () => {
 
-    const [otpStats, setOtpStats] = useState({})
-    const [otpStatus, setOtpStatus] = useState(false)
-    const [otp, setOtp] = useState('')
-    const [secret, setSecret] = useState()
+    const [otpStats, setOtpStats] = useState({});
+    const [otpStatus, setOtpStatus] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [secret, setSecret] = useState();
 
     const getOtpStatus = () => Networking.send(TWOFACTOR_URL)
         .then(r => r.json())
         .then(r => {
-            setOtpStatus(r['2fa_enabled'])
+            setOtpStatus(r['2fa_enabled']);
             setOtpStats(r)
-        })
+        });
 
-    useEffect(() => void getOtpStatus(), [])
+    useEffect(() => void getOtpStatus(), []);
 
     const register = () => Networking.send(TWOFACTOR_URL, {
         method: Networking.POST,
         body: JSON.stringify({action: 'register'})
     })
         .then(r => r.json())
-        .then(r => setSecret(r['otpauth_url']))
+        .then(r => setSecret(r['otpauth_url']));
 
     const enable = () => Networking.send(TWOFACTOR_URL, {
         method: Networking.POST,
         body: JSON.stringify({action: 'enable', otp})
     }).then(r => r.json())
-        .then(getOtpStatus)
+        .then(getOtpStatus);
 
     const disable = () => Networking.send(TWOFACTOR_URL, {
         method: Networking.POST,
         body: JSON.stringify({action: 'disable', otp})
-    }).then(getOtpStatus)
+    }).then(getOtpStatus);
 
     return <>
         {secret && <a href={secret}><QRCode value={secret}/></a>}
@@ -53,4 +53,4 @@ export const TwoFactor = () => {
             onChange={e => setOtp(e.target.value)}
         />
     </>
-}
+};

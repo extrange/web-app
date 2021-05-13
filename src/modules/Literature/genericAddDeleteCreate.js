@@ -9,7 +9,7 @@ import {GenericAddDeleteCreateDialog} from "./genericAddDeleteCreateDialog";
 const StyledList = styled(List)`
   max-width: 600px;
   ${BACKGROUND_COLOR};
-`
+`;
 
 const StyledFab = styled(Fab)`
   position: fixed;
@@ -28,29 +28,29 @@ export const GenericAddDeleteCreate = ({
                                            updateType,
                                            deleteType,
                                        }) => {
-    const [editingItem, setEditingItem] = useState(false)
+    const [editingItem, setEditingItem] = useState(false);
 
-    const onDelete = id => deleteType(id).then(getType)
+    const onDelete = id => deleteType(id).then(getType);
 
-    const onClose = () => setEditingItem(null)
+    const onClose = () => setEditingItem(null);
 
 
-    const onClickItem = item => setEditingItem(item)
+    const onClickItem = item => setEditingItem(item);
 
     const onSubmit = (data, id) => {
         if (id) {
             // Editing item
-            updateType(data, id).then(getType)
+            updateType(data, id).then(getType);
             setEditingItem(null)
         } else {
             // Adding item
-            addType(data).then(getType)
+            addType(data).then(getType);
             setEditingItem(null)
         }
-    }
+    };
 
     /*Refetch on initial render*/
-    useEffect(() => void getType(), [getType])
+    useEffect(() => void getType(), [getType]);
 
 
     return <>
@@ -80,4 +80,4 @@ export const GenericAddDeleteCreate = ({
             </ListItem>)}
         </StyledList>
     </>
-}
+};

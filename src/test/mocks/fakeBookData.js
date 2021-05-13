@@ -23,7 +23,7 @@ export const generateFakeBookData = (authors, genres, types) => [...Array(20)].m
     my_review: faker.random.words(),
     notes: faker.random.words(),
     updated: faker.date.past().toISOString()
-}))
+}));
 
 export const staticFakeBookData = [{
     "id": "71fc4323-1aec-42ae-8264-fa1bc965bf26",
@@ -425,4 +425,4 @@ export const staticFakeBookData = [{
     "my_review": "coherent FTP Senior",
     "notes": "cyan",
     "updated": "2020-08-22T02:02:42.956Z"
-}]
+}];

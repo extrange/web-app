@@ -10,7 +10,7 @@ export const ControlHelper = ({control, errors, name, Component, onClear, ...pro
     const {field: {ref, onBlur, ...fieldProps}} = useController({
         control,
         name
-    })
+    });
 
     let controlProps = {
         ...fieldProps,
@@ -20,7 +20,7 @@ export const ControlHelper = ({control, errors, name, Component, onClear, ...pro
         error: Boolean(errors[name]),
         helperText: errors[name]?.message,
         name,
-    }
+    };
 
     /*onBlur() must be called after onClean() to force re-validation after clearing input*/
     if (onClear) {
@@ -31,4 +31,4 @@ export const ControlHelper = ({control, errors, name, Component, onClear, ...pro
     }
 
     return <Component {...controlProps}/>
-}
+};

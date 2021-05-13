@@ -50,7 +50,7 @@ const StyledOverlayScrollbarsComponent = styled(OverlayScrollbarsComponent)`
   .os-viewport {
     overscroll-behavior: contain;
   }
-`
+`;
 
 /* Dialog with overlayscrollbars (does not scroll footer component)*/
 export const DialogBlurResponsive = ({children, footer, maxWidth=800, ...props}) =>
@@ -65,4 +65,4 @@ export const DialogBlurResponsive = ({children, footer, maxWidth=800, ...props})
             {children}
         </StyledOverlayScrollbarsComponent>
         {footer}
-    </StyledDialog>
+    </StyledDialog>;

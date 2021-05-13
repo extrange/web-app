@@ -11,7 +11,7 @@ import {OptionHedgeCalculator} from "./modules/OptionHedgeCalculator/OptionHedge
 import {PasswordTools} from './modules/PasswordTools/PasswordTools'
 import {Account} from "./modules/Account/Account";
 
-const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#'
+const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#';
 
 /*LocalStorage key*/
 const CURRENT_MODULE = 'CURRENT_MODULE';

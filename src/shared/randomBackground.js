@@ -5,8 +5,8 @@ import {differenceInMilliseconds, startOfTomorrow} from 'date-fns'
 
 /*Largest index of background images, inclusive*/
 const NUM_IMAGES = 26;
-const initialRefreshTimeout = () => differenceInMilliseconds(new Date(), startOfTomorrow())
-const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000
+const initialRefreshTimeout = () => differenceInMilliseconds(new Date(), startOfTomorrow());
+const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 const RandomBackgroundImage = styled.div`
   background: url(${({$picIndex}) => `/bg/${$picIndex}.jpg`}) top/cover;
@@ -17,19 +17,22 @@ const RandomBackgroundImage = styled.div`
 `;
 
 /*Get the latest pic index*/
-const getPicIndex = () => getRandomInt(1, NUM_IMAGES + 1, getDaysSinceEpoch())
+const getPicIndex = () => getRandomInt(1, NUM_IMAGES + 1, getDaysSinceEpoch());
 
 export const RandomBackground = () => {
 
-    const [picIndex, setPicIndex] = useState(getPicIndex())
+    const [picIndex, setPicIndex] = useState(getPicIndex());
 
-    const reloadBg = () => setPicIndex(getPicIndex())
+    const reloadBg = () => setPicIndex(getPicIndex());
 
-    useEffect(() => void setTimeout(() => {
-            reloadBg()
-            setInterval(reloadBg, REFRESH_INTERVAL_MS)
-        }, initialRefreshTimeout()
-    ), [])
+    useEffect(() => {
+        const timer = setTimeout(() => {
+                reloadBg();
+                setInterval(reloadBg, REFRESH_INTERVAL_MS)
+            }, initialRefreshTimeout()
+        );
+        return () => clearTimeout(timer)
+    }, []);
 
     return <RandomBackgroundImage $picIndex={picIndex}/>
 };

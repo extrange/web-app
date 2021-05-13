@@ -15,45 +15,45 @@ import {getName} from "country-list";
 
 const StyledCard = styled(Card)`
   outline: ${props => props.$thisDevice ? '2px solid ' + theme.palette.primary.main : 'none'};
-`
+`;
 
 const StyledTypography = styled(Typography)`
   margin: 10px 0;
-`
+`;
 
 const ImageDiv = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`
+`;
 
 const SavedBrowserDiv = styled.div`
   width: 100%;
   height: 32px;
   display: flex;
   justify-content: flex-end;
-`
+`;
 
 const BrowserLogoDiv = styled.div`
   background: no-repeat url(${props => props.$image}) center/contain;
   margin: 0 6px;
   width: 32px;
   height: 32px
-`
+`;
 
 const CardContainer = styled.div`
   display: flex;
   height: 100%;
   flex-direction: column;
   justify-content: space-between;
-`
+`;
 
 const BrowserLogo = {
     Chrome: ChromeLogo,
     Firefox: FirefoxLogo,
     Edge: EdgeLogo,
     Safari: SafariLogo,
-}
+};
 
 export const BrowserCard = ({
                                 browser: {
@@ -70,9 +70,9 @@ export const BrowserCard = ({
                                 forgetAndLogoutBrowser,
                             }) => {
 
-    const prettifiedUserAgent = prettifyUAString(user_agent)
-    const browserName = prettifiedUserAgent.browserName
-    const [detailView, setDetailView] = useState(false)
+    const prettifiedUserAgent = prettifyUAString(user_agent);
+    const browserName = prettifiedUserAgent.browserName;
+    const [detailView, setDetailView] = useState(false);
 
     return <>
         <StyledCard $thisDevice={is_current_session} key={id}>
@@ -121,4 +121,4 @@ export const BrowserCard = ({
             </CardContainer>
         </StyledCard>
     </>
-}
+};

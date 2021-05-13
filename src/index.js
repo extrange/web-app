@@ -18,7 +18,7 @@ import {LoginCheckAndNetworkState} from "./LoginCheckAndNetworkState";
 /*Decide whether to run mock service worker for debugging*/
 const USE_MOCK_SERVICE_WORKER = false;
 if (process.env.NODE_ENV === 'development' && USE_MOCK_SERVICE_WORKER) {
-    const {worker} = require('./test/mocks/browser')
+    const {worker} = require('./test/mocks/browser');
     worker.start()
 }
 

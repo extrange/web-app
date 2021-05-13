@@ -30,14 +30,14 @@ const StyledFab = styled(Fab)`
   right: 20px;
 `;
 
-const BOOK_COLUMN_STATE = 'BOOK_COLUMN_STATE'
+const BOOK_COLUMN_STATE = 'BOOK_COLUMN_STATE';
 
 const DEFAULT_COLUMN_STATES = {
     [BOOK_FIELDS.image_url]: true,
     [BOOK_FIELDS.title]: true,
     [BOOK_FIELDS.authors]: true,
     [BOOK_FIELDS.genres]: true,
-}
+};
 
 export const Books = ({
                           getBooks,
@@ -53,30 +53,30 @@ export const Books = ({
                           getGenres,
                           getTypes
                       }) => {
-    const [searchBookOpen, setSearchBookOpen] = useState(false)
+    const [searchBookOpen, setSearchBookOpen] = useState(false);
     const [bookData, setBookData] = useState(null);
     const [addedSnackbar, setAddedSnackbar] = useState(null);
-    const [filteredItemsLength, setFilteredItemsLength] = useState(books.length)
-    const [count, setCount] = useState(10)
+    const [filteredItemsLength, setFilteredItemsLength] = useState(books.length);
+    const [count, setCount] = useState(10);
 
     const getColumnState = column => localStorage.getItem(BOOK_COLUMN_STATE) ?
         JSON.parse(localStorage.getItem(BOOK_COLUMN_STATE))[column] :
-        DEFAULT_COLUMN_STATES[column]
+        DEFAULT_COLUMN_STATES[column];
 
     const setColumnState = (column, state) => {
-        let columnState = localStorage.getItem(BOOK_COLUMN_STATE)
+        let columnState = localStorage.getItem(BOOK_COLUMN_STATE);
 
         if (!columnState) {
-            let columnState = JSON.stringify({})
+            let columnState = JSON.stringify({});
             localStorage.setItem(BOOK_COLUMN_STATE, columnState)
         }
 
-        let parsedColumnState = JSON.parse(columnState)
+        let parsedColumnState = JSON.parse(columnState);
         localStorage.setItem(BOOK_COLUMN_STATE, JSON.stringify({
             ...parsedColumnState,
             [column]: state
         }));
-    }
+    };
 
     /*Get book description from results
     * todo Note: Goodreads is getting deprecated...*/
@@ -125,7 +125,7 @@ export const Books = ({
             return Promise
                 .all(authorsToCreate.map(name => Url.addAuthor({name: name})))
                 .then(r => {
-                    bookResult[BOOK_FIELDS.authors] = [...authorsToAdd, ...r].map(e => e.id)
+                    bookResult[BOOK_FIELDS.authors] = [...authorsToAdd, ...r].map(e => e.id);
                     return getAuthors().then(() => bookResult);
                 });
 
@@ -283,7 +283,7 @@ export const Books = ({
             name: BOOK_FIELDS.series,
             options: {
                 customBodyRenderLite: dataIndex => {
-                    let row = books[dataIndex]
+                    let row = books[dataIndex];
                     return row[BOOK_FIELDS.series] ? `${row[BOOK_FIELDS.series]} #${row[BOOK_FIELDS.series_position]}` : ''
                 },
                 customFilterListOptions: {
@@ -346,7 +346,7 @@ export const Books = ({
             display: getColumnState(e.name),
             sortThirdClickReset: true,
         }
-    })), [authors, books, genres, types])
+    })), [authors, books, genres, types]);
 
     const options = useMemo(() => ({
         count: count,
@@ -379,10 +379,10 @@ export const Books = ({
         }),
         searchPlaceholder: `Search ${filteredItemsLength} items`,
         tableBodyMaxHeight: '100%'
-    }), [books, filteredItemsLength, getBooks, count])
+    }), [books, filteredItemsLength, getBooks, count]);
 
     /*Refetch booklist on initial render*/
-    useEffect(() => void getBooks(), [getBooks])
+    useEffect(() => void getBooks(), [getBooks]);
 
     return <>
         <StyledFab color={'primary'} onClick={() => setSearchBookOpen(true)}>
@@ -460,4 +460,4 @@ export const Books = ({
         </StyledTableContainer>
     </>
 
-}
+};

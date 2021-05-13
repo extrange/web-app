@@ -26,29 +26,29 @@ const InnerContainer = styled(BackgroundScreenRounded)`
 
 const StyledTextField = styled(TextField)`
   margin: 5px 0;
-`
+`;
 
 const Spacer = styled.div`
   width: 30px
-`
+`;
 
 const StyledCircularProgress = styled(CircularProgress)`
   margin-left: 10px;
-`
+`;
 
 export const Login = ({setLoggedIn, recaptchaKey}) => {
 
     const [loginMessage, setLoginMessage] = useState('Sign In');
-    const [loading, setLoading] = useState(false)
-    const [otpRequired, setOtpRequired] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [otpRequired, setOtpRequired] = useState(false);
 
     const {values, bind, setValue} = useInput();
     const setError = useAsyncError();
-    const recaptchaRef = React.useRef()
+    const recaptchaRef = React.useRef();
 
 
     const onSubmit = event => {
-        setLoading(true)
+        setLoading(true);
         event.preventDefault();
         recaptchaRef.current
             .executeAsync()
@@ -68,7 +68,7 @@ export const Login = ({setLoggedIn, recaptchaKey}) => {
                 })
             }))
             .then(r => {
-                if (r.ok) setLoggedIn(true)
+                if (r.ok) setLoggedIn(true);
                 else if (![401, 403].includes(r.status)) {
                     /*Throw on other, non 401/403 errors*/
                     setError(`HTTP Error ${r.status}: ${r.statusText}`)
@@ -85,7 +85,7 @@ export const Login = ({setLoggedIn, recaptchaKey}) => {
                     setLoginMessage(r.message)
                 }
                 /*Reset captcha to allow user to retry*/
-                recaptchaRef.current?.reset()
+                recaptchaRef.current?.reset();
                 setLoading(false)
             })
     };

@@ -14,49 +14,49 @@ import {formatDistanceToNowStrict} from 'date-fns'
 import {TextFieldClearableInfoCurrency} from "./TextFieldClearableInfoCurrency";
 
 /*API Key from dnsproxy@gmail.com*/
-const ENDPOINT = 'https://finnhub.io/api/v1/quote?symbol=SPY&token=c10sd6n48v6pp7chu95g'
+const ENDPOINT = 'https://finnhub.io/api/v1/quote?symbol=SPY&token=c10sd6n48v6pp7chu95g';
 
 const FIELDS = {
     portfolioValue: 'portfolioValue',
     spyPrice: 'spyPrice',
     hedgeRatio: 'hedgeRatio',
     delta: 'delta',
-}
+};
 
-const emptyStringToUndefined = (val, origVal) => trim(origVal) === '' ? undefined : val
+const emptyStringToUndefined = (val, origVal) => trim(origVal) === '' ? undefined : val;
 
 const schema = yup.object({
     portfolioValue: yup.number().positive().required().transform(emptyStringToUndefined),
     spyPrice: yup.number().positive().required().transform(emptyStringToUndefined),
     hedgeRatio: yup.number().positive().max(1).required().transform(emptyStringToUndefined),
     delta: yup.number().positive().max(1).required().transform(emptyStringToUndefined)
-})
+});
 
 const Container = styled.div`
   ${BACKGROUND_COLOR};
   max-width: 600px;
-`
+`;
 
 const StyledTypography = styled(Typography)`
   &.MuiTypography-root {
     white-space: pre-line;
   }
-`
+`;
 
 const StyledTextFieldClearableInfo = styled(TextFieldClearableInfo)`
   margin: 10px;
   width: min(300px, calc(100vw - 20px));
-`
+`;
 
 const StyledTextFieldRefresh = styled(TextFieldRefreshLoading)`
   margin: 10px;
   width: min(300px, calc(100vw - 20px));
-`
+`;
 
 const StyledTextFieldClearableInfoCurrency = styled(TextFieldClearableInfoCurrency)`
   margin: 10px;
   width: min(300px, calc(100vw - 20px));
-`
+`;
 
 const explanatoryText = `Hedge instrument: SPY puts
 NOTE: This calculates a 1:1 put spread, not the 1:1.1 as described in the 'Options Edge' book
@@ -67,29 +67,29 @@ Beta of DPYA = IWDP = 0.99
 5yr beta of ISAC = 1
 
 Rehedge in first month ONLY if SPY has moved > 3% from the previous long put strike
-`
+`;
 
-const formatNoDecimals = new Intl.NumberFormat(undefined, {maximumFractionDigits: 0})
-const formatDecimals = new Intl.NumberFormat(undefined, {maximumFractionDigits: 1})
+const formatNoDecimals = new Intl.NumberFormat(undefined, {maximumFractionDigits: 0});
+const formatDecimals = new Intl.NumberFormat(undefined, {maximumFractionDigits: 1});
 const formatDollars = new Intl.NumberFormat(undefined, {
     style: 'currency',
     currency: 'USD',
     currencyDisplay: 'symbol'
-})
+});
 
 const FieldUseWatch = ({control, fields: userFields, Component}) => {
     const fields = useWatch({
         control,
         name: userFields,
-    })
+    });
     return <Component fields={fields}/>
-}
+};
 
 export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
-    const [drawerOpen, setDrawerOpen] = useState(false)
-    const [spyPriceUpdated, setSpyPriceUpdated] = useState()
-    const [tooltipText, setTooltipText] = useState('')
-    const [loading, setLoading] = useState(false)
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [spyPriceUpdated, setSpyPriceUpdated] = useState();
+    const [tooltipText, setTooltipText] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const {control, setValue, setError, formState: {errors}} = useForm({
         mode: 'onTouched',
@@ -100,28 +100,28 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
             [FIELDS.hedgeRatio]: 0.47,
             [FIELDS.delta]: '',
         }
-    })
+    });
 
     const onClear = name => () => setValue(name, '');
 
     const getSpyPrice = () => {
-        setLoading(true)
+        setLoading(true);
         return fetch(ENDPOINT, {method: 'GET'})
             .then(r => r.json())
             .then(({c}) => {
-                setValue(FIELDS.spyPrice, c)
-                setSpyPriceUpdated(new Date())
+                setValue(FIELDS.spyPrice, c);
+                setSpyPriceUpdated(new Date());
                 setLoading(false)
             })
             .catch(e => {
-                setLoading(false)
+                setLoading(false);
                 setError(FIELDS.spyPrice, {message: `Failed to fetch from API: ${e}`})
             })
-    }
+    };
 
 
     // eslint-disable-next-line
-    useEffect(() => void getSpyPrice(), [])
+    useEffect(() => void getSpyPrice(), []);
 
     return <AppBarResponsive
         appName={'Option Hedge Calculator'}
@@ -216,7 +216,7 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
 
         </Container>
     </AppBarResponsive>
-}
+};
 
 /*Test case:
 *

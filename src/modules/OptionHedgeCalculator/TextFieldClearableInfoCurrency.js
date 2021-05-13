@@ -6,7 +6,7 @@ const CleaveTextField = ({inputRef, ...props}) =>
     <Cleave
         htmlRef={inputRef}
         {...props}
-    />
+    />;
 
 /*Textfield with clear and info buttons, and currency formatting
 * Permanently shrunk*/
@@ -29,4 +29,4 @@ export const TextFieldClearableInfoCurrency = ({info, onClear, onChange, ...prop
         }}
         {...props}
     />
-}
+};

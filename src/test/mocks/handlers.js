@@ -2,10 +2,10 @@ import {rest} from 'msw'
 import {AUTHORS, BOOKS, GENRES, TYPES} from "../../modules/Literature/urls";
 import {staticFakeBookData} from "./fakeBookData";
 
-let id = 100
-const authors = [...Array(20)].map((val, id) => ({id, name: `Author${id}`, notes: `notes${id}`}))
-const genres = [...Array(20)].map((val, id) => ({id, name: `Genre${id}`, notes: `notes${id}`}))
-const types = [...Array(20)].map((val, id) => ({id, name: `Type${id}`, notes: `notes${id}`}))
+let id = 100;
+const authors = [...Array(20)].map((val, id) => ({id, name: `Author${id}`, notes: `notes${id}`}));
+const genres = [...Array(20)].map((val, id) => ({id, name: `Genre${id}`, notes: `notes${id}`}));
+const types = [...Array(20)].map((val, id) => ({id, name: `Type${id}`, notes: `notes${id}`}));
 // const fakeBooks = generateFakeBookData(authors, genres, types)
 
 export const handlers = [
@@ -25,10 +25,10 @@ export const handlers = [
         )
     }),
     rest.post(AUTHORS, (req, res, context) => {
-        let name = req.body['name']
+        let name = req.body['name'];
         if (name && !authors.find(e => e.name === name)) {
-            let newAuthor = {id: id++, name, notes: ''}
-            authors.push(newAuthor)
+            let newAuthor = {id: id++, name, notes: ''};
+            authors.push(newAuthor);
             return res(
                 context.status(201),
                 context.json(newAuthor),
@@ -48,10 +48,10 @@ export const handlers = [
         )
     }),
     rest.post(GENRES, (req, res, context) => {
-        let name = req.body['name']
+        let name = req.body['name'];
         if (name && !genres.find(e => e.name === name)) {
-            let newGenre = {id: id++, name, notes: ''}
-            genres.push(newGenre)
+            let newGenre = {id: id++, name, notes: ''};
+            genres.push(newGenre);
             return res(
                 context.status(201),
                 context.json(newGenre),
@@ -71,10 +71,10 @@ export const handlers = [
         )
     }),
     rest.post(TYPES, (req, res, context) => {
-        let name = req.body['name']
+        let name = req.body['name'];
         if (name && !types.find(e => e.name === name)) {
-            let newType = {id: id++, name, notes: ''}
-            types.push(newType)
+            let newType = {id: id++, name, notes: ''};
+            types.push(newType);
             return res(
                 context.status(201),
                 context.json(newType),
@@ -85,4 +85,4 @@ export const handlers = [
             context.text('Bad request')
         )
     })
-]
+];

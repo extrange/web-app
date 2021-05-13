@@ -11,7 +11,7 @@ import PropTypes from 'prop-types'
 
 const StyledCircularProgress = styled(CircularProgress)`
   cursor: default;
-`
+`;
 const propTypes = {
     createOption: PropTypes.func,
     getOptionLabel: PropTypes.func,
@@ -23,7 +23,7 @@ const propTypes = {
     options: PropTypes.array.isRequired,
     renderProps: PropTypes.object, // error state, helper text
     value: PropTypes.any
-}
+};
 
 export const AutocompleteWithCreate = ({
                                            createOption,
@@ -42,7 +42,7 @@ export const AutocompleteWithCreate = ({
         let [loading, setLoading] = useState(false);
 
         // Optimization for filtering through option labels
-        const sanitizedOptionLabels = useMemo(() => options.map(flow(getOptionLabel, sanitizeString)), [options, getOptionLabel])
+        const sanitizedOptionLabels = useMemo(() => options.map(flow(getOptionLabel, sanitizeString)), [options, getOptionLabel]);
 
         /* Needed for getting option label for single autocomplete when option is being added (i.e. _name is set)*/
         const _getOptionLabel = option => getOptionLabel(option) ?? option._name;
@@ -54,7 +54,7 @@ export const AutocompleteWithCreate = ({
             getOptionSelected(option, value) ||
             /*An option is currently being created.
             * Ternary is needed because undefined === undefined*/
-            value._name ? value._name === option._name : false
+            value._name ? value._name === option._name : false;
 
         const filterOptions = (options, state) => {
             let input = state.inputValue;
@@ -117,13 +117,13 @@ export const AutocompleteWithCreate = ({
             if (multiple) {
 
                 // Find the options with _justAdded === true, call createOption for it and remove the flag
-                let el = newValue.find(e => e._justAdded)
+                let el = newValue.find(e => e._justAdded);
                 if (el) {
-                    el._justAdded = false
+                    el._justAdded = false;
                     createOption(el._name)
                         .then(obj => {
                             // Refresh options with newly added option
-                            getOptions()
+                            getOptions();
 
                             // Get current state and then replace new option with server returned object (it now has id)
                             onChange(getValue().map(e => e._name === el._name ? obj : e))
@@ -134,15 +134,15 @@ export const AutocompleteWithCreate = ({
             } else if (newValue && newValue._justAdded) {
 
                 // New option added to single value autocomplete (will be disabled while loading)
-                setLoading(true)
+                setLoading(true);
                 createOption(newValue._name)
                     .then(obj => {
 
                         // Refresh options with newly added option
-                        getOptions()
+                        getOptions();
 
                         // Input is disabled while this is happening
-                        onChange(obj)
+                        onChange(obj);
                         setLoading(false)
                     })
             }
@@ -174,4 +174,4 @@ export const AutocompleteWithCreate = ({
     }
 ;
 
-AutocompleteWithCreate.propTypes = propTypes
+AutocompleteWithCreate.propTypes = propTypes;

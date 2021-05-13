@@ -26,12 +26,12 @@ export const AlertSnackbarWithDialog = ({
                                             onClose,
                                             snackbarText,
                                             dialogTitle,
-                                            dialogText,
+                                            dialogContent,
                                             actions
                                         }) => {
 
-    const [dialogOpen, setDialogOpen] = useState(false)
-    const dialogEnabled = Boolean(dialogTitle && dialogText)
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const dialogEnabled = Boolean(dialogTitle && dialogContent);
 
     return <>
         {dialogEnabled && <StyledDialog
@@ -42,7 +42,9 @@ export const AlertSnackbarWithDialog = ({
             <DialogTitle>{dialogTitle}</DialogTitle>
 
             <DialogContent>
-                <DialogContentText>{dialogText}</DialogContentText>
+                <DialogContentText component={'div'}>
+                    {dialogContent}
+                </DialogContentText>
             </DialogContent>
 
 
@@ -79,4 +81,4 @@ export const AlertSnackbarWithDialog = ({
         </Snackbar>
     </>
         ;
-}
+};

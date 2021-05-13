@@ -14,19 +14,19 @@ const StyledContainer = styled.form`
   flex-direction: column;
   padding: 20px;
   ${BACKGROUND_COLOR};
-`
+`;
 
 export const HomeAutomation = ({logout, returnToMainApp}) => {
-    const [drawerOpen, setDrawerOpen] = useState(false)
-    const [snackbar, setSnackbar] = useState()
-    const [disabled, setDisabled] = useState(false)
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [snackbar, setSnackbar] = useState();
+    const [disabled, setDisabled] = useState(false);
 
     const handleSubmit = e => {
         e.preventDefault();
-        setDisabled(true)
-        setTimeout(() => setDisabled(false), 2000)
+        setDisabled(true);
+        setTimeout(() => setDisabled(false), 2000);
         sendCommand(e.target.command.value).then(() => setSnackbar(true));
-    }
+    };
 
     return <AppBarResponsive
         appName={'Home Automation'}
@@ -67,4 +67,4 @@ export const HomeAutomation = ({logout, returnToMainApp}) => {
                 </Button>
         </StyledContainer>
     </AppBarResponsive>
-}
+};

@@ -19,45 +19,45 @@ const BookResults = styled.div`
 
 const StyledForm = styled.form`
   padding: 10px 0;
-`
+`;
 
 const Footer = styled.div`
   display: flex;
   justify-content: space-between;
-`
+`;
 
 export const SearchBooks = ({books, closeSearch, handleSearch, setBookData}) => {
 
-    const [loading, setLoading] = useState(false)
-    const [results, setResults] = useState(null)
+    const [loading, setLoading] = useState(false);
+    const [results, setResults] = useState(null);
 
     const onSearch = event => {
-        event.preventDefault()
-        setResults(null)
-        setLoading(true)
-        console.log(event.target.elements)
-        let query = event.target.elements.search.value
+        event.preventDefault();
+        setResults(null);
+        setLoading(true);
+        console.log(event.target.elements);
+        let query = event.target.elements.search.value;
         Networking.send(`${Url.SEARCH}?q=${query}`, {method: 'GET'})
             .then(resp => resp.json())
             .then(json => {
-                setResults(json.results)
+                setResults(json.results);
                 setLoading(false)
             });
     };
 
     const onSearchResultClick = result => {
-        setLoading(true)
+        setLoading(true);
         handleSearch(result)
             .then(r => {
-                setBookData(r)
+                setBookData(r);
                 closeSearch()
             })
-    }
+    };
 
     const footer = <Footer>
         <Button
             onClick={() => {
-                setBookData({})
+                setBookData({});
                 closeSearch()
             }}>
             Add manually
@@ -67,7 +67,7 @@ export const SearchBooks = ({books, closeSearch, handleSearch, setBookData}) => 
             color={'primary'}>
             Close
         </Button>
-    </Footer>
+    </Footer>;
 
     return <>
         <DialogBlurResponsive
@@ -78,8 +78,8 @@ export const SearchBooks = ({books, closeSearch, handleSearch, setBookData}) => 
                 <Autocomplete
                     autoComplete
                     filterSelectedOptions
-                    filterOptions={(options, state) =>
-                        matchSorter(options, state.inputValue).slice(0, 10)}
+                    filterOptions={(options, state) => state.inputValue ?
+                        matchSorter(options, state.inputValue).slice(0, 3) : []}
                     freeSolo
                     options={books.map(e => e.title)}
                     renderInput={params => <TextField

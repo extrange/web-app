@@ -1,7 +1,7 @@
 import {API_URL} from "../../globals/urls";
 import {Networking} from "../../util/networking";
 
-const HOME_AUTOMATION_URL = `${API_URL}/home-automation/send`
+const HOME_AUTOMATION_URL = `${API_URL}/home-automation/send`;
 
 export const COMMANDS = {
     gate_toggle: 'Gate: Toggle',
@@ -12,10 +12,10 @@ export const COMMANDS = {
     ceiling_fan_off: 'Ceiling Fan: Off',
     dyson_fan_on: 'Dyson Fan: On',
     dyson_fan_off: 'Dyson Fan: Off',
-}
+};
 
 export const sendCommand = command => Networking.send(HOME_AUTOMATION_URL, {
     method: Networking.POST,
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({command})
-})
+});
