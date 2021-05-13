@@ -64,14 +64,9 @@ export const Books = ({
         DEFAULT_COLUMN_STATES[column];
 
     const setColumnState = (column, state) => {
-        let columnState = localStorage.getItem(BOOK_COLUMN_STATE);
+        let columnState = localStorage.getItem(BOOK_COLUMN_STATE)
 
-        if (!columnState) {
-            let columnState = JSON.stringify({});
-            localStorage.setItem(BOOK_COLUMN_STATE, columnState)
-        }
-
-        let parsedColumnState = JSON.parse(columnState);
+        let parsedColumnState = columnState ? JSON.parse(columnState) : DEFAULT_COLUMN_STATES;
         localStorage.setItem(BOOK_COLUMN_STATE, JSON.stringify({
             ...parsedColumnState,
             [column]: state
@@ -108,7 +103,6 @@ export const Books = ({
                 }
             });
 
-            // Add all current values first
             let bookResult = {};
 
             [

@@ -115,9 +115,9 @@ export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listIt
                 arrow
                 enterTouchDelay={100}
                 interactive
-                title={`Created ${formatDistanceToNowPretty(parseJSON(editingTask.created))}`}>
+                title={editingTask.created ?`Created ${formatDistanceToNowPretty(parseJSON(editingTask.created))}` : ''}>
                 <Typography variant={'body2'} color={'textSecondary'}>
-                    Edited {saving === SavingStates.UNCHANGED ?
+                    Edited {saving === SavingStates.UNCHANGED && editingTask.updated ?
                     formatDistanceToNowPretty(parseJSON(editingTask.updated)) :
                     'just now'}
                 </Typography>
