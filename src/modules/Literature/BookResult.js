@@ -46,7 +46,7 @@ const Authors = styled(Typography)`
   font-style: italic;
 `;
 
-export const BookResult = ({onSearchResultClick, result, key, searchLoading}) => {
+export const BookResult = ({idx, onSearchResultClick, result, searchLoading}) => {
     let {authors=[], from, image_url, published, title, description} = result;
 
     const [detailView, setDetailView] = useState(false);
@@ -60,7 +60,7 @@ export const BookResult = ({onSearchResultClick, result, key, searchLoading}) =>
 
     useEffect(() => void setDetailView(false), [result]);
 
-    return <StyledCard key={key}>
+    return <StyledCard key={idx}>
         <StyledActionArea onClick={() => setDetailView(!detailView)}>
             {detailView ?
                 <Description $maxHeight={maxHeight} $empty={!Boolean(description)}>

@@ -103,7 +103,7 @@ export const Books = ({
                 }
             });
 
-            let bookResult = {};
+            let bookResult = Object.assign({}, DEFAULT_BOOK_VALUES);
 
             [
                 BOOK_FIELDS.description,
@@ -114,7 +114,7 @@ export const Books = ({
                 BOOK_FIELDS.title,
                 BOOK_FIELDS.series,
                 BOOK_FIELDS.series_position
-            ].forEach(e => bookResult[e] = mergedResult[e] || DEFAULT_BOOK_VALUES[e]);
+            ].forEach(e => mergedResult[e] && (bookResult[e] = mergedResult[e]));
 
             return Promise
                 .all(authorsToCreate.map(name => Url.addAuthor({name: name})))
@@ -349,7 +349,7 @@ export const Books = ({
                 bottomOffset={-400}
                 onEnter={() => setCount(row => row + 10)}
                 scrollableAncestor={window}
-            />,
+            ><tfoot/></Waypoint>,
         customSearchRender: debounceSearchRender(200),
         draggableColumns: {
             enabled: true,

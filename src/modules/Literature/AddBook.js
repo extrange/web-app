@@ -168,7 +168,7 @@ export const AddBook = ({
                     setAddedSnackbar({message: 'Changes discarded'});
                     onClose()
                 }}> Discard </Button>
-                <Button onClick={onSubmit} color={'primary'}> Save </Button>
+                <Button onClick={() => setSaveDialog(false)} color={'primary'}>Cancel</Button>
             </DialogActions>
         </Dialog>
         <Dialog
@@ -232,7 +232,6 @@ export const AddBook = ({
 
                     errors={errors}
                     label={'Title'}
-                    onClear={onClear(BOOK_FIELDS.title)}
                     size={'small'}
                     style={{gridArea: BOOK_FIELDS.title}}
                     variant={'outlined'}

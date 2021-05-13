@@ -35,7 +35,6 @@ export const SearchBooks = ({books, closeSearch, handleSearch, setBookData}) => 
         event.preventDefault();
         setResults(null);
         setLoading(true);
-        console.log(event.target.elements);
         let query = event.target.elements.search.value;
         Networking.send(`${Url.SEARCH}?q=${query}`, {method: 'GET'})
             .then(resp => resp.json())
@@ -107,7 +106,7 @@ export const SearchBooks = ({books, closeSearch, handleSearch, setBookData}) => 
                         result={result}
                         onSearchResultClick={onSearchResultClick}
                         searchLoading={loading}
-                        key={idx}
+                        idx={idx}
                     />
                 })}
             </BookResults>}
