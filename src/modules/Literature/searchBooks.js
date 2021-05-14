@@ -78,7 +78,7 @@ export const SearchBooks = ({books, closeSearch, handleSearch, setBookData}) => 
                     autoComplete
                     filterSelectedOptions
                     filterOptions={(options, state) => state.inputValue ?
-                        matchSorter(options, state.inputValue).slice(0, 3) : []}
+                        matchSorter(options, state.inputValue.trim()).slice(0, 3) : []}
                     freeSolo
                     options={books.map(e => e.title)}
                     renderInput={params => <TextField
