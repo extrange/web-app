@@ -87,7 +87,8 @@ export const AddBook = ({
         formState: {
             isDirty,
             errors
-        }
+        },
+        watch
     } = useForm({
         resolver: yupResolver(YUP_SCHEMA),
         defaultValues: isEmpty(bookData) ? DEFAULT_BOOK_VALUES : transformFromServer(bookData, {
@@ -151,6 +152,7 @@ export const AddBook = ({
 
     const footer = <ButtonFlexDiv>
         <IconButton
+            tabIndex={-1}
             onClick={() => setInfoDialog(true)}>
             <InfoOutlinedIcon/>
         </IconButton>
@@ -268,6 +270,47 @@ export const AddBook = ({
                 />
 
                 <Controller
+                    name={BOOK_FIELDS.type}
+                    control={control}
+                    render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
+                        autoComplete
+                        autoHighlight
+                        createOption={e => Url.addType({name: e})}
+                        filterSelectedOptions
+                        getOptionLabel={e => e.name}
+                        getOptions={getTypes}
+                        getOptionSelected={(option, value) => option.id === value.id}
+                        maxOptionsToShow={0}
+                        multiple={false}
+                        name={name}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        options={types}
+                        renderProps={{
+                            label: 'Type',
+                            variant: 'outlined',
+
+                            error: Boolean(errors[BOOK_FIELDS.type]),
+                            helperText: errors[BOOK_FIELDS.type]?.message
+                        }}
+                        size={'small'}
+                        style={{gridArea: BOOK_FIELDS.type}}
+                        value={value}
+                    />}
+                />
+
+                 <ControlHelper
+                    name={BOOK_FIELDS.description}
+                    label={'Description'}
+                    errors={errors}
+                    Component={TextFieldMultilineEllipsis}
+                    control={control}
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.description}}
+                    variant={'outlined'}
+                />
+
+                <Controller
                     name={BOOK_FIELDS.genres}
                     control={control}
                     render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
@@ -279,6 +322,7 @@ export const AddBook = ({
                         getOptions={getGenres}
                         getOptionSelected={(option, value) => option.id === value.id}
                         getValue={() => getValues(BOOK_FIELDS.genres)}
+                        maxOptionsToShow={0}
                         multiple={true}
                         name={name}
                         onBlur={onBlur}
@@ -298,46 +342,6 @@ export const AddBook = ({
                 />
 
                 <Controller
-                    name={BOOK_FIELDS.type}
-                    control={control}
-                    render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
-                        autoComplete
-                        autoHighlight
-                        createOption={e => Url.addType({name: e})}
-                        filterSelectedOptions
-                        getOptionLabel={e => e.name}
-                        getOptions={getTypes}
-                        getOptionSelected={(option, value) => option.id === value.id}
-                        multiple={false}
-                        name={name}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        options={types}
-                        renderProps={{
-                            label: 'Type',
-                            variant: 'outlined',
-
-                            error: Boolean(errors[BOOK_FIELDS.type]),
-                            helperText: errors[BOOK_FIELDS.type]?.message
-                        }}
-                        size={'small'}
-                        style={{gridArea: BOOK_FIELDS.type}}
-                        value={value}
-                    />}
-                />
-
-                <ControlHelper
-                    name={BOOK_FIELDS.description}
-                    label={'Description'}
-                    errors={errors}
-                    Component={TextFieldMultilineEllipsis}
-                    control={control}
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.description}}
-                    variant={'outlined'}
-                />
-
-                <Controller
                     name={BOOK_FIELDS.read_next}
                     control={control}
                     render={({onChange, onBlur, value, name}) =>
@@ -348,7 +352,10 @@ export const AddBook = ({
                             labelPlacement={'end'}
                             name={name}
                             onBlur={onBlur}
-                            onChange={e => onChange(e.target.checked)}
+                            onChange={e => {
+                                setValue(BOOK_FIELDS.date_read, DEFAULT_BOOK_VALUES[BOOK_FIELDS.date_read])
+                                onChange(e.target.checked)
+                            }}
                             style={{gridArea: BOOK_FIELDS.read_next}}
                         />}
                 />
@@ -357,6 +364,17 @@ export const AddBook = ({
                     {errors[BOOK_FIELDS.read_next]?.message}
                 </FormHelperText>
 
+                <ControlHelper
+                    name={BOOK_FIELDS.rating}
+                    label={'Rating'}
+                    control={control}
+                    Component={TextFieldClearable}
+                    errors={errors}
+                    onClear={onClear(BOOK_FIELDS.rating)}
+                    size={'small'}
+                    style={{gridArea: BOOK_FIELDS.rating}}
+                    variant={'outlined'}
+                />
 
                 <MuiPickersUtilsProvider utils={DateFns}>
                     <ControlHelper
@@ -367,6 +385,7 @@ export const AddBook = ({
                         Component={KeyboardDatePicker}
 
                         autoOk
+                        disabled={watch(BOOK_FIELDS.read_next)}
                         disableFuture
                         format={'dd/MM/yyyy'}
                         placeholder={'dd/mm/yyyy'}
@@ -450,18 +469,6 @@ export const AddBook = ({
                     onClear={onClear(BOOK_FIELDS.series_position)}
                     size={'small'}
                     style={{gridArea: BOOK_FIELDS.series_position}}
-                    variant={'outlined'}
-                />
-
-                <ControlHelper
-                    name={BOOK_FIELDS.rating}
-                    label={'Rating'}
-                    control={control}
-                    Component={TextFieldClearable}
-                    errors={errors}
-                    onClear={onClear(BOOK_FIELDS.rating)}
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.rating}}
                     variant={'outlined'}
                 />
 

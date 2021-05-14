@@ -18,6 +18,7 @@ const propTypes = {
     getOptions: PropTypes.func.isRequired,
     getOptionSelected: PropTypes.func,
     getValue: PropTypes.func, // Required if multiple=true (to get the current state in a callback)
+    maxOptionsToShow: PropTypes.number,
     multiple: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     options: PropTypes.array.isRequired,
@@ -31,6 +32,7 @@ export const AutocompleteWithCreate = ({
                                            getOptions,
                                            getOptionSelected = (a, b) => a === b,
                                            getValue,
+                                           maxOptionsToShow = 10,
                                            multiple = false,
                                            onChange,
                                            options,
@@ -74,8 +76,7 @@ export const AutocompleteWithCreate = ({
                 })
             }
 
-            // Limit to 10 for performance
-            return filtered.slice(0, 10); //todo add 'Scroll for more' functionality
+            return maxOptionsToShow ? filtered.slice(0, maxOptionsToShow) : filtered //todo add 'Scroll for more' functionality
         };
 
         const renderInput = params => <TextField

@@ -17,6 +17,7 @@ import {ThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme} from
 import MUIDataTable, {debounceSearchRender} from "mui-datatables";
 import {SearchBooks} from "./searchBooks";
 import {mergeWith} from "lodash";
+import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 
 
 const StyledTableContainer = styled(TableContainer)`
@@ -252,7 +253,7 @@ export const Books = ({
                 customFilterListOptions: {
                     render: e => `Read Next: ${e}`
                 },
-                customBodyRender: value => value ? 'True' : 'False',
+                customBodyRender: value => value ? <ErrorOutlineOutlinedIcon color={'secondary'}/> : '',
                 filterType: 'checkbox',
                 searchable: false,
             }
@@ -262,8 +263,7 @@ export const Books = ({
             name: BOOK_FIELDS.date_read,
             options: {
                 customBodyRenderLite: dataIndex => books[dataIndex][BOOK_FIELDS.date_read] ?
-                    formatDistanceToNowPretty(parseISO(books[dataIndex][BOOK_FIELDS.date_read])) :
-                    'Not yet read',
+                    formatDistanceToNowPretty(parseISO(books[dataIndex][BOOK_FIELDS.date_read])) : '',
                 searchable: false,
             }
         },
@@ -349,7 +349,9 @@ export const Books = ({
                 bottomOffset={-400}
                 onEnter={() => setCount(row => row + 10)}
                 scrollableAncestor={window}
-            ><tfoot/></Waypoint>,
+            >
+                <tfoot/>
+            </Waypoint>,
         customSearchRender: debounceSearchRender(200),
         draggableColumns: {
             enabled: true,
