@@ -1,11 +1,11 @@
 //Books in a series should be collapsible
 import {useEffect, useMemo, useState} from 'react';
-import {Fab, Snackbar, TableContainer, TextField} from "@material-ui/core";
+import {Checkbox, Fab, FormControlLabel, Snackbar, TableContainer, TextField} from "@material-ui/core";
 import styled from 'styled-components'
 import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
 import AddIcon from "@material-ui/icons/Add";
 import {AddBook} from "./AddBook";
-import {parseISO} from 'date-fns'
+import {isBefore, parseISO, subMonths, subWeeks, subYears} from 'date-fns'
 import {Alert, Autocomplete} from "@material-ui/lab";
 import * as Url from './urls'
 import {getGoodreadsBookInfo, getGoogleBookInfo} from './urls'
@@ -73,6 +73,25 @@ export const Books = ({
             [column]: state
         }));
     };
+
+    const dateOptions = useMemo(() => [
+        {
+            name: 'All',
+            date: new Date(0),
+        },
+        {
+            name: 'Last week',
+            date: subWeeks(new Date(), 1)
+        },
+        {
+            name: 'Last month',
+            date: subMonths(new Date(), 1)
+        },
+        {
+            name: 'Last year',
+            date: subYears(new Date(), 1)
+        }
+    ], [])
 
     /*Get book description from results
     * todo Note: Goodreads is getting deprecated...*/
@@ -160,8 +179,8 @@ export const Books = ({
                 filterType: 'custom',
                 filterOptions: {
                     logic: (el, filters) => filters.length && !filters.some(e => el.includes(e.id)),
-                    display: (filterList, onChange, index, column) => {
-                        return <Autocomplete
+                    display: (filterList, onChange, index, column) =>
+                        <Autocomplete
                             autoComplete
                             autoHighlight
                             filterSelectedOptions
@@ -179,7 +198,6 @@ export const Books = ({
                             renderInput={params => <TextField {...params} label={'Author'}/>}
                             value={filterList[index]}
                         />
-                    }
                 },
             }
         },
@@ -195,8 +213,8 @@ export const Books = ({
                 filterType: 'custom',
                 filterOptions: {
                     logic: (el, filters) => filters.length && !filters.some(e => el.includes(e.id)),
-                    display: (filterList, onChange, index, column) => {
-                        return <Autocomplete
+                    display: (filterList, onChange, index, column) =>
+                        <Autocomplete
                             autoComplete
                             autoHighlight
                             filterSelectedOptions
@@ -214,7 +232,6 @@ export const Books = ({
                             renderInput={params => <TextField {...params} label={'Genre'}/>}
                             value={filterList[index]}
                         />
-                    }
                 },
             }
         },
@@ -241,21 +258,52 @@ export const Books = ({
         },
         {
             label: 'Date added',
-            name: 'date_added',
+            name: 'date_added', // date_added is not in BOOK_FIELDS
             options: {
-                customBodyRenderLite: dataIndex => formatDistanceToNowPretty(parseISO(books[dataIndex].date_added)),
+                customBodyRenderLite: dataIndex => formatDistanceToNowPretty(parseISO(books[dataIndex].date_added)), // date_added is not in BOOK_FIELDS
+                customFilterListOptions: {
+                    render: v => `Date Added: ${v[0].name}`
+                },
+                filterOptions: {
+                    logic: (el, filters) => filters.length && isBefore(parseISO(el), filters[0].date),
+                    display: (filterList, onChange, index, column) =>
+                        <Autocomplete
+                            autoComplete
+                            autoHighlight
+                            getOptionLabel={e => e.name}
+                            getOptionSelected={(opt, val) => opt.name === val.name}
+                            onChange={(event, value) =>
+                                onChange(value ? [value] : [], index, column)}
+                            options={dateOptions}
+                            renderInput={params => <TextField {...params} label={'Date Added'}/>}
+                            value={filterList[index].length ? filterList[index][0] : dateOptions[0]}
+                        />
+                },
+                filterType: 'custom',
                 searchable: false,
-            }
+                sortDescFirst: true,
+            },
         },
         {
             label: 'Read Next',
             name: BOOK_FIELDS.read_next,
             options: {
+                customBodyRenderLite: dataIndex => books[dataIndex][BOOK_FIELDS.read_next] ?
+                    <ErrorOutlineOutlinedIcon color={'secondary'}/> : '',
                 customFilterListOptions: {
-                    render: e => `Read Next: ${e}`
+                    render: () => 'Read Next'
                 },
-                customBodyRender: value => value ? <ErrorOutlineOutlinedIcon color={'secondary'}/> : '',
-                filterType: 'checkbox',
+                filterOptions: {
+                    logic: (el, filters) => filters.length && !el,
+                    display: (filterList, onChange, index, column) =>
+                        <FormControlLabel
+                            control={<Checkbox
+                                checked={Boolean(filterList[index][0])}
+                                onChange={e => onChange(e.target.checked ? [true] : [], index, column)}
+                            />}
+                            label={'Read Next'}/>
+                },
+                filterType: 'custom',
                 searchable: false,
             }
         },
@@ -265,13 +313,37 @@ export const Books = ({
             options: {
                 customBodyRenderLite: dataIndex => books[dataIndex][BOOK_FIELDS.date_read] ?
                     formatDistanceToNowPretty(parseISO(books[dataIndex][BOOK_FIELDS.date_read])) : '',
+                customFilterListOptions: {
+                    render: v => `Date Read: ${v[0].name}`
+                },
+                filterOptions: {
+                    logic: (el, filters) => filters.length && (isBefore(parseISO(el), filters[0].date) || !Boolean(el)),
+                    display: (filterList, onChange, index, column) =>
+                        <Autocomplete
+                            autoComplete
+                            autoHighlight
+                            getOptionLabel={e => e.name}
+                            getOptionSelected={(opt, val) => opt.name === val.name}
+                            onChange={(event, value) =>
+                                onChange(value ? [value] : [], index, column)}
+                            options={dateOptions}
+                            renderInput={params => <TextField {...params} label={'Date Read'}/>}
+                            value={filterList[index].length ? filterList[index][0] : dateOptions[0]}
+                        />
+                },
+                filterType: 'custom',
                 searchable: false,
-            }
+                sortDescFirst: true,
+            },
         },
 
         {
             label: 'Published',
             name: BOOK_FIELDS.published,
+            options: {
+                filter: false,
+                sortDescFirst: true
+            },
         },
         {
             label: 'Series',
@@ -331,8 +403,28 @@ export const Books = ({
             name: 'updated',
             options: {
                 customBodyRenderLite: dataIndex => formatDistanceToNowPretty(parseISO(books[dataIndex].updated)),
+                customFilterListOptions: {
+                    render: v => `Updated: ${v[0].name}`
+                },
+                filterOptions: {
+                    logic: (el, filters) => filters.length && isBefore(parseISO(el), filters[0].date),
+                    display: (filterList, onChange, index, column) =>
+                        <Autocomplete
+                            autoComplete
+                            autoHighlight
+                            getOptionLabel={e => e.name}
+                            getOptionSelected={(opt, val) => opt.name === val.name}
+                            onChange={(event, value) =>
+                                onChange(value ? [value] : [], index, column)}
+                            options={dateOptions}
+                            renderInput={params => <TextField {...params} label={'Updated'}/>}
+                            value={filterList[index].length ? filterList[index][0] : dateOptions[0]}
+                        />
+                },
+                filterType: 'custom',
                 searchable: false,
-            }
+                sortDescFirst: true,
+            },
         }
     ].map(e => ({
         ...e,
@@ -341,7 +433,7 @@ export const Books = ({
             display: getColumnState(e.name),
             sortThirdClickReset: true,
         }
-    })), [authors, books, genres, types]);
+    })), [authors, books, dateOptions, genres, types]);
 
     const options = useMemo(() => ({
         count: count,
