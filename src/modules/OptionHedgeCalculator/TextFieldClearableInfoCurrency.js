@@ -10,13 +10,14 @@ const CleaveTextField = ({inputRef, ...props}) =>
 
 /*Textfield with clear and info buttons, and currency formatting
 * Permanently shrunk*/
-export const TextFieldClearableInfoCurrency = ({info, onClear, onChange, ...props}) => {
+export const TextFieldClearableInfoCurrency = ({info, onChange, InputProps, ...props}) => {
 
     return <TextFieldClearableInfo
+        {...props}
         info={info}
-        onClear={onClear}
         InputLabelProps={{ shrink: true }}
         InputProps={{
+            ...InputProps,
             inputComponent: CleaveTextField,
             inputProps: {
                 options: {
@@ -27,6 +28,6 @@ export const TextFieldClearableInfoCurrency = ({info, onClear, onChange, ...prop
             },
             onChange: e => onChange(e.target.rawValue)
         }}
-        {...props}
+        onChange={onChange}
     />
 };

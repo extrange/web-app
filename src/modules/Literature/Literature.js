@@ -79,9 +79,9 @@ export const Literature = ({returnToMainApp, logout}) => {
 
     const getBooks = useCallback(() => Url.getBooks().then(json => setBooks(json)), []);
 
-    const getAuthors = useCallback(() => Url.getAuthors().then(result => setAuthors(result)),[]);
-    const getGenres = useCallback(() => Url.getGenres().then(result => setGenres(result)),[]);
-    const getTypes = useCallback(() => Url.getTypes().then(result => setTypes(result)),[]);
+    const getAuthors = useCallback(() => Url.getAuthors().then(result => setAuthors(result)), []);
+    const getGenres = useCallback(() => Url.getGenres().then(result => setGenres(result)), []);
+    const getTypes = useCallback(() => Url.getTypes().then(result => setTypes(result)), []);
 
     useEffect(() => {
         void getBooks();

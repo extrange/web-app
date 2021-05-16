@@ -84,6 +84,7 @@ export const AutocompleteWithCreate = ({
             {...renderProps}
             InputProps={{
                 ...params.InputProps,
+                ...renderProps?.InputProps,
                 endAdornment:
                     <>
                         {loading && <CircularProgress size={20}/>}

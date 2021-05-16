@@ -73,7 +73,8 @@ const BOOK_SCHEMA = {
         defaultValue: '',
     },
     published: {
-        yupSchema: yup.number().integer().nullable().transform((val, origVal) => trim(origVal) === '' ? null : val),
+        yupSchema: yup.number().integer().nullable().transform((val, origVal) => trim(origVal) === '' ? null : val)
+            .typeError('Must be a valid year'),
         defaultValue: '',
         /* isNumber checks are needed because 0 is falsy*/
         transformFromServer: val => isNumber(val) ? val : ''

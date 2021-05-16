@@ -5,16 +5,17 @@ import CachedIcon from '@material-ui/icons/Cached';
 import {noop} from "../../util/util";
 import React from "react";
 
-export const TextFieldRefreshLoading = ({onRefresh, onClear, loading, tooltipText = '', onOpen = noop, ...props}) => {
+export const TextFieldRefreshLoading = ({onChange, onRefresh, loading, tooltipText = '', onOpen = noop, ...props}) => {
 
     return <TextField
         {...props}
+        onChange={onChange}
         InputProps={{
             ...props.InputProps,
             endAdornment:
                 <InputAdornment position={'end'}>
                     {props.value &&
-                    <ClearIcon style={{cursor: 'pointer'}} onClick={onClear}/>}
+                    <ClearIcon style={{cursor: 'pointer'}} onClick={() => onChange('')}/>}
                     <InputAdornment position={'end'}>
                         <Tooltip
                             onOpen={onOpen}

@@ -3,15 +3,15 @@ import {AppBarResponsive} from "../../shared/AppBarResponsive";
 import React, {useEffect, useState} from "react";
 import {yupResolver} from '@hookform/resolvers/yup'
 import styled from 'styled-components'
-import {useForm, useWatch} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
 import * as yup from 'yup'
-import {ControlHelper} from "../../shared/controlHelper";
 import {trim} from "lodash";
 import {TextFieldClearableInfo} from "../../shared/textFieldClearableInfo";
 import {TextFieldRefreshLoading} from "./textFieldRefreshLoading";
 import {formatDistanceToNowStrict} from 'date-fns'
 import {TextFieldClearableInfoCurrency} from "./TextFieldClearableInfoCurrency";
+import {FieldUseWatch} from "./FieldUseWatch";
 
 /*API Key from dnsproxy@gmail.com*/
 const ENDPOINT = 'https://finnhub.io/api/v1/quote?symbol=SPY&token=c10sd6n48v6pp7chu95g';
@@ -77,21 +77,17 @@ const formatDollars = new Intl.NumberFormat(undefined, {
     currencyDisplay: 'symbol'
 });
 
-const FieldUseWatch = ({control, fields: userFields, Component}) => {
-    const fields = useWatch({
-        control,
-        name: userFields,
-    });
-    return <Component fields={fields}/>
-};
-
 export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [spyPriceUpdated, setSpyPriceUpdated] = useState();
     const [tooltipText, setTooltipText] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const {control, setValue, setError, formState: {errors}} = useForm({
+    const {
+        control,
+        setValue,
+        setError
+    } = useForm({
         mode: 'onTouched',
         resolver: yupResolver(schema),
         defaultValues: {
@@ -101,8 +97,6 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
             [FIELDS.delta]: '',
         }
     });
-
-    const onClear = name => () => setValue(name, '');
 
     const getSpyPrice = () => {
         setLoading(true);
@@ -134,83 +128,95 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
         <Container>
             <StyledTypography variant={'body1'}>{explanatoryText}</StyledTypography>
 
-            <ControlHelper
-                label={'Beta-weighted Portfolio Value (USD)'}
-                variant={'outlined'}
-                info={'Take beta of IWDA to be 0.89 and exclude bonds e.g. AGGU'}
-
+            <Controller
                 name={FIELDS.portfolioValue}
-                Component={StyledTextFieldClearableInfoCurrency}
                 control={control}
-                errors={errors}
-                onClear={onClear(FIELDS.portfolioValue)}
-            />
+                render={({
+                             field: {ref, ...field},
+                             fieldState: {error}
+                         }) =>
+                    <StyledTextFieldClearableInfoCurrency
+                        {...field}
+                        error={Boolean(error)}
+                        helperText={error?.message}
+                        info={'Take beta of IWDA to be 0.89 and exclude bonds e.g. AGGU'}
+                        label={'Beta-weighted Portfolio Value (USD)'}
+                        variant={'outlined'}
+                    />}/>
 
-            <ControlHelper
-                label={'SPY Price'}
-                variant={'outlined'}
-                tooltipText={tooltipText}
-                onOpen={() => setTooltipText(spyPriceUpdated ? 'Last updated ' + formatDistanceToNowStrict(spyPriceUpdated, {addSuffix: true}) : '')}
-                onRefresh={getSpyPrice}
-                loading={loading}
-
+            <Controller
                 name={FIELDS.spyPrice}
-                Component={StyledTextFieldRefresh}
                 control={control}
-                errors={errors}
-                onClear={onClear(FIELDS.spyPrice)}
-            />
+                render={({
+                             field: {ref, ...field},
+                             fieldState: {error}
+                         }) =>
+                    <StyledTextFieldRefresh
+                        {...field}
+                        error={Boolean(error)}
+                        helperText={error?.message}
+                        label={'SPY Price'}
+                        loading={loading}
+                        onOpen={() => setTooltipText(spyPriceUpdated ? 'Last updated ' + formatDistanceToNowStrict(spyPriceUpdated, {addSuffix: true}) : '')}
+                        onRefresh={getSpyPrice}
+                        tooltipText={tooltipText}
+                        variant={'outlined'}/>}/>
+
 
             <FieldUseWatch
                 control={control}
-                fields={[FIELDS.spyPrice]}
-                Component={({fields}) => <Typography variant={'body1'}>
-                    Strike price for short 8.6% delta OTM, 90-day put: {formatNoDecimals.format(0.914 * fields[FIELDS.spyPrice])}
-                </Typography>}
-            />
+                fieldsToWatch={[FIELDS.spyPrice]}
+                Component={({fields: [spyPrice]}) => <Typography variant={'body1'}>
+                    Strike price for short 8.6% delta OTM, 90-day
+                    put: {formatNoDecimals.format(0.914 * spyPrice)}
+                </Typography>}/>
 
-
-            <ControlHelper
-                label={'Hedge Ratio'}
-                variant={'outlined'}
-                info={'% of portfolio value to hedge using put options (via delta equivalent amount)'}
-
+            <Controller
                 name={FIELDS.hedgeRatio}
-                Component={StyledTextFieldClearableInfo}
                 control={control}
-                errors={errors}
-                onClear={onClear(FIELDS.hedgeRatio)}
-            />
+                render={({
+                             field: {ref, ...field},
+                             fieldState: {error}
+                         }) =>
+                    <StyledTextFieldClearableInfo
+                        {...field}
+                        error={Boolean(error)}
+                        info={'% of portfolio value to hedge using put options (via delta equivalent amount)'}
+                        helperText={error?.message}
+                        label={'Hedge Ratio'}
+                        variant={'outlined'}/>}/>
+
 
             <FieldUseWatch
                 control={control}
-                fields={[FIELDS.hedgeRatio, FIELDS.portfolioValue]}
-                Component={({fields}) =>
-                    <Typography variant={'body1'}>Notional
-                        amount to hedge: {formatDollars.format(fields[FIELDS.portfolioValue] * fields[FIELDS.hedgeRatio])}</Typography>}
+                fieldsToWatch={[FIELDS.hedgeRatio, FIELDS.portfolioValue]}
+                Component={({fields: [hedgeRatio, portfolioValue]}) =>
+                    <Typography variant={'body1'}>
+                        Notional amount to hedge: {formatDollars.format(portfolioValue * hedgeRatio)}
+                    </Typography>}/>
 
-            />
-
-            <ControlHelper
-                label={'Delta'}
-                variant={'outlined'}
-                info={'Delta of each spread with OTM 8.6% put sold, per option e.g. 0.250'}
-
+            <Controller
                 name={FIELDS.delta}
-                Component={StyledTextFieldClearableInfo}
                 control={control}
-                errors={errors}
-                onClear={onClear(FIELDS.delta)}
-            />
+                render={({
+                             field: {ref, ...field},
+                             fieldState: {error}
+                         }) =>
+                    <StyledTextFieldClearableInfo
+                        {...field}
+                        error={Boolean(error)}
+                        info={'Delta of each spread with OTM 8.6% put sold, per option e.g. 0.250'}
+                        label={'Delta'}
+                        helperText={error?.message}
+                        variant={'outlined'}/>}/>
 
             <FieldUseWatch
                 control={control}
-                fields={[FIELDS.portfolioValue, FIELDS.hedgeRatio, FIELDS.delta, FIELDS.spyPrice]}
-                Component={({fields}) =>
+                fieldsToWatch={[FIELDS.portfolioValue, FIELDS.hedgeRatio, FIELDS.delta, FIELDS.spyPrice]}
+                Component={({fields: [portfolioValue, hedgeRatio, delta, spyPrice]}) =>
                     <Typography variant={'body1'}>
                         Number of spreads required (i.e. standard option contracts):
-                        {formatDecimals.format((fields[FIELDS.portfolioValue] * fields[FIELDS.hedgeRatio]) /
-                            (fields[FIELDS.delta] * fields[FIELDS.spyPrice] * 100))}
+                        {formatDecimals.format(portfolioValue * hedgeRatio / (delta * spyPrice * 100))}
                     </Typography>}
             />
 

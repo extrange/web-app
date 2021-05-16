@@ -152,7 +152,7 @@ export const Books = ({
             options: {
                 customBodyRenderLite: dataIndex =>
                     books[dataIndex][BOOK_FIELDS.authors]
-                        .map(id => authors.find(authors => authors.id === id).name)
+                        .map(id => authors.find(authors => authors.id === id)?.name)
                         .join(', '),
                 customFilterListOptions: {
                     render: val => val.map(e => `Author: ${e.name}`)
@@ -187,7 +187,8 @@ export const Books = ({
             label: 'Genres',
             name: BOOK_FIELDS.genres,
             options: {
-                customBodyRenderLite: dataIndex => books[dataIndex][BOOK_FIELDS.genres].map(id => genres.find(genres => genres.id === id).name).join(', '),
+                customBodyRenderLite: dataIndex => books[dataIndex][BOOK_FIELDS.genres]
+                    .map(id => genres.find(genres => genres.id === id)?.name).join(', '),
                 customFilterListOptions: {
                     render: val => val.map(e => `Genre: ${e.name}`)
                 },
@@ -221,7 +222,7 @@ export const Books = ({
             label: 'Type',
             name: BOOK_FIELDS.type,
             options: {
-                customBodyRenderLite: dataIndex => types.find(type => type.id === books[dataIndex][BOOK_FIELDS.type]).name,
+                customBodyRenderLite: dataIndex => types.find(type => type.id === books[dataIndex][BOOK_FIELDS.type])?.name,
                 customFilterListOptions: {
                     render: v => `Type: ${types.find(type => type.id === v).name}`
                 },

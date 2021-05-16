@@ -51,8 +51,8 @@ export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listIt
         }
     });
 
-    register({name: 'title'});
-    register({name: 'notes'});
+    register('title');
+    register('notes');
 
     // eslint-disable-next-line
     const debouncedAutoSave = useCallback(debounce(() => {
@@ -115,7 +115,7 @@ export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listIt
                 arrow
                 enterTouchDelay={100}
                 interactive
-                title={editingTask.created ?`Created ${formatDistanceToNowPretty(parseJSON(editingTask.created))}` : ''}>
+                title={editingTask.created ? `Created ${formatDistanceToNowPretty(parseJSON(editingTask.created))}` : ''}>
                 <Typography variant={'body2'} color={'textSecondary'}>
                     Edited {saving === SavingStates.UNCHANGED && editingTask.updated ?
                     formatDistanceToNowPretty(parseJSON(editingTask.updated)) :
@@ -128,8 +128,7 @@ export const EditItem = ({editingTask, createTask, updateTask, closeEdit, listIt
                     [SavingStates.MODIFIED]: <CircularProgress color="inherit" size={20}/>,
                     [SavingStates.SAVED]:
                         <Zoom
-                            in={saving === SavingStates.SAVED}
-                            timeout={{enter: '500ms', exit: '500ms'}}>
+                            in={saving === SavingStates.SAVED}>
                             <CheckIcon/>
                         </Zoom>,
                 }[saving]}

@@ -1,8 +1,8 @@
 import {API_URL} from "../../globals/urls";
 import {Networking} from "../../util/networking";
 
-const MOHH_MAIL_URL = `${API_URL}/hmail/check-mohh-mail`;
-const IHIS_MAIL_URL = `${API_URL}/hmail/check-ihis-mail`;
+const MOHH_MAIL_URL = `${API_URL}/hmail/check-mohh-mail/`;
+const IHIS_MAIL_URL = `${API_URL}/hmail/check-ihis-mail/`;
 
 export const HMAIL_URL = 'https://www.hmail.sg';
 

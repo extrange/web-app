@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import * as Url from "./urls";
 import styled from "styled-components";
 import {KeyboardDatePicker} from "@material-ui/pickers/DatePicker";
@@ -31,10 +31,9 @@ import {isEmpty} from "lodash";
 import {DialogBlurResponsive} from "../../shared/dialogBlurResponsive";
 import {Alert} from "@material-ui/lab";
 import {useAsyncError} from "../../util/useAsyncError";
-import {AutocompleteWithCreate} from "../../shared/autocompleteWithCreate";
+import {AutocompleteWithCreate} from "../../shared/AutocompleteWithCreate";
 import {TextFieldClearable} from "../../shared/textFieldClearable";
 import {TextFieldMultilineEllipsis} from "../../shared/textFieldMultilineEllipsis";
-import {ControlHelper} from "../../shared/controlHelper";
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 const FieldContainer = styled.div`
@@ -85,8 +84,7 @@ export const AddBook = ({
         getValues,
         setValue,
         formState: {
-            isDirty,
-            errors
+            isDirty
         },
         watch
     } = useForm({
@@ -103,7 +101,6 @@ export const AddBook = ({
     const [saveDialog, setSaveDialog] = useState(false);
     const [infoDialog, setInfoDialog] = useState(false);
 
-    const onClear = name => () => setValue(name, DEFAULT_BOOK_VALUES[name], {shouldDirty: true});
     const setError = useAsyncError();
 
     const onSubmit = handleSubmit(
@@ -159,6 +156,24 @@ export const AddBook = ({
         <Button onClick={handleDiscard}>Discard</Button>
         <Button onClick={onSubmit} color={'primary'}> Save </Button>
     </ButtonFlexDiv>;
+
+    const StandardField = useCallback(({Component, name, label, getComponentProps = () => ({}), ...props}) =>
+        <Controller
+            control={control}
+            name={name}
+            render={controllerProps => {
+                const {field: {ref, ...field}, fieldState: {error}} = controllerProps
+                return <Component
+                    {...props}
+                    {...field}
+                    error={Boolean(error)}
+                    label={label}
+                    helperText={error?.message}
+                    size={'small'}
+                    style={{gridArea: field.name}}
+                    variant={'outlined'}
+                    {...getComponentProps({...controllerProps, name, label})}/>
+            }}/>, [control])
 
     return <>
         <Dialog
@@ -227,161 +242,127 @@ export const AddBook = ({
             disableBackdropClick
             onBackdropClick={handleDiscard}>
             <FieldContainer>
-                <ControlHelper
+
+                <StandardField
                     name={BOOK_FIELDS.title}
-                    control={control}
-                    Component={TextFieldMultilineEllipsis}
-
-                    errors={errors}
                     label={'Title'}
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.title}}
-                    variant={'outlined'}
-                />
+                    Component={TextFieldMultilineEllipsis}/>
 
-                <Controller
+                <StandardField
                     name={BOOK_FIELDS.authors}
-                    control={control}
-                    render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
-                        autoComplete
-                        autoHighlight
-                        createOption={e => Url.addAuthor({name: e})}
-                        filterSelectedOptions
-                        getOptionLabel={e => e.name}
-                        getOptions={getAuthors}
-                        getOptionSelected={(option, value) => option.id === value.id}
-                        getValue={() => getValues(BOOK_FIELDS.authors)}
-                        multiple={true}
-                        name={name}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        options={authors}
-                        renderProps={{
-                            label: 'Authors',
-                            variant: 'outlined',
+                    label={'Authors'}
+                    Component={AutocompleteWithCreate}
 
-                            error: Boolean(errors[BOOK_FIELDS.authors]),
-                            helperText: errors[BOOK_FIELDS.authors] ? 'Creating author(s)...' : null
-                        }}
-                        size={'small'}
-                        style={{gridArea: BOOK_FIELDS.authors}}
-                        value={value}
-                    />}
+                    autoComplete
+                    autoHighlight
+                    createOption={e => Url.addAuthor({name: e})}
+                    filterSelectedOptions
+                    getComponentProps={({field: {name}, fieldState: {error}, label}) => ({
+                        getValue: () => getValues(name),
+                        renderProps: {
+                            label,
+                            variant: 'outlined',
+                            error: Boolean(error),
+                            helperText: error ? 'Creating author(s)...' : null
+                        }
+                    })}
+                    getOptionLabel={e => e.name}
+                    getOptions={getAuthors}
+                    getOptionSelected={(option, value) => option.id === value.id}
+                    multiple={true}
+                    options={authors}
                 />
 
-                <Controller
+                <StandardField
                     name={BOOK_FIELDS.type}
-                    control={control}
-                    render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
-                        autoComplete
-                        autoHighlight
-                        createOption={e => Url.addType({name: e})}
-                        filterSelectedOptions
-                        getOptionLabel={e => e.name}
-                        getOptions={getTypes}
-                        getOptionSelected={(option, value) => option.id === value.id}
-                        maxOptionsToShow={0}
-                        multiple={false}
-                        name={name}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        options={types}
-                        renderProps={{
-                            label: 'Type',
+                    label={'Type'}
+                    Component={AutocompleteWithCreate}
+
+                    autoComplete
+                    autoHighlight
+                    createOption={e => Url.addType({name: e})}
+                    filterSelectedOptions
+                    getComponentProps={({fieldState: {error}, label}) => ({
+                        renderProps: {
+                            label,
                             variant: 'outlined',
+                            error: Boolean(error),
+                            helperText: error?.message
+                        }
+                    })}
+                    getOptionLabel={e => e.name}
+                    getOptions={getTypes}
+                    getOptionSelected={(option, value) => option.id === value.id}
+                    maxOptionsToShow={0}
+                    multiple={false}
+                    options={types}/>
 
-                            error: Boolean(errors[BOOK_FIELDS.type]),
-                            helperText: errors[BOOK_FIELDS.type]?.message
-                        }}
-                        size={'small'}
-                        style={{gridArea: BOOK_FIELDS.type}}
-                        value={value}
-                    />}
-                />
-
-                 <ControlHelper
+                <StandardField
                     name={BOOK_FIELDS.description}
                     label={'Description'}
-                    errors={errors}
-                    Component={TextFieldMultilineEllipsis}
-                    control={control}
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.description}}
-                    variant={'outlined'}
-                />
+                    Component={TextFieldMultilineEllipsis}/>
 
-                <Controller
+                <StandardField
                     name={BOOK_FIELDS.genres}
-                    control={control}
-                    render={({onChange, onBlur, value, name}) => <AutocompleteWithCreate
-                        autoComplete
-                        autoHighlight
-                        createOption={e => Url.addGenre({name: e})}
-                        filterSelectedOptions
-                        getOptionLabel={e => e.name}
-                        getOptions={getGenres}
-                        getOptionSelected={(option, value) => option.id === value.id}
-                        getValue={() => getValues(BOOK_FIELDS.genres)}
-                        maxOptionsToShow={0}
-                        multiple={true}
-                        name={name}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        options={genres}
-                        renderProps={{
-                            label: 'Genres',
-                            variant: 'outlined',
+                    label={'Genres'}
+                    Component={AutocompleteWithCreate}
 
-                            error: Boolean(errors[BOOK_FIELDS.genres]),
-                            helperText: errors[BOOK_FIELDS.genres] ? 'Creating genre(s)...' : null
-                        }}
-                        size={'small'}
-                        style={{gridArea: BOOK_FIELDS.genres}}
-                        value={value}
-                    />}
+                    autoComplete
+                    autoHighlight
+                    createOption={e => Url.addGenre({name: e})}
+                    filterSelectedOptions
+                    getComponentProps={({field: {name}, fieldState: {error}, label}) => ({
+                        getValue: () => getValues(name),
+                        renderProps: {
+                            label,
+                            variant: 'outlined',
+                            error: Boolean(error),
+                            helperText: error ? 'Creating genre(s)...' : null
+                        }
+                    })}
+                    getOptionLabel={e => e.name}
+                    getOptions={getGenres}
+                    getOptionSelected={(option, value) => option.id === value.id}
+                    maxOptionsToShow={0}
+                    multiple={true}
+                    options={genres}
+
                 />
 
                 <Controller
                     name={BOOK_FIELDS.read_next}
                     control={control}
-                    render={({onChange, onBlur, value, name}) =>
+                    render={({
+                                 field: {onChange, value, ...field},
+                                 fieldState: {error},
+                             }) => <>
                         <FormControlLabel
+                            {...field}
                             checked={value}
                             control={<Checkbox/>}
                             label={'Read next?'}
                             labelPlacement={'end'}
-                            name={name}
-                            onBlur={onBlur}
                             onChange={e => {
                                 setValue(BOOK_FIELDS.date_read, DEFAULT_BOOK_VALUES[BOOK_FIELDS.date_read])
-                                onChange(e.target.checked)
+                                onChange(e)
                             }}
-                            style={{gridArea: BOOK_FIELDS.read_next}}
-                        />}
-                />
-                <FormHelperText
-                    error={Boolean(errors[BOOK_FIELDS.read_next])}>
-                    {errors[BOOK_FIELDS.read_next]?.message}
-                </FormHelperText>
+                            style={{gridArea: field.name}}
+                        />
+                        <FormHelperText
+                            error={Boolean(error)}>
+                            {error?.message}
+                        </FormHelperText>
+                    </>}/>
 
-                <ControlHelper
+                <StandardField
                     name={BOOK_FIELDS.rating}
                     label={'Rating'}
-                    control={control}
-                    Component={TextFieldClearable}
-                    errors={errors}
-                    onClear={onClear(BOOK_FIELDS.rating)}
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.rating}}
-                    variant={'outlined'}
-                />
+                    Component={TextFieldClearable}/>
 
                 <MuiPickersUtilsProvider utils={DateFns}>
-                    <ControlHelper
+                    <StandardField
                         name={BOOK_FIELDS.date_read}
                         label={'Date Read'}
-                        control={control}
-                        errors={errors}
                         Component={KeyboardDatePicker}
 
                         autoOk
@@ -390,115 +371,52 @@ export const AddBook = ({
                         format={'dd/MM/yyyy'}
                         placeholder={'dd/mm/yyyy'}
                         inputVariant={'outlined'}
-                        size={'small'}
-                        style={{gridArea: BOOK_FIELDS.date_read}}
-                        variant={'inline'}
                     />
+
                 </MuiPickersUtilsProvider>
 
-                <ControlHelper
+                <StandardField
                     name={BOOK_FIELDS.image_url}
-                    errors={errors}
                     label={'Image URL'}
                     Component={TextFieldClearable}
-                    control={control}
-                    onClear={onClear(BOOK_FIELDS.image_url)}
+                    type={'url'}/>
 
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.image_url}}
-                    type={'url'}
-                    variant={'outlined'}
-                />
-
-                <ControlHelper
+                <StandardField
                     name={BOOK_FIELDS.published}
                     label={'Year Published'}
-                    control={control}
-                    Component={TextFieldClearable}
-                    errors={errors}
+                    Component={TextFieldClearable}/>
 
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.published}}
-                    type={'tel'}
-                    onClear={onClear(BOOK_FIELDS.published)}
-                    variant={'outlined'}
-                />
-
-                <ControlHelper
+                <StandardField
                     name={BOOK_FIELDS.google_id}
                     label={'Google ID'}
-                    control={control}
-                    Component={TextFieldClearable}
-                    errors={errors}
-                    onClear={onClear(BOOK_FIELDS.google_id)}
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.google_id}}
-                    variant={'outlined'}
-                />
+                    Component={TextFieldClearable}/>
 
-                <ControlHelper
+                <StandardField
                     name={BOOK_FIELDS.goodreads_book_id}
                     label={'Goodreads ID'}
-                    control={control}
-                    Component={TextFieldClearable}
-                    errors={errors}
-                    onClear={onClear(BOOK_FIELDS.goodreads_book_id)}
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.goodreads_book_id}}
-                    variant={'outlined'}
-                />
+                    Component={TextFieldClearable}/>
 
-                <ControlHelper
+                <StandardField
                     name={BOOK_FIELDS.series}
                     label={'Series Name'}
-                    control={control}
-                    Component={TextFieldClearable}
-                    errors={errors}
-                    onClear={onClear(BOOK_FIELDS.series)}
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.series}}
-                    variant={'outlined'}
-                />
+                    Component={TextFieldClearable}/>
 
-                <ControlHelper
+                <StandardField
                     name={BOOK_FIELDS.series_position}
                     label={'Series Position'}
-                    control={control}
-                    Component={TextFieldClearable}
-                    errors={errors}
-                    onClear={onClear(BOOK_FIELDS.series_position)}
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.series_position}}
-                    variant={'outlined'}
-                />
+                    Component={TextFieldClearable}/>
 
-                <ControlHelper
+                <StandardField
                     name={BOOK_FIELDS.my_review}
                     label={'My Review'}
-                    control={control}
                     Component={TextFieldMultilineEllipsis}
-                    errors={errors}
+                    placeholder={'Not good, read others, highlight specific chapters, etc'}/>
 
-                    placeholder={'Not good, read others, highlight specific chapters, etc'}
-                    multiline
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.my_review}}
-                    variant={'outlined'}
-                />
-
-                <ControlHelper
+                <StandardField
                     name={BOOK_FIELDS.notes}
                     label={'Notes'}
-                    control={control}
                     Component={TextFieldMultilineEllipsis}
-                    errors={errors}
-
-                    placeholder={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}
-                    multiline
-                    size={'small'}
-                    style={{gridArea: BOOK_FIELDS.notes}}
-                    variant={'outlined'}
-                />
+                    placeholder={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}/>
 
             </FieldContainer>
         </DialogBlurResponsive>

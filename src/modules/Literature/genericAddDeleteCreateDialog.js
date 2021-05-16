@@ -2,7 +2,7 @@ import {DialogBlurResponsive} from "../../shared/dialogBlurResponsive";
 import React from "react";
 import {Button, TextField} from "@material-ui/core";
 import styled from "styled-components";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 
 const FormContainer = styled.div`
   display: flex;
@@ -29,7 +29,10 @@ export const GenericAddDeleteCreateDialog = ({
                                                  editingItem: {id, name, notes}
                                              }) => {
 
-    const {register, handleSubmit} = useForm({
+    const {
+        control,
+        handleSubmit
+    } = useForm({
         defaultValues: {
             name,
             notes,
@@ -45,22 +48,28 @@ export const GenericAddDeleteCreateDialog = ({
     return <DialogBlurResponsive
         open
         onClose={onClose}
-        footer={footer}
-    >
-        <FormContainer>
-            <StyledTextField
-                label={'Name'}
-                name={'name'}
-                inputRef={register}
-                variant={'outlined'}
-            />
+        footer={footer}>
 
-            <StyledTextField
-                label={'Notes'}
+        <FormContainer>
+
+            <Controller
+                name={'name'}
+                control={control}
+                render={({field: {ref, ...field}}) =>
+                    <StyledTextField
+                        {...field}
+                        label={'Name'}
+                        variant={'outlined'}/>}/>
+
+            <Controller
                 name={'notes'}
-                inputRef={register}
-                variant={'outlined'}
-            />
+                control={control}
+                render={({field: {ref, ...field}}) =>
+                    <StyledTextField
+                        {...field}
+                        label={'Notes'}
+                        variant={'outlined'}/>}/>
+
         </FormContainer>
 
     </DialogBlurResponsive>
