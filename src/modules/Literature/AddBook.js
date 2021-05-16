@@ -164,14 +164,14 @@ export const AddBook = ({
             render={controllerProps => {
                 const {field: {ref, ...field}, fieldState: {error}} = controllerProps
                 return <Component
-                    {...props}
-                    {...field}
                     error={Boolean(error)}
                     label={label}
                     helperText={error?.message}
                     size={'small'}
                     style={{gridArea: field.name}}
                     variant={'outlined'}
+                    {...props}
+                    {...field}
                     {...getComponentProps({...controllerProps, name, label})}/>
             }}/>, [control])
 

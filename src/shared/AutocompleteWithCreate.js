@@ -28,10 +28,12 @@ const propTypes = {
 
 export const AutocompleteWithCreate = ({
                                            createOption,
+                                           error, // Not used
                                            getOptionLabel = e => e,
                                            getOptions,
                                            getOptionSelected = (a, b) => a === b,
                                            getValue,
+                                           helperText, // Not used
                                            maxOptionsToShow = 10,
                                            multiple = false,
                                            onChange,
@@ -156,7 +158,6 @@ export const AutocompleteWithCreate = ({
         };
 
         return <Autocomplete
-
             clearOnBlur // Used together with freeSolo
             disabled={!multiple && loading}
             filterOptions={filterOptions}
