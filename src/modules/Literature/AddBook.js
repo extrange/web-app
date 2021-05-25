@@ -25,7 +25,8 @@ import {
     FormControlLabel,
     FormHelperText,
     IconButton,
-    Snackbar
+    Snackbar,
+    Typography
 } from "@material-ui/core";
 import {isEmpty} from "lodash";
 import {DialogBlurResponsive} from "../../shared/dialogBlurResponsive";
@@ -35,6 +36,7 @@ import {AutocompleteWithCreate} from "../../shared/AutocompleteWithCreate";
 import {TextFieldClearable} from "../../shared/textFieldClearable";
 import {TextFieldMultilineEllipsis} from "../../shared/textFieldMultilineEllipsis";
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import {mapGenres} from "./utils";
 
 const FieldContainer = styled.div`
   display: grid;
@@ -102,6 +104,8 @@ export const AddBook = ({
     const [infoDialog, setInfoDialog] = useState(false);
 
     const setError = useAsyncError();
+
+    const sortedGenres = genres.map(e => mapGenres(e, genres)).sort((a, b) => a.fullName.localeCompare(b.fullName))
 
     const onSubmit = handleSubmit(
         data => {
@@ -302,6 +306,7 @@ export const AddBook = ({
                     label={'Description'}
                     Component={TextFieldMultilineEllipsis}/>
 
+                {/*todo Very hacky. Write this better*/}
                 <StandardField
                     name={BOOK_FIELDS.genres}
                     label={'Genres'}
@@ -323,9 +328,12 @@ export const AddBook = ({
                     getOptionLabel={e => e.name}
                     getOptions={getGenres}
                     getOptionSelected={(option, value) => option.id === value.id}
+                    groupBy={e => e.ancestors?.length ? e.ancestors.join(' > ') : ''}
                     maxOptionsToShow={0}
                     multiple={true}
-                    options={genres}
+                    options={sortedGenres}
+                    renderOption={e => e.ancestors?.length ?
+                        <Typography style={{marginLeft: '20px'}}>{e.name}</Typography> : (e.name || `Add '${e._name}'`)}
 
                 />
 

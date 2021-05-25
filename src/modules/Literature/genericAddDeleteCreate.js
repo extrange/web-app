@@ -1,6 +1,6 @@
 import {Fab, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText} from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
 import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
 import AddIcon from "@material-ui/icons/Add";
@@ -48,9 +48,6 @@ export const GenericAddDeleteCreate = ({
             setEditingItem(null)
         }
     };
-
-    /*Refetch on initial render*/
-    useEffect(() => void getType(), [getType]);
 
 
     return <>

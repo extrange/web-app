@@ -63,7 +63,7 @@ export const AutocompleteWithCreate = ({
         const filterOptions = (options, state) => {
             let input = state.inputValue;
             //matchSorter already removes accents, spaces and converts to lowercase
-            let filtered = matchSorter(options, input, {keys: [getOptionLabel]});
+            let filtered = input ? matchSorter(options, input, {keys: [getOptionLabel]}) : options;
 
             /*Suggest adding option ONLY if input is NOT blank,
             NOT in existing options (comparing with diacritics stripped),

@@ -62,7 +62,7 @@ export const Lists = ({returnToMainApp, logout}) => {
     const title = <>
         <Typography variant={"h6"} noWrap>{getTasklistTitle(currentListId)}</Typography>
         {loading
-            ? <CircularProgress color="inherit" size={20} style={{margin: '12px'}}/>
+            ? <CircularProgress size={20} style={{margin: '12px'}}/>
             : <IconButton onClick={() => currentListId ? listItems(currentListId) : 0}><SyncIcon/></IconButton>}
     </>;
 

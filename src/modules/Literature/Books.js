@@ -1,5 +1,5 @@
 //Books in a series should be collapsible
-import {useEffect, useMemo, useState} from 'react';
+import {useMemo, useState} from 'react';
 import {Checkbox, Fab, FormControlLabel, Snackbar, TableContainer, TextField} from "@material-ui/core";
 import styled from 'styled-components'
 import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
@@ -469,9 +469,6 @@ export const Books = ({
         searchPlaceholder: `Search ${filteredItemsLength} items`,
         tableBodyMaxHeight: '100%'
     }), [books, filteredItemsLength, getBooks, count]);
-
-    /*Refetch booklist on initial render*/
-    useEffect(() => void getBooks(), [getBooks]);
 
     return <>
         <StyledFab color={'primary'} onClick={() => setSearchBookOpen(true)}>

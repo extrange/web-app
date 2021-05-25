@@ -9,6 +9,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import TitleIcon from '@material-ui/icons/Title';
 import {GenericAddDeleteCreate} from "./genericAddDeleteCreate";
+import {Genres} from "./Genres";
 
 const LITERATURE_CURRENT_SUBMODULE = 'LITERATURE_CURRENT_SUBMODULE';
 
@@ -39,12 +40,14 @@ const LITERATURE_MODULES = (props = {}) => ({
             <InsertDriveFileIcon/>
         </ListItemIcon>
             <ListItemText primary={'Genres'}/></>,
-        jsx: <GenericAddDeleteCreate
-            types={props.genres}
-            addType={Url.addGenre}
-            deleteType={Url.deleteGenre}
-            getType={props.getGenres}
-            updateType={Url.updateGenre}
+        jsx: <Genres
+            books={props.books}
+            genres={props.genres}
+            addGenre={Url.addGenre}
+            deleteGenre={Url.deleteGenre}
+            getGenres={props.getGenres}
+            updateGenre={Url.updateGenre}
+            setTitleEndAdornment={props.setTitleEndAdornment}
         />
     },
     TYPES: {
@@ -77,6 +80,9 @@ export const Literature = ({returnToMainApp, logout}) => {
     const [genres, setGenres] = useState([]);
     const [types, setTypes] = useState([]);
 
+    const [titleEndAdornment, setTitleEndAdornment] = useState(null)
+
+
     const getBooks = useCallback(() => Url.getBooks().then(json => setBooks(json)), []);
 
     const getAuthors = useCallback(() => Url.getAuthors().then(result => setAuthors(result)), []);
@@ -105,9 +111,12 @@ export const Literature = ({returnToMainApp, logout}) => {
     return (
         <AppBarResponsive
             appName={'Literature'}
-            titleContent={<Typography variant={"h6"} noWrap>
-                {capitalize(currentSubModule)}
-            </Typography>}
+            titleContent={<>
+                <Typography variant={"h6"} noWrap>
+                    {capitalize(currentSubModule)}
+                </Typography>
+                {titleEndAdornment}
+            </>}
             logout={logout}
             returnToMainApp={returnToMainApp}
             drawerOpen={drawerOpen}
@@ -125,7 +134,8 @@ export const Literature = ({returnToMainApp, logout}) => {
                 setTypes,
                 getAuthors,
                 getGenres,
-                getTypes
+                getTypes,
+                setTitleEndAdornment,
             })[currentSubModule].jsx}
         </AppBarResponsive>
     );
