@@ -1,0 +1,31 @@
+{
+  "files": {
+    "main.css": "/static/css/main.94626784.chunk.css",
+    "main.js": "/static/js/main.cba02892.chunk.js",
+    "main.js.map": "/static/js/main.cba02892.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.11f320ca.js",
+    "runtime-main.js.map": "/static/js/runtime-main.11f320ca.js.map",
+    "static/css/2.50ab1feb.chunk.css": "/static/css/2.50ab1feb.chunk.css",
+    "static/js/2.4777cd01.chunk.js": "/static/js/2.4777cd01.chunk.js",
+    "static/js/2.4777cd01.chunk.js.map": "/static/js/2.4777cd01.chunk.js.map",
+    "index.html": "/index.html",
+    "service-worker.js": "/service-worker.js",
+    "service-worker.js.map": "/service-worker.js.map",
+    "static/css/2.50ab1feb.chunk.css.map": "/static/css/2.50ab1feb.chunk.css.map",
+    "static/css/main.94626784.chunk.css.map": "/static/css/main.94626784.chunk.css.map",
+    "static/js/2.4777cd01.chunk.js.LICENSE.txt": "/static/js/2.4777cd01.chunk.js.LICENSE.txt",
+    "static/media/starcraft.css": "/static/media/Starcraft-Normal.daea2a3f.woff2",
+    "static/media/index.css": "/static/media/source-sans-pro-vietnamese-400-normal.6b777020.woff2",
+    "static/media/300.css": "/static/media/roboto-vietnamese-300-normal.af9afdc1.woff2",
+    "static/media/400.css": "/static/media/roboto-vietnamese-400-normal.c0bec65d.woff2",
+    "static/media/500.css": "/static/media/roboto-vietnamese-500-normal.b8e494da.woff2",
+    "static/media/700.css": "/static/media/roboto-vietnamese-700-normal.3096f18a.woff2"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.11f320ca.js",
+    "static/css/2.50ab1feb.chunk.css",
+    "static/js/2.4777cd01.chunk.js",
+    "static/css/main.94626784.chunk.css",
+    "static/js/main.cba02892.chunk.js"
+  ]
+}
