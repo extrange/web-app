@@ -94,7 +94,7 @@ export const ModuleSelect = ({logout}) => {
                     color={'primary'}
                     onClick={() => window.open(GDOCS_ATTRACTIONS_URL, '_blank', 'noopener,noreferrer')}
                     endIcon={<CallMadeIcon/>}>
-                    Attractions and Food
+                    Attractions and Food THIS IS A NEW COMMIT TEST
                 </StyledButton>
                 <StyledButton
                     variant={'contained'}
