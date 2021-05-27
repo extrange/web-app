@@ -21,6 +21,8 @@ import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
 import {GenreDialog} from "./GenreDialog";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import NoteIcon from '@material-ui/icons/Note';
+import {HTML5Backend} from "react-dnd-html5-backend";
+import {DndProvider} from "react-dnd";
 
 
 const StyledSortableTree = styled(SortableTree)`
@@ -59,7 +61,7 @@ const Container = styled.div`
   ${BACKGROUND_COLOR};
 `
 
-const NumberCircle = styled.span`
+export const NumberCircle = styled.span`
   margin: auto 5px;
   border: 2px solid rgba(255, 255, 255, 0.4);
   padding: 3px;
@@ -184,11 +186,11 @@ export const Genres = ({
         return () => setTitleEndAdornment(null)
     }, [loading, setTitleEndAdornment])
 
-    return <>
+    return <DndProvider backend={HTML5Backend}>
         <Dialog
             open={genreInfoDialogOpen}
             onClose={() => setGenreInfoDialogOpen(false)}>
-            <DialogTitle>Genre Tagging Notes</DialogTitle>
+            <DialogTitle>Genre Notes</DialogTitle>
             <DialogContent>
                 <DialogContentText component={'div'}>
                     A book can belong to multiple tags e.g.
@@ -203,6 +205,9 @@ export const Genres = ({
                         <li>If a tag is deleted/modified, it is deleted/modified on all books</li>
                         <li>A parent tag cannot be deleted if it has children</li>
                     </ul>
+
+                    Also, book counts by genre will not add up to the total number of books. This is because
+                    some books can belong to two top-level genres, for example Finance and Programming.
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -230,6 +235,6 @@ export const Genres = ({
                 isVirtualized={false}
             />
         </Container>
-    </>
+    </DndProvider>
 
 }

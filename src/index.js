@@ -14,8 +14,6 @@ import 'overlayscrollbars/css/OverlayScrollbars.css'
 import {theme} from "./globals/theme";
 import {RandomBackground} from "./shared/randomBackground";
 import {LoginCheckAndNetworkState} from "./LoginCheckAndNetworkState";
-import {HTML5Backend} from 'react-dnd-html5-backend'
-import {DndProvider} from 'react-dnd'
 
 /*Decide whether to run mock service worker for debugging*/
 const USE_MOCK_SERVICE_WORKER = false;
@@ -30,10 +28,8 @@ ReactDOM.render(
             <CssBaseline/>
             <RandomBackground/>
             <ErrorBoundary>
-                <DndProvider backend={HTML5Backend}>
-                    <LoadServiceWorker/>
-                    <LoginCheckAndNetworkState/>
-                </DndProvider>
+                <LoadServiceWorker/>
+                <LoginCheckAndNetworkState/>
             </ErrorBoundary>
         </MuiThemeProvider>
     </StrictMode>
