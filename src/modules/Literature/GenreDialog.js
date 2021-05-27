@@ -74,6 +74,7 @@ export const GenreDialog = ({
             Submit</Button>
     </StyledFooter>;
 
+
     return <>
         <Dialog
             open={saveDialog}
