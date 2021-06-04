@@ -1,7 +1,7 @@
-import {AppBarResponsive} from "../../shared/AppBarResponsive";
+import {AppBar} from "../../common/AppBar";
 import {useState} from "react";
 import {List, ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
-import {BackgroundScreen} from "../../shared/backgroundScreen";
+import {BackgroundScreen} from "../../common/backgroundScreen";
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import PublicIcon from '@material-ui/icons/Public';
 import {TwoFactor} from "./TwoFactor";
@@ -30,7 +30,7 @@ const SUBMODULES = {
     }
 };
 
-export const Account = ({returnToMainApp, logout}) => {
+export const Account = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [submodule, setSubmodule] = useState(Object.keys(SUBMODULES)[0]);
 
@@ -42,18 +42,14 @@ export const Account = ({returnToMainApp, logout}) => {
             >{v.appDrawer}</ListItem>)}
     </List>;
 
-    return <AppBarResponsive
-        appName={'Account'}
+    return <AppBar
+        drawerContent={drawerContent}
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
-        titleContent={<Typography variant={'h6'}>{SUBMODULES[submodule].name}</Typography>}
-        logout={logout}
-        returnToMainApp={returnToMainApp}
-        drawerContent={drawerContent}
-    >
+        titleContent={<Typography variant={'h6'}>{SUBMODULES[submodule].name}</Typography>}>
         <BackgroundScreen>
             {SUBMODULES[submodule].jsx}
         </BackgroundScreen>
 
-    </AppBarResponsive>
+    </AppBar>
 };

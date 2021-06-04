@@ -1,13 +1,13 @@
 import {Typography} from "@material-ui/core";
-import {AppBarResponsive} from "../../shared/AppBarResponsive";
+import {AppBar} from "../../common/AppBar";
 import React, {useEffect, useState} from "react";
 import {yupResolver} from '@hookform/resolvers/yup'
 import styled from 'styled-components'
 import {Controller, useForm} from "react-hook-form";
-import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
+import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
 import * as yup from 'yup'
 import {trim} from "lodash";
-import {TextFieldClearableInfo} from "../../shared/textFieldClearableInfo";
+import {TextFieldClearableInfo} from "../../common/textFieldClearableInfo";
 import {TextFieldRefreshLoading} from "./textFieldRefreshLoading";
 import {formatDistanceToNowStrict} from 'date-fns'
 import {TextFieldClearableInfoCurrency} from "./TextFieldClearableInfoCurrency";
@@ -77,7 +77,7 @@ const formatDollars = new Intl.NumberFormat(undefined, {
     currencyDisplay: 'symbol'
 });
 
-export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
+export const OptionHedgeCalculator = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [spyPriceUpdated, setSpyPriceUpdated] = useState();
     const [tooltipText, setTooltipText] = useState('');
@@ -117,14 +117,9 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
     // eslint-disable-next-line
     useEffect(() => void getSpyPrice(), []);
 
-    return <AppBarResponsive
-        appName={'Option Hedge Calculator'}
-        titleContent={<Typography variant={"h6"} noWrap>Option Hedge Calculator</Typography>}
+    return <AppBar
         setDrawerOpen={setDrawerOpen}
-        logout={logout}
-        returnToMainApp={returnToMainApp}
-        drawerOpen={drawerOpen}
-    >
+        drawerOpen={drawerOpen}>
         <Container>
             <StyledTypography variant={'body1'}>{explanatoryText}</StyledTypography>
 
@@ -221,7 +216,7 @@ export const OptionHedgeCalculator = ({logout, returnToMainApp}) => {
             />
 
         </Container>
-    </AppBarResponsive>
+    </AppBar>
 };
 
 /*Test case:

@@ -1,5 +1,5 @@
-import {API_URL} from "../../globals/urls";
-import {Networking} from "../../util/networking";
+import {API_URL} from "../../app/urls";
+import {Networking} from "../../app/network/networking";
 
 const HOME_AUTOMATION_URL = `${API_URL}/home-automation/send`;
 

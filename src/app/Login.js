@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
-import {LOGIN_URL} from "./globals/urls";
+import {LOGIN_URL} from "./urls";
 import styled from "styled-components";
 import {Button, Checkbox, CircularProgress, FormControlLabel, TextField, Typography} from "@material-ui/core";
-import {BackgroundScreenRounded} from "./shared/backgroundScreen";
-import {Networking} from "./util/networking";
-import {useInput} from "./util/useInput";
-import {useAsyncError} from "./util/useAsyncError";
+import {BackgroundScreenRounded} from "../common/backgroundScreen";
+import {Networking} from "./network/networking";
+import {useInput} from "../common/useInput";
 import ReCAPTCHA from "react-google-recaptcha";
+import {useDispatch} from "react-redux";
+import {login, setNetworkError} from "./appSlice";
+import {NETWORK_ERROR} from "./network/NetworkError";
 
 const StyledForm = styled.form`
   display: flex;
@@ -36,59 +38,63 @@ const StyledCircularProgress = styled(CircularProgress)`
   margin-left: 10px;
 `;
 
-export const Login = ({setLoggedIn, recaptchaKey}) => {
+export const Login = ({recaptchaKey}) => {
+
+    const dispatch = useDispatch()
 
     const [loginMessage, setLoginMessage] = useState('Sign In');
     const [loading, setLoading] = useState(false);
     const [otpRequired, setOtpRequired] = useState(false);
 
     const {values, bind, setValue} = useInput();
-    const setError = useAsyncError();
     const recaptchaRef = React.useRef();
 
-
     const onSubmit = event => {
-        setLoading(true);
         event.preventDefault();
+        setLoading(true);
         recaptchaRef.current
             .executeAsync()
-            .then(token => fetch(LOGIN_URL, {
+            .then(token => Networking.send(LOGIN_URL, {
                 method: Networking.POST,
-                credentials: 'include',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify({
                     username: values.username,
                     password: values.password,
                     token: token,
                     otp: values.otp,
                     save_browser: values.saveBrowser
-                })
+                }),
+                allowUnauth: true
             }))
             .then(r => {
-                if (r.ok) setLoggedIn(true);
-                else if (![401, 403].includes(r.status)) {
-                    /*Throw on other, non 401/403 errors*/
-                    setError(`HTTP Error ${r.status}: ${r.statusText}`)
-                }
-                return r.json()
+                setLoading(false)
+                r.json().then(json => {
+
+                    if (r.ok) {
+                        dispatch(login(json))
+                        return
+                    }
+
+                    /*401/403 errors*/
+                    if (json.otp_required && !otpRequired) {
+                        setOtpRequired(true)
+
+                    } else /*Invalid username/password/OTP*/
+                        setLoginMessage(json.message)
+
+                    /*Reset captcha to allow user to retry*/
+                    recaptchaRef.current?.reset();
+                })
             })
-            .then(r => {
-                /*401/403 errors*/
-                if (r.otp_required && !otpRequired) {
-                    /*Prompt for OTP*/
-                    setOtpRequired(true)
-                } else {
-                    /*Invalid OTP*/
-                    setLoginMessage(r.message)
-                }
-                /*Reset captcha to allow user to retry*/
-                recaptchaRef.current?.reset();
+            .catch(e => {
+                dispatch(setNetworkError({
+                    message: {text: e?.toString()},
+                    name: 'Fetch Error: gRecaptcha request failed',
+                    type: NETWORK_ERROR.FETCH_ERROR,
+                }))
                 setLoading(false)
             })
     };
+
     return <StyledForm onSubmit={onSubmit}>
         <InnerContainer>
             <Typography variant={'h6'} gutterBottom align={"center"}>

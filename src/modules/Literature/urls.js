@@ -1,8 +1,8 @@
 /**
  * Convenience URL-related methods for Literature app
  */
-import {API_URL} from "../../globals/urls";
-import {Networking} from "../../util/networking";
+import {API_URL} from "../../app/urls";
+import {Networking} from "../../app/network/networking";
 
 //Static URls
 export const LIT_API = `${API_URL}/literature`;

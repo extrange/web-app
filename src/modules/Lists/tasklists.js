@@ -3,7 +3,7 @@ import {Tasklist} from "./tasklist";
 import './tasklists.css'
 import {getTasklistUrl, TASKLISTS_URL} from "./urls";
 import {List} from "@material-ui/core";
-import {Networking} from "../../util/networking";
+import {Networking} from "../../app/network/networking";
 
 export const Tasklists = ({tasklists, listTasklists, currentListId, setAndSaveCurrentList, setDrawerOpen}) => {
 

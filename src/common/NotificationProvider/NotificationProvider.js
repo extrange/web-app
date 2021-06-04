@@ -1,6 +1,6 @@
 import {NotificationContext} from './notificationContext'
 import {useRef, useState} from "react";
-import {noop} from "../../util/util";
+import {noop} from "../util";
 import {Mail} from '../../modules/Mail/Mail'
 
 /*

@@ -4,10 +4,10 @@ import {EditItem} from "./editItem";
 import {getTasksUrl, getTaskUrl} from "./urls";
 import {Virtuoso} from 'react-virtuoso/dist'
 import {Fab, List} from "@material-ui/core";
-import {Loading} from "../../shared/loading";
+import {Loading} from "../../common/loading";
 import styled from 'styled-components'
 import AddIcon from '@material-ui/icons/Add';
-import {Networking} from "../../util/networking";
+import {Networking} from "../../app/network/networking";
 
 const StyledFab = styled(Fab)`
   position: fixed;

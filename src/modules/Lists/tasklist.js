@@ -1,4 +1,4 @@
-import {StyledListItem, StyledListItemSecondaryAction} from "../../shared/styledListItem";
+import {StyledListItem, StyledListItemSecondaryAction} from "../../common/styledListItem";
 import {IconButton, ListItemText} from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 

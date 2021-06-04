@@ -1,5 +1,5 @@
 /**
- * Entrypoint URLs shared between modules
+ * Entrypoint URLs common between modules
  * */
 
 // Base API URL

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Networking} from "../../util/networking";
+import {Networking} from "../../app/network/networking";
 import {BROWSERS_URL, getBrowserDetail} from "./urls";
 import {Typography} from "@material-ui/core";
 import {compareDesc, parseJSON} from "date-fns";

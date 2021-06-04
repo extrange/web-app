@@ -1,4 +1,4 @@
-import {StyledButton} from "../../shared/common";
+import {StyledButton} from "../../common/common";
 
 export const CreateTasklist = props => {
     return (

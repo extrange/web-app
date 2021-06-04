@@ -17,12 +17,10 @@ import {
     ListItem,
     ListItemText
 } from "@material-ui/core";
-import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
+import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
 import {GenreDialog} from "./GenreDialog";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import NoteIcon from '@material-ui/icons/Note';
-import {HTML5Backend} from "react-dnd-html5-backend";
-import {DndProvider} from "react-dnd";
 
 
 const StyledSortableTree = styled(SortableTree)`
@@ -186,7 +184,7 @@ export const Genres = ({
         return () => setTitleEndAdornment(null)
     }, [loading, setTitleEndAdornment])
 
-    return <DndProvider backend={HTML5Backend}>
+    return <>
         <Dialog
             open={genreInfoDialogOpen}
             onClose={() => setGenreInfoDialogOpen(false)}>
@@ -235,6 +233,6 @@ export const Genres = ({
                 isVirtualized={false}
             />
         </Container>
-    </DndProvider>
+    </>
 
 }

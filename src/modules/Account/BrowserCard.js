@@ -1,15 +1,15 @@
 import {Button, Card, CardActionArea, CardActions, CardContent, Chip, Typography} from "@material-ui/core";
-import {formatDistanceToNowPretty, prettifyUAString} from "../../util/util";
+import {formatDistanceToNowPretty, prettifyUAString} from "../../common/util";
 import PhoneIphoneIcon from "@material-ui/icons/PhoneIphone";
 import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
 import PublicIcon from '@material-ui/icons/Public';
 import {format, parseJSON} from "date-fns";
 import styled from "styled-components";
-import {theme} from "../../globals/theme";
-import ChromeLogo from '../../browserLogos/chrome.png'
-import FirefoxLogo from '../../browserLogos/firefox.png'
-import EdgeLogo from '../../browserLogos/edge.png'
-import SafariLogo from '../../browserLogos/safari.png'
+import {theme} from "../../app/theme";
+import ChromeLogo from '../../common/browserLogos/chrome.png'
+import FirefoxLogo from '../../common/browserLogos/firefox.png'
+import EdgeLogo from '../../common/browserLogos/edge.png'
+import SafariLogo from '../../common/browserLogos/safari.png'
 import {useState} from "react";
 import {getName} from "country-list";
 

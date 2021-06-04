@@ -1,4 +1,4 @@
-import {AppBarResponsive} from "../../shared/AppBarResponsive";
+import {AppBar} from "../../common/AppBar";
 import {useCallback, useEffect, useState} from "react";
 import {
     Button,
@@ -23,11 +23,11 @@ import {
     generateUsername,
     getEntropy,
     getSha1Hash
-} from "../../util/passwordUtil";
-import {Networking} from "../../util/networking";
+} from "./passwordUtil";
+import {Networking} from "../../app/network/networking";
 import {HIBP_LOOKUP} from "./urls";
 import styled from 'styled-components'
-import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
+import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
 import ReplayIcon from '@material-ui/icons/Replay';
 import "@fontsource/jetbrains-mono"
 import FileCopyIcon from '@material-ui/icons/FileCopy';
@@ -94,7 +94,7 @@ const formatDecimal = new Intl.NumberFormat(undefined, {maximumFractionDigits: 2
 const DEFAULT_USERNAME_LENGTH = 10;
 const DEFAULT_PASSWORD_LENGTH = 24;
 
-export const PasswordTools = ({returnToMainApp, logout}) => {
+export const PasswordTools = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [hashCount, setHashCount] = useState(0);
     const [settings, setSettings] = useState({
@@ -163,15 +163,10 @@ export const PasswordTools = ({returnToMainApp, logout}) => {
 
     const closeSettings = () => setSettings(current => ({...current, dialogOpen: false}));
 
-    return <AppBarResponsive
+    return <AppBar
         drawerOpen={drawerOpen}
-        drawerContent={null}
-        returnToMainApp={returnToMainApp}
-        logout={logout}
-        setDrawerOpen={setDrawerOpen}
-        titleContent={<Typography variant={'h6'}>Password Tools</Typography>}
-        appName={'Password Tools'}
-    >
+        setDrawerOpen={setDrawerOpen}>
+
         <Dialog open={settings.dialogOpen} onClose={closeSettings}>
             <DialogTitle
                 style={{zIndex: 1}}>{settings.dialogType === 'username' ? 'Username' : 'Password'} Options</DialogTitle>
@@ -361,7 +356,7 @@ export const PasswordTools = ({returnToMainApp, logout}) => {
 
 
         </Container>
-    </AppBarResponsive>
+    </AppBar>
 
 
 };

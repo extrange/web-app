@@ -1,12 +1,6 @@
-import {NetworkState} from "../NetworkStateSnackbar";
-
-
-export class NotAuthenticated extends Error {
-    constructor(message, data) {
-        super(message);
-        this.data = data
-    }
-}
+import {setNetworkError} from "../appSlice";
+import store from '../store'
+import {NETWORK_ERROR} from "./NetworkError";
 
 /**
  * Handles authentication for fetch() requests.
@@ -32,9 +26,10 @@ export class Networking {
      *
      * @param url
      * @param obj Parameters for the fetch() request. Defaults to 'GET'.
+     * if 'allowUnauth' is true, will not throw on 401/403 errors.
      * @returns {Promise<Response>}
      */
-    static send = (url, {method = Networking.GET, headers, body = null} = {}) =>
+    static send = (url, {method = Networking.GET, headers, body = null, allowUnauth = false} = {}) =>
         new Promise(resolve =>
             fetch(url, {
                     method: method,
@@ -46,26 +41,23 @@ export class Networking {
                     },
                     body: body
                 }
-            ).then(resp => resp.ok ?
-                void typeof resolve(resp) :
-                resp.text().then(r => NetworkState.throwError({
-                    message: <>
-                        <p>{method}: {url}</p>
-                        <p>{r}</p>
-                    </>,
-                    name: `HTTP Error ${resp.status}: ${resp.statusText}`,
-                    object: resp,
-                    status: resp.status
-                }))
-            ).catch(e => NetworkState.throwError({
-                message: <>
-                    <p>{method}: {url}</p>
-                    <p>{e.message}</p>
-                </>,
+            ).then(resp => resp.ok || ([401, 403].includes(resp.status) && allowUnauth) ?
+                void resolve(resp) :
+                resp.text()
+                    .then(r =>
+                        void store.dispatch(setNetworkError({
+                                message: {method, url, text: r},
+                                name: `HTTP Error ${resp.status}: ${resp.statusText}`,
+                                type: NETWORK_ERROR.HTTP_ERROR,
+                                status: resp.status
+                            })
+                        )
+                    )
+            ).catch(e => void store.dispatch(setNetworkError({
+                message: {method, url, text: e.message},
                 name: e.name,
-                object: e,
-                status: null
-            }))
+                type: NETWORK_ERROR.FETCH_ERROR,
+            })))
         );
 
 

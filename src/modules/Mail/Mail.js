@@ -1,5 +1,5 @@
 import {useCallback, useContext, useEffect, useRef} from "react";
-import {NotificationContext} from "../../shared/NotificationProvider/notificationContext";
+import {NotificationContext} from "../../common/NotificationProvider/notificationContext";
 import {CHECK_MAIL_FREQUENCY_MS, checkMailThrottled} from "./checkMailThrottled";
 
 

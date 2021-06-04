@@ -1,9 +1,9 @@
 import QRCode from "qrcode.react";
-import {formatDistanceToNowPretty} from "../../util/util";
+import {formatDistanceToNowPretty} from "../../common/util";
 import {parseJSON} from "date-fns";
 import {Button, TextField, Typography} from "@material-ui/core";
 import {useEffect, useState} from "react";
-import {Networking} from "../../util/networking";
+import {Networking} from "../../app/network/networking";
 import {TWOFACTOR_URL} from "./urls";
 
 

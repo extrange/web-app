@@ -1,13 +1,13 @@
 import {HideOnScroll} from "./common";
 import {
-    AppBar,
+    AppBar as MuiAppBar,
     Drawer,
     IconButton,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
-    Toolbar,
+    Toolbar, Typography,
     useMediaQuery,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -17,8 +17,12 @@ import {styled as muiStyled, useTheme} from "@material-ui/core/styles"
 import styled from 'styled-components'
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {BACKGROUND_COLOR} from "./backgroundScreen";
-import {OverlayScrollbarOptions} from "../globals/theme";
+import {OverlayScrollbarOptions} from "../app/theme";
 import {NotificationMenu} from "./notificationMenu";
+import {useDispatch, useSelector} from "react-redux";
+import {logout, selectCurrentModule, setCurrentModule} from "../app/appSlice";
+import React from "react";
+import {MODULES} from "../app/ModuleSelect";
 
 /*StyledContainer is a flex container for StyledDrawerContainer (flex: 1 0),
 HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
@@ -42,7 +46,7 @@ const FlexContainer = styled.div`
   height: 100vh;
 `;
 
-const TransparentAppBar = muiStyled(AppBar)(({theme}) => ({
+const TransparentAppBar = muiStyled(MuiAppBar)(({theme}) => ({
     [theme.breakpoints.up('md')]: {
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: drawerWidth,
@@ -86,36 +90,43 @@ const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
     }
 }));
 
-
-export const AppBarResponsive = ({
-                                     appName,
-                                     titleContent, // Typography h6 is recommended with 'noWrap'
+/*Shared App Bar among modules*/
+export const AppBar= ({
+                                     children,
+                                     drawerContent,
                                      drawerOpen,
                                      setDrawerOpen,
-                                     drawerContent,
-                                     children,
-                                     returnToMainApp,
-                                     logout
+                                     sidebarName: _sidebarName, /*Optional, defaults to module's displayName*/
+
+                                    /*Optional, defaults to module's displayName
+                                     Typography h6 is recommended with 'noWrap'*/
+                                     titleContent: _titleContent,
                                  }) => {
 
     const theme = useTheme();
     const mobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const dispatch = useDispatch()
+    const currentModule = useSelector(selectCurrentModule)
+    const displayName = MODULES[currentModule]?.displayName ?? ''
+
+    const sidebarName = _sidebarName ?? displayName
+    const titleContent = _titleContent ?? <Typography variant={"h6"} noWrap>{displayName}</Typography>
 
     const drawer = <OverlayScrollbarsWithMaxWidth
         options={OverlayScrollbarOptions}
         className={'os-host-flexbox'}>
         <List>
             <ListItem>
-                <StyledAppNameDiv>{appName}</StyledAppNameDiv>
+                <StyledAppNameDiv>{sidebarName}</StyledAppNameDiv>
             </ListItem>
-            <ListItem button onClick={returnToMainApp}>
+            <ListItem button onClick={() => dispatch(setCurrentModule())}>
                 <ListItemIcon>
                     <ArrowBackIcon/>
                 </ListItemIcon>
                 <ListItemText primary={'Back to Apps'}/>
             </ListItem>
             {drawerContent}
-            <ListItem button onClick={logout}>
+            <ListItem button onClick={() => dispatch(logout())}>
                 <ListItemIcon>
                     <MeetingRoomIcon/>
                 </ListItemIcon>

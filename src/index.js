@@ -1,19 +1,22 @@
 import ReactDOM from 'react-dom';
-import {StrictMode} from "react";
+import React, {StrictMode} from "react";
 import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import '@fontsource/source-sans-pro' //For codemirror in MarkdownEditor.js
-import './fonts/starcraft/starcraft.css' //Stylized font for menu
+import './common/fonts/starcraft/starcraft.css' //Stylized font for menu
 import {MuiThemeProvider} from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import {LoadServiceWorker} from "./LoadServiceWorker";
-import {ErrorBoundary} from "./ErrorBoundary";
+import {LoadServiceWorker} from "./app/LoadServiceWorker";
+import {ErrorBoundary} from "./app/ErrorBoundary";
 import 'overlayscrollbars/css/OverlayScrollbars.css'
-import {theme} from "./globals/theme";
-import {RandomBackground} from "./shared/randomBackground";
-import {LoginCheckAndNetworkState} from "./LoginCheckAndNetworkState";
+import {theme} from "./app/theme";
+import {RandomBackground} from "./common/randomBackground";
+import {App} from "./app/App";
+import {Provider} from 'react-redux'
+import store from './app/store'
+import {NetworkError} from "./app/network/NetworkError";
 
 /*Decide whether to run mock service worker for debugging*/
 const USE_MOCK_SERVICE_WORKER = false;
@@ -28,8 +31,11 @@ ReactDOM.render(
             <CssBaseline/>
             <RandomBackground/>
             <ErrorBoundary>
-                <LoadServiceWorker/>
-                <LoginCheckAndNetworkState/>
+                <Provider store={store}>
+                    <LoadServiceWorker/>
+                    <NetworkError/>
+                    <App/>
+                </Provider>
             </ErrorBoundary>
         </MuiThemeProvider>
     </StrictMode>

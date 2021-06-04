@@ -2,14 +2,14 @@
 import {useMemo, useState} from 'react';
 import {Checkbox, Fab, FormControlLabel, Snackbar, TableContainer, TextField} from "@material-ui/core";
 import styled from 'styled-components'
-import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
+import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
 import AddIcon from "@material-ui/icons/Add";
 import {AddBook} from "./AddBook";
 import {isBefore, parseISO, subMonths, subWeeks, subYears} from 'date-fns'
 import {Alert, Autocomplete} from "@material-ui/lab";
 import * as Url from './urls'
 import {getGoodreadsBookInfo, getGoogleBookInfo} from './urls'
-import {formatDistanceToNowPretty, sanitizeString} from "../../util/util";
+import {formatDistanceToNowPretty, sanitizeString} from "../../common/util";
 import {matchSorter} from "match-sorter";
 import {BOOK_FIELDS, DEFAULT_BOOK_VALUES} from "./schema";
 import {Waypoint} from 'react-waypoint';

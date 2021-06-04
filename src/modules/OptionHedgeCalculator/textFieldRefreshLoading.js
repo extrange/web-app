@@ -2,7 +2,7 @@ import TextField from "@material-ui/core/TextField";
 import {CircularProgress, IconButton, InputAdornment, Tooltip} from "@material-ui/core";
 import ClearIcon from "@material-ui/icons/Clear";
 import CachedIcon from '@material-ui/icons/Cached';
-import {noop} from "../../util/util";
+import {noop} from "../../common/util";
 import React from "react";
 
 export const TextFieldRefreshLoading = ({onChange, onRefresh, loading, tooltipText = '', onOpen = noop, ...props}) => {

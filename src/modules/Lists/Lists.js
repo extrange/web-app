@@ -1,19 +1,19 @@
 import {useEffect, useState} from "react";
-import {AppBarResponsive} from "../../shared/AppBarResponsive";
+import {AppBar} from "../../common/AppBar";
 import {Tasklists} from "./tasklists";
 import {Tasks} from "./tasks";
 import {getTasksUrl, getTaskUrl, TASKLISTS_URL} from "./urls";
 import {CircularProgress, IconButton, Typography} from "@material-ui/core";
 import SyncIcon from '@material-ui/icons/Sync';
-import {useAsyncError} from "../../util/useAsyncError";
-import {Networking} from "../../util/networking";
+import {useAsyncError} from "../../common/useAsyncError";
+import {Networking} from "../../app/network/networking";
 
 const LIST_CURRENT_LIST = 'LIST_CURRENT_LIST';
 
 //todo move into urls as static methods
 const get = Networking.crudMethods(getTasksUrl, getTaskUrl)[0];
 
-export const Lists = ({returnToMainApp, logout}) => {
+export const Lists = () => {
 
     // There is a chance the listId stored is invalid - useEffect below checks for this
     const [currentListId, setCurrentListId] = useState(null);
@@ -66,10 +66,7 @@ export const Lists = ({returnToMainApp, logout}) => {
             : <IconButton onClick={() => currentListId ? listItems(currentListId) : 0}><SyncIcon/></IconButton>}
     </>;
 
-    return <AppBarResponsive
-        appName={'Lists'}
-        returnToMainApp={returnToMainApp}
-        logout={logout}
+    return <AppBar
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
         titleContent={title}
@@ -78,9 +75,7 @@ export const Lists = ({returnToMainApp, logout}) => {
             setAndSaveCurrentList={setAndSaveCurrentList}
             tasklists={tasklists}
             listTasklists={listTasklists}
-            setDrawerOpen={setDrawerOpen}
-        />}
-    >
+            setDrawerOpen={setDrawerOpen}/>}>
         <Tasks
             currentList={currentListId}
             setLoading={setLoading}
@@ -88,5 +83,5 @@ export const Lists = ({returnToMainApp, logout}) => {
             setItems={setItems}
             listItems={listItems}
         />
-    </AppBarResponsive>
+    </AppBar>
 };

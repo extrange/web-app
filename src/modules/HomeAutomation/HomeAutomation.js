@@ -1,10 +1,10 @@
-import {AppBarResponsive} from "../../shared/AppBarResponsive";
-import {Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Typography} from "@material-ui/core";
+import {AppBar} from "../../common/AppBar";
+import {Button, FormControl, InputLabel, MenuItem, Select, Snackbar} from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
 import React, {useState} from "react";
 import styled from 'styled-components'
 import {COMMANDS, sendCommand} from "./urls";
-import {BACKGROUND_COLOR} from "../../shared/backgroundScreen";
+import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
 
 const StyledContainer = styled.form`
   display: flex;
@@ -16,7 +16,7 @@ const StyledContainer = styled.form`
   ${BACKGROUND_COLOR};
 `;
 
-export const HomeAutomation = ({logout, returnToMainApp}) => {
+export const HomeAutomation = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [snackbar, setSnackbar] = useState();
     const [disabled, setDisabled] = useState(false);
@@ -28,15 +28,11 @@ export const HomeAutomation = ({logout, returnToMainApp}) => {
         sendCommand(e.target.command.value).then(() => setSnackbar(true));
     };
 
-    return <AppBarResponsive
-        appName={'Home Automation'}
-        titleContent={<Typography variant={"h6"} noWrap>Home Automation</Typography>}
-        logout={logout}
-        returnToMainApp={returnToMainApp}
+    return <AppBar
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}>
         <Snackbar
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            anchorOrigin={{vertical: 'top', horizontal: 'center'}}
             open={snackbar}
             onClose={() => setSnackbar(false)}
             autoHideDuration={3000}>
@@ -47,7 +43,7 @@ export const HomeAutomation = ({logout, returnToMainApp}) => {
             </Alert>
         </Snackbar>
         <StyledContainer
-                onSubmit={handleSubmit}>
+            onSubmit={handleSubmit}>
 
             <FormControl>
                 <InputLabel>Command</InputLabel>
@@ -60,11 +56,11 @@ export const HomeAutomation = ({logout, returnToMainApp}) => {
             </FormControl>
             <Button
                 disabled={disabled}
-                    variant={'contained'}
-                    color={'primary'}
-                    type={'submit'}
-                >Send command
-                </Button>
+                variant={'contained'}
+                color={'primary'}
+                type={'submit'}
+            >Send command
+            </Button>
         </StyledContainer>
-    </AppBarResponsive>
+    </AppBar>
 };

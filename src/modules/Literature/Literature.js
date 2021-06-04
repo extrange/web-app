@@ -3,13 +3,16 @@ import {Books} from "./Books";
 import * as Url from "./urls";
 import {capitalize} from "lodash";
 import {List, ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
-import {AppBarResponsive} from "../../shared/AppBarResponsive";
+import {AppBar} from "../../common/AppBar";
 import HomeIcon from '@material-ui/icons/Home';
 import PeopleIcon from '@material-ui/icons/People';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import TitleIcon from '@material-ui/icons/Title';
 import {GenericAddDeleteCreate} from "./genericAddDeleteCreate";
 import {Genres} from "./Genres";
+
+import {HTML5Backend} from "react-dnd-html5-backend";
+import {DndProvider} from "react-dnd";
 
 const LITERATURE_CURRENT_SUBMODULE = 'LITERATURE_CURRENT_SUBMODULE';
 
@@ -65,7 +68,7 @@ const LITERATURE_MODULES = (props = {}) => ({
     }
 });
 
-export const Literature = ({returnToMainApp, logout}) => {
+export const Literature = () => {
 
     const storedSubModule = sessionStorage.getItem(LITERATURE_CURRENT_SUBMODULE);
 
@@ -109,34 +112,33 @@ export const Literature = ({returnToMainApp, logout}) => {
     </List>;
 
     return (
-        <AppBarResponsive
-            appName={'Literature'}
+        <AppBar
             titleContent={<>
                 <Typography variant={"h6"} noWrap>
                     {capitalize(currentSubModule)}
                 </Typography>
                 {titleEndAdornment}
             </>}
-            logout={logout}
-            returnToMainApp={returnToMainApp}
             drawerOpen={drawerOpen}
             setDrawerOpen={setDrawerOpen}
             drawerContent={drawerContent}>
-            {LITERATURE_MODULES({
-                getBooks,
-                books,
-                setBooks,
-                authors,
-                setAuthors,
-                genres,
-                setGenres,
-                types,
-                setTypes,
-                getAuthors,
-                getGenres,
-                getTypes,
-                setTitleEndAdornment,
-            })[currentSubModule].jsx}
-        </AppBarResponsive>
+            <DndProvider backend={HTML5Backend}>
+                {LITERATURE_MODULES({
+                    getBooks,
+                    books,
+                    setBooks,
+                    authors,
+                    setAuthors,
+                    genres,
+                    setGenres,
+                    types,
+                    setTypes,
+                    getAuthors,
+                    getGenres,
+                    getTypes,
+                    setTitleEndAdornment,
+                })[currentSubModule].jsx}
+            </DndProvider>
+        </AppBar>
     );
 };

@@ -1,6 +1,6 @@
 import {useMemo, useState} from "react";
 import {flow} from "lodash";
-import {noop, sanitizeString} from "../util/util";
+import {noop, sanitizeString} from "./util";
 import {matchSorter} from "match-sorter";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";

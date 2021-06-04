@@ -1,4 +1,4 @@
-import {API_URL} from "../../globals/urls";
+import {API_URL} from "../../app/urls";
 
 
 const PASSWORDS_API = `${API_URL}/passwords`;

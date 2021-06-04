@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {AppBarResponsive} from "../../shared/AppBarResponsive";
+import {AppBar} from "../../common/AppBar";
 import {CircularProgress, List, ListItem, ListItemText, Typography} from "@material-ui/core";
 import shaka from 'shaka-player/dist/shaka-player.ui'
 import {getChannelUrl, getOrRefreshChannel} from "./urls";
@@ -23,7 +23,7 @@ const StyledVideo = styled.video`
   height: 100%;
 `;
 
-export const DVR = ({logout, returnToMainApp}) => {
+export const DVR = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [channel, setChannel] = useState(CHANNELS[0]);
     const [loading, setLoading] = useState(false);
@@ -93,15 +93,12 @@ export const DVR = ({logout, returnToMainApp}) => {
                 </ListItem>)}
         </List>;
 
-    return <AppBarResponsive
-        appName={'DVR'}
+    return <AppBar
         titleContent={<>
             <Typography variant={"h6"} noWrap>DVR: {channel}</Typography>
             {loading && <CircularProgress color="inherit" size={20} style={{margin: '12px'}}/>}
         </>}
         setDrawerOpen={setDrawerOpen}
-        logout={logout}
-        returnToMainApp={returnToMainApp}
         drawerOpen={drawerOpen}
         drawerContent={drawerContent}
     >
@@ -112,5 +109,5 @@ export const DVR = ({logout, returnToMainApp}) => {
                 id="video"
                 autoPlay/>
         </VideoDiv>
-    </AppBarResponsive>
+    </AppBar>
 };

@@ -1,6 +1,6 @@
 import {useEffect} from "react";
-import {Networking} from "./util/networking";
-import {LOGIN_URL} from "./globals/urls";
+import {Networking} from "./network/networking";
+import {LOGIN_URL} from "./urls";
 
 const SESSION_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
 

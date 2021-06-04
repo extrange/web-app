@@ -1,5 +1,5 @@
-import {API_URL} from "../../globals/urls";
-import {Networking} from "../../util/networking";
+import {API_URL} from "../../app/urls";
+import {Networking} from "../../app/network/networking";
 
 const MOHH_MAIL_URL = `${API_URL}/hmail/check-mohh-mail/`;
 const IHIS_MAIL_URL = `${API_URL}/hmail/check-ihis-mail/`;
