@@ -4,10 +4,10 @@ import {EditItem} from "./editItem";
 import {getTasksUrl, getTaskUrl} from "./urls";
 import {Virtuoso} from 'react-virtuoso/dist'
 import {Fab, List} from "@material-ui/core";
-import {Loading} from "../../common/loading";
+import {Loading} from "../../shared/components/loading";
 import styled from 'styled-components'
 import AddIcon from '@material-ui/icons/Add';
-import {Networking} from "../../app/network/networking";
+import {crudMethods} from "../../app/appSlice";
 
 const StyledFab = styled(Fab)`
   position: fixed;
@@ -22,7 +22,7 @@ const StyledDiv = styled.div`
 `;
 
 //todo move into urls as static methods
-const [, add, update, del] = Networking.crudMethods(getTasksUrl, getTaskUrl);
+const [, add, update, del] = crudMethods(getTasksUrl, getTaskUrl);
 
 export const Tasks = ({currentList, items, listItems}) => {
 

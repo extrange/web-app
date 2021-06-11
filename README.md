@@ -12,8 +12,8 @@ I'm making a dashboard of my tasks, investments and booklists using ReactJS and 
 ## Directory structure
 
 - `/app`: app-wide setup and globals that depend on all the other folders.
-- `/common`: shared components and utilities e.g. fonts, networking
-- `/modules`
+- `/shared`: shared components and utilities e.g. fonts, hooks, input components
+- `/modules`:
     - `Module1`: No subdirectories
       - `Module1.js`
 - `/test`: Mocks, MSW/Jest etc

@@ -2,7 +2,7 @@ import {Fab, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText} 
 import DeleteIcon from '@material-ui/icons/Delete';
 import React, {useState} from 'react'
 import styled from 'styled-components'
-import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
+import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
 import AddIcon from "@material-ui/icons/Add";
 import {GenericAddDeleteCreateDialog} from "./genericAddDeleteCreateDialog";
 

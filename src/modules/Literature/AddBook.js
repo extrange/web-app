@@ -29,12 +29,12 @@ import {
     Typography
 } from "@material-ui/core";
 import {isEmpty} from "lodash";
-import {DialogBlurResponsive} from "../../common/dialogBlurResponsive";
+import {DialogBlurResponsive} from "../../shared/components/dialogBlurResponsive";
 import {Alert} from "@material-ui/lab";
-import {useAsyncError} from "../../common/useAsyncError";
-import {AutocompleteWithCreate} from "../../common/AutocompleteWithCreate";
-import {TextFieldClearable} from "../../common/textFieldClearable";
-import {TextFieldMultilineEllipsis} from "../../common/textFieldMultilineEllipsis";
+import {useAsyncError} from "../../shared/useAsyncError";
+import {AutocompleteWithCreate} from "../../shared/components/AutocompleteWithCreate";
+import {TextFieldClearable} from "../../shared/components/textFieldClearable";
+import {TextFieldMultilineEllipsis} from "../../shared/components/textFieldMultilineEllipsis";
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import {mapGenres} from "./utils";
 

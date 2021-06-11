@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {Dialog} from "@material-ui/core";
-import {OverlayScrollbarOptions, theme} from "../app/theme";
+import {OverlayScrollbarOptions, theme} from "../../app/theme";
 
 const StyledDialog = styled(Dialog)`
   .MuiDialog-paper {

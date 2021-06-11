@@ -1,4 +1,9 @@
-import {StyledButton} from "../../common/common";
+import styled from "styled-components";
+import {Button} from "@material-ui/core";
+
+const StyledButton = styled(Button)({
+    margin: '10px',
+});
 
 export const CreateTasklist = props => {
     return (

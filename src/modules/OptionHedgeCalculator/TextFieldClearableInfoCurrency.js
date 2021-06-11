@@ -1,4 +1,4 @@
-import {TextFieldClearableInfo} from "../../common/textFieldClearableInfo";
+import {TextFieldClearableInfo} from "../../shared/components/textFieldClearableInfo";
 import Cleave from "cleave.js/react";
 import React from "react";
 

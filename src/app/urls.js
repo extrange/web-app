@@ -1,19 +1,17 @@
 /**
- * Entrypoint URLs common between modules
+ * Base and authentication endpoints
  * */
+import {joinUrl} from "../shared/util";
 
-// Base API URL
+/*Base*/
 export const API_URL = 'https://api.nicholaslyz.com';
-
-// Files URL
 export const FILES_URL = 'https://files.nicholaslyz.com';
+export const DUMMY_URL = 'https://dummy.nicholaslyz.com'
 
-// Account URLs
-export const ACCOUNT_URL = `${API_URL}/account`;
+/*Authentication*/
+export const LOGIN_URL = joinUrl(API_URL, 'account/login')
+export const LOGOUT_URL = joinUrl(API_URL, 'account/logout')
+export const RECAPTCHA_KEY_URL = joinUrl(API_URL, 'account/recaptcha-key')
 
-export const LOGIN_URL = `${ACCOUNT_URL}/login/`;
-export const LOGOUT_URL = `${ACCOUNT_URL}/logout/`;
-export const RECAPTCHA_KEY_URL = `${ACCOUNT_URL}/recaptcha-key/`;
-
-// Test URL
-export const TEST_URL = `${API_URL}/test/`;
+/*Testing*/
+export const TEST_URL = joinUrl(API_URL, 'test')

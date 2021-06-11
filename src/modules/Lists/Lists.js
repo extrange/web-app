@@ -1,17 +1,18 @@
 import {useEffect, useState} from "react";
-import {AppBar} from "../../common/AppBar";
+import {AppBar} from "../../app/AppBar/AppBar";
 import {Tasklists} from "./tasklists";
 import {Tasks} from "./tasks";
 import {getTasksUrl, getTaskUrl, TASKLISTS_URL} from "./urls";
 import {CircularProgress, IconButton, Typography} from "@material-ui/core";
 import SyncIcon from '@material-ui/icons/Sync';
-import {useAsyncError} from "../../common/useAsyncError";
-import {Networking} from "../../app/network/networking";
+import {useAsyncError} from "../../shared/useAsyncError";
+import {crudMethods, send} from "../../app/appSlice";
+import {useSend} from "../../shared/useSend";
 
 const LIST_CURRENT_LIST = 'LIST_CURRENT_LIST';
 
 //todo move into urls as static methods
-const get = Networking.crudMethods(getTasksUrl, getTaskUrl)[0];
+const get = crudMethods(getTasksUrl, getTaskUrl)[0];
 
 export const Lists = () => {
 
@@ -22,16 +23,14 @@ export const Lists = () => {
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState([]);
     const setError = useAsyncError();
+    const send = useSend()
 
     const setAndSaveCurrentList = listId => {
         setCurrentListId(listId);
         localStorage.setItem(LIST_CURRENT_LIST, listId);
     };
 
-    const listTasklists = () => Networking.send(TASKLISTS_URL, {
-        method: 'GET'
-    })
-        .then(resp => resp.json())
+    const listTasklists = () => send(TASKLISTS_URL)
         .then(json => setTasklists(json));
 
     //todo use Abort controller to cancel requests

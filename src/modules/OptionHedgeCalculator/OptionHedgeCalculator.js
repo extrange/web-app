@@ -1,13 +1,13 @@
 import {Typography} from "@material-ui/core";
-import {AppBar} from "../../common/AppBar";
+import {AppBar} from "../../app/AppBar/AppBar";
 import React, {useEffect, useState} from "react";
 import {yupResolver} from '@hookform/resolvers/yup'
 import styled from 'styled-components'
 import {Controller, useForm} from "react-hook-form";
-import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
+import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
 import * as yup from 'yup'
 import {trim} from "lodash";
-import {TextFieldClearableInfo} from "../../common/textFieldClearableInfo";
+import {TextFieldClearableInfo} from "../../shared/components/textFieldClearableInfo";
 import {TextFieldRefreshLoading} from "./textFieldRefreshLoading";
 import {formatDistanceToNowStrict} from 'date-fns'
 import {TextFieldClearableInfoCurrency} from "./TextFieldClearableInfoCurrency";
@@ -219,7 +219,7 @@ export const OptionHedgeCalculator = () => {
     </AppBar>
 };
 
-/*Test case:
+/*Testing case:
 *
 * Beta-weighted portfolio value in USD: 1000000
 * Current price of SPY: 300

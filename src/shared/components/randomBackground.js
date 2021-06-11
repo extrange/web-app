@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {getDaysSinceEpoch, getRandomInt} from "./util";
+import {getDaysSinceEpoch, getRandomInt} from "../util";
 import {useCallback, useEffect, useState} from "react";
 
 /*Largest index of background images, inclusive*/

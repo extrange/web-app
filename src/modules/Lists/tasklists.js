@@ -3,17 +3,17 @@ import {Tasklist} from "./tasklist";
 import './tasklists.css'
 import {getTasklistUrl, TASKLISTS_URL} from "./urls";
 import {List} from "@material-ui/core";
-import {Networking} from "../../app/network/networking";
+import {useSend} from "../../shared/useSend";
 
 export const Tasklists = ({tasklists, listTasklists, currentListId, setAndSaveCurrentList, setDrawerOpen}) => {
 
+    const send = useSend()
+
     const createTasklist = async (title) => {
-        let resp = await Networking.send(TASKLISTS_URL, {
+        let json = await send(TASKLISTS_URL, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json',},
-            body: JSON.stringify({title})
+            body: {title}
         });
-        let json = await resp.json();
         let id = json['id'];
         await listTasklists();
         setAndSaveCurrentList(id);
@@ -22,7 +22,7 @@ export const Tasklists = ({tasklists, listTasklists, currentListId, setAndSaveCu
     const deleteTasklist = id => {
         let decision = window.confirm('Delete tasklist?');
         if (!decision) return;
-        Networking.send(getTasklistUrl(id), {
+        send(getTasklistUrl(id), {
             method: 'DELETE'
         })
             .then(() => listTasklists())

@@ -1,4 +1,3 @@
-import {HideOnScroll} from "./common";
 import {
     AppBar as MuiAppBar,
     Drawer,
@@ -7,8 +6,11 @@ import {
     ListItem,
     ListItemIcon,
     ListItemText,
-    Toolbar, Typography,
+    Slide,
+    Toolbar,
+    Typography,
     useMediaQuery,
+    useScrollTrigger,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -16,13 +18,14 @@ import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import {styled as muiStyled, useTheme} from "@material-ui/core/styles"
 import styled from 'styled-components'
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
-import {BACKGROUND_COLOR} from "./backgroundScreen";
-import {OverlayScrollbarOptions} from "../app/theme";
-import {NotificationMenu} from "./notificationMenu";
+import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
+import {OverlayScrollbarOptions} from "../theme";
+import {NotificationMenu} from "../../shared/components/notificationMenu";
 import {useDispatch, useSelector} from "react-redux";
-import {logout, selectCurrentModule, setCurrentModule} from "../app/appSlice";
+import {selectCurrentModule, setCurrentModule} from "../appSlice";
 import React from "react";
-import {MODULES} from "../app/ModuleSelect";
+import {MODULES} from "../modules";
+import {useLogoutMutation} from "../authApi";
 
 /*StyledContainer is a flex container for StyledDrawerContainer (flex: 1 0),
 HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
@@ -91,26 +94,36 @@ const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
 }));
 
 /*Shared App Bar among modules*/
-export const AppBar= ({
-                                     children,
-                                     drawerContent,
-                                     drawerOpen,
-                                     setDrawerOpen,
-                                     sidebarName: _sidebarName, /*Optional, defaults to module's displayName*/
+export const AppBar = ({
+                           children,
+                           drawerContent,
+                           drawerOpen,
+                           setDrawerOpen,
+                           sidebarName: _sidebarName, /*Optional, defaults to module's displayName*/
 
-                                    /*Optional, defaults to module's displayName
-                                     Typography h6 is recommended with 'noWrap'*/
-                                     titleContent: _titleContent,
-                                 }) => {
+                           /*Optional, defaults to module's displayName
+                            Typography h6 is recommended with 'noWrap'*/
+                           titleContent: _titleContent,
+                       }) => {
+
+    const dispatch = useDispatch()
+
+    const [logout] = useLogoutMutation()
 
     const theme = useTheme();
     const mobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const dispatch = useDispatch()
     const currentModule = useSelector(selectCurrentModule)
-    const displayName = MODULES[currentModule]?.displayName ?? ''
+    const displayName = MODULES[currentModule].displayName
 
     const sidebarName = _sidebarName ?? displayName
     const titleContent = _titleContent ?? <Typography variant={"h6"} noWrap>{displayName}</Typography>
+
+    const HideOnScroll = ({children, target}) => {
+        const trigger = useScrollTrigger({threshold: 50, target});
+        return <Slide direction={'down'} in={!trigger}>
+            {children}
+        </Slide>
+    };
 
     const drawer = <OverlayScrollbarsWithMaxWidth
         options={OverlayScrollbarOptions}
@@ -126,7 +139,7 @@ export const AppBar= ({
                 <ListItemText primary={'Back to Apps'}/>
             </ListItem>
             {drawerContent}
-            <ListItem button onClick={() => dispatch(logout())}>
+            <ListItem button onClick={() => logout()}>
                 <ListItemIcon>
                     <MeetingRoomIcon/>
                 </ListItemIcon>

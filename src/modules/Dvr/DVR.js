@@ -1,10 +1,11 @@
 import React, {useEffect, useRef, useState} from "react";
-import {AppBar} from "../../common/AppBar";
+import {AppBar} from "../../app/AppBar/AppBar";
 import {CircularProgress, List, ListItem, ListItemText, Typography} from "@material-ui/core";
 import shaka from 'shaka-player/dist/shaka-player.ui'
-import {getChannelUrl, getOrRefreshChannel} from "./urls";
+import {DVR_URL, getChannelUrl} from "./urls";
 import styled from 'styled-components'
 import 'shaka-player/dist/controls.css'
+import {useSend} from "../../shared/useSend";
 
 const CHANNELS = [
     'CAM_1',
@@ -28,6 +29,11 @@ export const DVR = () => {
     const [channel, setChannel] = useState(CHANNELS[0]);
     const [loading, setLoading] = useState(false);
     const player = useRef();
+    const send = useSend()
+
+    const getOrRefreshChannel = channel =>
+        send(`${DVR_URL}/?channel=${channel}`,
+            {method: 'GET'})
 
     // Load channel and keep refreshing every REFRESH_INTERVAL seconds
     useEffect(() => {

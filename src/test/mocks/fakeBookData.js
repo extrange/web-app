@@ -1,6 +1,6 @@
 import faker from "faker";
 import {sample, sampleSize} from "lodash";
-import {getRandomInt} from "../../common/util";
+import {getRandomInt} from "../../shared/util";
 import {formatISO} from 'date-fns'
 
 export const generateFakeBookData = (authors, genres, types) => [...Array(20)].map((val, id) => ({

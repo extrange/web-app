@@ -5,18 +5,18 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import '@fontsource/source-sans-pro' //For codemirror in MarkdownEditor.js
-import './common/fonts/starcraft/starcraft.css' //Stylized font for menu
+import './shared/static/fonts/starcraft/starcraft.css' //Stylized font for menu
 import {MuiThemeProvider} from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import {LoadServiceWorker} from "./app/LoadServiceWorker";
-import {ErrorBoundary} from "./app/ErrorBoundary";
+import {LoadServiceWorker} from "./app/LoadServiceWorker/LoadServiceWorker";
+import {ErrorBoundary} from "./app/ErrorBoundary/ErrorBoundary";
 import 'overlayscrollbars/css/OverlayScrollbars.css'
 import {theme} from "./app/theme";
-import {RandomBackground} from "./common/randomBackground";
+import {RandomBackground} from "./shared/components/randomBackground";
 import {App} from "./app/App";
 import {Provider} from 'react-redux'
 import store from './app/store'
-import {NetworkError} from "./app/network/NetworkError";
+import {NetworkError} from "./app/NetworkError/NetworkError";
 
 /*Decide whether to run mock service worker for debugging*/
 const USE_MOCK_SERVICE_WORKER = false;
@@ -32,9 +32,9 @@ ReactDOM.render(
             <RandomBackground/>
             <ErrorBoundary>
                 <Provider store={store}>
-                    <LoadServiceWorker/>
-                    <NetworkError/>
-                    <App/>
+                        <LoadServiceWorker/>
+                        <NetworkError/>
+                        <App/>
                 </Provider>
             </ErrorBoundary>
         </MuiThemeProvider>

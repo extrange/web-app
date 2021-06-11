@@ -1,15 +1,19 @@
 import {NotificationContext} from './notificationContext'
 import {useRef, useState} from "react";
-import {noop} from "../util";
+import {noop} from "../../shared/util";
 import {Mail} from '../../modules/Mail/Mail'
+import {useSelector} from "react-redux";
+import {selectLoginStatus} from "../appSlice";
 
 /*
 This class handles notifications and also provides notificationContext.
 Only executed after successful login.
+todo Refactor this to use Redux instead of useContext
 */
 export const NotificationProvider = ({children}) => {
 
     const [notifications, setNotifications] = useState([]);
+    const {isSuperUser} = useSelector(selectLoginStatus)
     const nextId = useRef(0);
 
     const addNotification = ({source, title, content, count = 1, action = noop()}) => {
@@ -37,7 +41,7 @@ export const NotificationProvider = ({children}) => {
     };
 
     return <NotificationContext.Provider value={notificationParams}>
-        <Mail/>
+        {/*{isSuperUser && <Mail/>}*/}
         {children}
     </NotificationContext.Provider>
 };

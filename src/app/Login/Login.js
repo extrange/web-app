@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
-import {LOGIN_URL} from "./urls";
 import styled from "styled-components";
 import {Button, Checkbox, CircularProgress, FormControlLabel, TextField, Typography} from "@material-ui/core";
-import {BackgroundScreenRounded} from "../common/backgroundScreen";
-import {Networking} from "./network/networking";
-import {useInput} from "../common/useInput";
+import {BackgroundScreenRounded} from "../../shared/components/backgroundScreen";
+import {useInput} from "../../shared/useInput";
 import ReCAPTCHA from "react-google-recaptcha";
-import {useDispatch} from "react-redux";
-import {login, setNetworkError} from "./appSlice";
-import {NETWORK_ERROR} from "./network/NetworkError";
+import {useDispatch, useSelector} from "react-redux";
+import {selectLoginStatus, setNetworkError} from "../appSlice";
+import {NETWORK_ERROR} from "../constants";
+import {useCheckLoginQuery, useLoginMutation} from "../authApi";
+import {Loading} from "../../shared/components/loading";
 
 const StyledForm = styled.form`
   display: flex;
@@ -38,62 +38,67 @@ const StyledCircularProgress = styled(CircularProgress)`
   margin-left: 10px;
 `;
 
-export const Login = ({recaptchaKey}) => {
+/*Will update loggedIn state*/
+export const Login = () => {
 
     const dispatch = useDispatch()
+    const {recaptchaKey} = useSelector(selectLoginStatus)
 
-    const [loginMessage, setLoginMessage] = useState('Sign In');
-    const [loading, setLoading] = useState(false);
-    const [otpRequired, setOtpRequired] = useState(false);
+    const [login, {isLoading}] = useLoginMutation()
+    const {isFetching, isError, error} = useCheckLoginQuery(undefined, {refetchOnMountOrArgChange: true})
 
     const {values, bind, setValue} = useInput();
     const recaptchaRef = React.useRef();
+    const [loginMessage, setLoginMessage] = useState('Sign In');
+    const [otpRequired, setOtpRequired] = useState(false);
+
 
     const onSubmit = event => {
         event.preventDefault();
-        setLoading(true);
         recaptchaRef.current
             .executeAsync()
-            .then(token => Networking.send(LOGIN_URL, {
-                method: Networking.POST,
-                body: JSON.stringify({
-                    username: values.username,
-                    password: values.password,
-                    token: token,
-                    otp: values.otp,
-                    save_browser: values.saveBrowser
-                }),
-                allowUnauth: true
+            .then(token => login({
+                username: values.username,
+                password: values.password,
+                token: token,
+                otp: values.otp,
+                save_browser: values.saveBrowser
             }))
-            .then(r => {
-                setLoading(false)
-                r.json().then(json => {
+            .then(res => {
+                if (res.error &&
+                    res.error.type === NETWORK_ERROR.HTTP_ERROR &&
+                    [401, 403].includes(res.error.status)) {
+                    let data = res.error.data
 
-                    if (r.ok) {
-                        dispatch(login(json))
-                        return
-                    }
-
-                    /*401/403 errors*/
-                    if (json.otp_required && !otpRequired) {
+                    if (data.otp_required)
                         setOtpRequired(true)
 
-                    } else /*Invalid username/password/OTP*/
-                        setLoginMessage(json.message)
+                    setLoginMessage(data.message)
 
-                    /*Reset captcha to allow user to retry*/
+                    /*Reset captcha for retries*/
                     recaptchaRef.current?.reset();
-                })
+                }
             })
             .catch(e => {
+                /*Since thunks do not throw if not unwrapped,
+                * only gRecaptcha errors are caught here.
+                * networkErrorMiddleware handles the rest.
+                * This is at the end of the chain so that all
+                * prior 'then's do not execute if recaptcha validation fails.*/
                 dispatch(setNetworkError({
-                    message: {text: e?.toString()},
-                    name: 'Fetch Error: gRecaptcha request failed',
+                    text: `gRecaptcha request failed: ${e?.message}`,
                     type: NETWORK_ERROR.FETCH_ERROR,
                 }))
-                setLoading(false)
             })
+
     };
+
+    /*Show loading screen also for non-401/403 errors*/
+    if (isFetching || (isError && ![401, 403].includes(error.status)))
+        return <Loading
+            open={true}
+            message={isError ? 'HTTP Error' : 'Checking authentication...'}
+            fullscreen={true}/>;
 
     return <StyledForm onSubmit={onSubmit}>
         <InnerContainer>
@@ -130,7 +135,7 @@ export const Login = ({recaptchaKey}) => {
                     autoComplete={'one-time-code'}
                     fullWidth
                     variant={'outlined'}
-                    inputmode={"numeric"}
+                    inputMode={"numeric"}
                     pattern={"[0-9]*"}
                     {...bind('otp')}
                 />
@@ -152,7 +157,7 @@ export const Login = ({recaptchaKey}) => {
                 color={'primary'}
                 fullWidth
             >
-                <Spacer/>Login{loading ? <StyledCircularProgress color={"inherit"} size={20}/> : <Spacer/>}
+                <Spacer/>Login{isLoading ? <StyledCircularProgress color={"inherit"} size={20}/> : <Spacer/>}
             </Button>
             <ReCAPTCHA
                 ref={recaptchaRef}

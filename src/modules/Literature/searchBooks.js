@@ -1,13 +1,13 @@
 import {BookResult} from "./BookResult";
 import styled from "styled-components";
 import {Button, CircularProgress, TextField} from "@material-ui/core";
-import {Networking} from "../../app/network/networking";
 import * as Url from "./urls";
 import {useState} from "react";
-import {DialogBlurResponsive} from "../../common/dialogBlurResponsive";
+import {DialogBlurResponsive} from "../../shared/components/dialogBlurResponsive";
 import SearchIcon from '@material-ui/icons/Search';
 import {Autocomplete} from "@material-ui/lab";
 import {matchSorter} from "match-sorter";
+import {useSend} from "../../shared/useSend";
 
 const BookResults = styled.div`
   display: grid;
@@ -28,6 +28,7 @@ const Footer = styled.div`
 
 export const SearchBooks = ({books, closeSearch, handleSearch, setBookData}) => {
 
+    const send = useSend()
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState(null);
 
@@ -36,8 +37,7 @@ export const SearchBooks = ({books, closeSearch, handleSearch, setBookData}) => 
         setResults(null);
         setLoading(true);
         let query = event.target.elements.search.value;
-        Networking.send(`${Url.SEARCH}?q=${query}`, {method: 'GET'})
-            .then(resp => resp.json())
+        send(`${Url.SEARCH}?q=${query}`)
             .then(json => {
                 setResults(json.results);
                 setLoading(false)

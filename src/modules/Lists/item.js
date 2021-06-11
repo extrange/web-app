@@ -1,6 +1,6 @@
 import {IconButton, ListItemText} from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
-import {StyledListItem, StyledListItemSecondaryAction} from "../../common/styledListItem";
+import {StyledListItem, StyledListItemSecondaryAction} from "../../shared/components/styledListItem";
 
 
 export const Item = ({deleteTask, handleEditTask, task}) =>

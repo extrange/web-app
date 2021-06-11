@@ -17,7 +17,7 @@ import {
     ListItem,
     ListItemText
 } from "@material-ui/core";
-import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
+import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
 import {GenreDialog} from "./GenreDialog";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import NoteIcon from '@material-ui/icons/Note';

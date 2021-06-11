@@ -1,4 +1,4 @@
-import {DialogBlurResponsive} from "../../common/dialogBlurResponsive";
+import {DialogBlurResponsive} from "../../shared/components/dialogBlurResponsive";
 import React from "react";
 import {Button, TextField} from "@material-ui/core";
 import styled from "styled-components";

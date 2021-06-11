@@ -1,12 +1,12 @@
 import styled from "styled-components";
-import {MarkdownEditor} from "../../common/MarkdownEditor/MarkdownEditor";
+import {MarkdownEditor} from "../../shared/components/MarkdownEditor/MarkdownEditor";
 import {Button, CircularProgress, TextField, Tooltip, Typography, useMediaQuery, Zoom} from "@material-ui/core";
 import {useForm} from "react-hook-form";
 import {useTheme} from "@material-ui/core/styles";
 import {debounce} from 'lodash'
 import {useCallback, useRef, useState} from "react";
-import {formatDistanceToNowPretty, isEmpty} from "../../common/util";
-import {DialogBlurResponsive} from "../../common/dialogBlurResponsive";
+import {formatDistanceToNowPretty, isEmpty} from "../../shared/util";
+import {DialogBlurResponsive} from "../../shared/components/dialogBlurResponsive";
 import CheckIcon from '@material-ui/icons/Check';
 import {parseJSON} from "date-fns";
 

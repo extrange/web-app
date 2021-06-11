@@ -2,14 +2,14 @@
 import {useMemo, useState} from 'react';
 import {Checkbox, Fab, FormControlLabel, Snackbar, TableContainer, TextField} from "@material-ui/core";
 import styled from 'styled-components'
-import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
+import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
 import AddIcon from "@material-ui/icons/Add";
 import {AddBook} from "./AddBook";
 import {isBefore, parseISO, subMonths, subWeeks, subYears} from 'date-fns'
 import {Alert, Autocomplete} from "@material-ui/lab";
 import * as Url from './urls'
-import {getGoodreadsBookInfo, getGoogleBookInfo} from './urls'
-import {formatDistanceToNowPretty, sanitizeString} from "../../common/util";
+import {BOOK_INFO} from './urls'
+import {formatDistanceToNowPretty, sanitizeString} from "../../shared/util";
 import {matchSorter} from "match-sorter";
 import {BOOK_FIELDS, DEFAULT_BOOK_VALUES} from "./schema";
 import {Waypoint} from 'react-waypoint';
@@ -18,6 +18,7 @@ import MUIDataTable, {debounceSearchRender} from "mui-datatables";
 import {SearchBooks} from "./searchBooks";
 import {mergeWith} from "lodash";
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
+import {useSend} from "../../shared/useSend";
 
 
 const StyledTableContainer = styled(TableContainer)`
@@ -59,6 +60,7 @@ export const Books = ({
     const [addedSnackbar, setAddedSnackbar] = useState(null);
     const [filteredItemsLength, setFilteredItemsLength] = useState(books.length);
     const [count, setCount] = useState(10);
+    const send = useSend()
 
     const getColumnState = column => localStorage.getItem(BOOK_COLUMN_STATE) ?
         JSON.parse(localStorage.getItem(BOOK_COLUMN_STATE))[column] :
@@ -73,6 +75,10 @@ export const Books = ({
             [column]: state
         }));
     };
+
+    // These methods get 'published', 'series_name', 'series_position', 'description'
+    const getGoogleBookInfo = isbn => send(`${BOOK_INFO}?isbn=${isbn}`);
+    const getGoodreadsBookInfo = (work_id, book_id) => send(`${BOOK_INFO}?work_id=${work_id}&book_id=${book_id}`);
 
     const dateOptions = useMemo(() => [
         {

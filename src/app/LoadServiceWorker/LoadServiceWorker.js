@@ -2,8 +2,8 @@ import {messageSW, Workbox} from "workbox-window";
 import {useEffect, useRef, useState} from 'react';
 import {Button, Snackbar} from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
-import {useAsyncError} from "../common/useAsyncError";
-import {isLocalhost, noop} from "../common/util";
+import {useAsyncError} from "../../shared/useAsyncError";
+import {isLocalhost, noop} from "../../shared/util";
 
 // https://developers.google.com/web/tools/workbox/modules/workbox-window#important_service_worker_lifecycle_moments
 

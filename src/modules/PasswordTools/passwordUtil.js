@@ -1,4 +1,4 @@
-import {getSecureRandom} from "../../common/util";
+import {getSecureRandom} from "../../shared/util";
 import {formatDistance} from "date-fns";
 
 const DIGITS_REGEX = /\d/;

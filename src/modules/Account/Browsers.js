@@ -1,10 +1,12 @@
 import {useEffect, useState} from "react";
-import {Networking} from "../../app/network/networking";
 import {BROWSERS_URL, getBrowserDetail} from "./urls";
 import {Typography} from "@material-ui/core";
 import {compareDesc, parseJSON} from "date-fns";
 import styled from 'styled-components'
 import {BrowserCard} from "./BrowserCard";
+import {NETWORK_METHOD} from "../../app/constants";
+import {send} from "../../app/appSlice";
+import {useSend} from "../../shared/useSend";
 
 const Grid = styled.div`
   display: grid;
@@ -18,15 +20,15 @@ const GridContainer = styled.div`
 `;
 
 export const Browsers = () => {
+    const send = useSend()
     const [browsers, setDevices] = useState([]);
 
     const forgetAndLogoutBrowser = id =>
-        Networking.send(getBrowserDetail(id), {method: Networking.DELETE})
+        send(getBrowserDetail(id), {method: NETWORK_METHOD.DELETE})
             .then(getBrowsers);
 
     const getBrowsers = () =>
-        Networking.send(BROWSERS_URL)
-            .then(r => r.json())
+        send(BROWSERS_URL)
             .then(r => setDevices(r));
 
     useEffect(() => void getBrowsers(), []);

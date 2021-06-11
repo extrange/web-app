@@ -1,10 +1,12 @@
-import {AppBar} from "../../common/AppBar";
+import {AppBar} from "../../app/AppBar/AppBar";
 import {Button, FormControl, InputLabel, MenuItem, Select, Snackbar} from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
 import React, {useState} from "react";
 import styled from 'styled-components'
-import {COMMANDS, sendCommand} from "./urls";
-import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
+import {COMMANDS, HOME_AUTOMATION_URL} from "./urls";
+import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
+import {NETWORK_METHOD} from "../../app/constants";
+import {useSend} from "../../shared/useSend";
 
 const StyledContainer = styled.form`
   display: flex;
@@ -20,6 +22,12 @@ export const HomeAutomation = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [snackbar, setSnackbar] = useState();
     const [disabled, setDisabled] = useState(false);
+    const send = useSend()
+
+    const sendCommand = command => send(HOME_AUTOMATION_URL, {
+        method: NETWORK_METHOD.POST,
+        body: {command}
+    });
 
     const handleSubmit = e => {
         e.preventDefault();

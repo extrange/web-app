@@ -1,4 +1,4 @@
-import {AppBar} from "../../common/AppBar";
+import {AppBar} from "../../app/AppBar/AppBar";
 import {useCallback, useEffect, useState} from "react";
 import {
     Button,
@@ -24,10 +24,9 @@ import {
     getEntropy,
     getSha1Hash
 } from "./passwordUtil";
-import {Networking} from "../../app/network/networking";
 import {HIBP_LOOKUP} from "./urls";
 import styled from 'styled-components'
-import {BACKGROUND_COLOR} from "../../common/backgroundScreen";
+import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
 import ReplayIcon from '@material-ui/icons/Replay';
 import "@fontsource/jetbrains-mono"
 import FileCopyIcon from '@material-ui/icons/FileCopy';
@@ -37,6 +36,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
+import {send} from "../../app/appSlice";
 
 const Container = styled.div`
   display: flex;
@@ -136,7 +136,7 @@ export const PasswordTools = () => {
     // eslint-disable-next-line
     const checkHibp = useCallback(debounce(
         hash => getSha1Hash(hash)
-            .then(r => Networking.send(HIBP_LOOKUP(r)))
+            .then(r => send(HIBP_LOOKUP(r)))
             .then(r => r.json())
             .then(r => {
                 setHashCount(r.count);

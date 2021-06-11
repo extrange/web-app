@@ -13,6 +13,7 @@ import {
     formatDistanceToNowStrict
 } from "date-fns";
 import UAParser from "ua-parser-js";
+import {isPlainObject} from "@reduxjs/toolkit";
 
 /**
  * Strip accents, empty spaces and lowercase a string (for comparison purposes)
@@ -74,15 +75,15 @@ export const isLocalhost = Boolean(
 export const noop = () => {
 };
 
-let arr = new Uint32Array(1);
-const max = 2 ** 32;
-
 /**
  * Cryptographically secure random number generator.
  * Assumes window.crypto exists.
  */
 export const getSecureRandom = () => {
     if (!window.crypto) throw new Error('window.crypto not supported on browser');
+
+    let arr = new Uint32Array(1);
+    const max = 2 ** 32;
 
     /*Will generate random numbers between 0 and 1 (exclusive) with 32 bit maximum precision
     * Rejection sampling.*/
@@ -126,3 +127,27 @@ export const prettifyUAString = uaString => {
         browserName
     }
 };
+
+/*Joins URLs, adding/removing slashes as necessary
+* Will end with trailing slash*/
+
+export const joinUrl = (...args) =>
+    args.reduce((acc, url) => acc + url.replace(/\/$/, '').replace(/^\//, '') + '/', '')
+
+export const stripHtml = html => {
+   let doc = new DOMParser().parseFromString(html, 'text/html');
+   return doc.body.textContent || "";
+}
+
+/*Copied from RTKQ's fetchBaseQuery.
+* Will not affect non-objects such as classes.*/
+export const stripUndefined = obj => {
+    if (!isPlainObject(obj)) {
+        return obj
+    }
+    const copy = {...obj}
+    for (const [k, v] of Object.entries(copy)) {
+        if (typeof v === 'undefined') delete copy[k]
+    }
+    return copy
+}

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {ListItem, ListItemSecondaryAction} from "@material-ui/core";
 import {BACKGROUND_COLOR} from "./backgroundScreen";
-import {theme} from "../app/theme";
+import {theme} from "../../app/theme";
 
 export const StyledListItem = styled(ListItem)`
   ::before {

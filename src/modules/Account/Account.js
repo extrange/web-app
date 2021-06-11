@@ -1,7 +1,7 @@
-import {AppBar} from "../../common/AppBar";
+import {AppBar} from "../../app/AppBar/AppBar";
 import {useState} from "react";
 import {List, ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
-import {BackgroundScreen} from "../../common/backgroundScreen";
+import {BackgroundScreen} from "../../shared/components/backgroundScreen";
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import PublicIcon from '@material-ui/icons/Public';
 import {TwoFactor} from "./TwoFactor";
