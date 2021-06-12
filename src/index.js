@@ -15,7 +15,7 @@ import {theme} from "./app/theme";
 import {RandomBackground} from "./shared/components/randomBackground";
 import {App} from "./app/App";
 import {Provider} from 'react-redux'
-import store from './app/store'
+import {store} from './app/store'
 import {NetworkError} from "./app/NetworkError/NetworkError";
 
 /*Decide whether to run mock service worker for debugging*/

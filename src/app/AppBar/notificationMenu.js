@@ -1,7 +1,7 @@
 import {Badge, Chip, Divider, IconButton, ListItem, ListItemText, Popover, Typography} from '@material-ui/core'
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import React, {useContext, useState} from "react";
-import {getNotificationCount, NotificationContext} from "../../app/NotificationProvider/notificationContext";
+import {getNotificationCount, NotificationContext} from "../NotificationProvider/notificationContext";
 import styled from "styled-components";
 import {formatDistanceToNowStrict} from 'date-fns'
 

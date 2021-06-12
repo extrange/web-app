@@ -31,7 +31,6 @@ const StyledButton = styled(Button)({
 
 export const ModuleSelect = () => {
     const dispatch = useDispatch()
-
     const [logout] = useLogoutMutation()
 
     const currentModule = useSelector(selectCurrentModule)

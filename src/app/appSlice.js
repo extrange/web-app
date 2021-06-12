@@ -1,5 +1,4 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {LOGOUT_URL} from "./urls";
+import {createSlice} from "@reduxjs/toolkit";
 import {CURRENT_MODULE, NETWORK_ERROR, NETWORK_METHOD} from "./constants";
 import {authApi} from "./authApi";
 
@@ -123,6 +122,7 @@ export const appSlice = createSlice({
         .addMatcher(authApi.endpoints.logout.matchFulfilled, () => {
             /*Not pure, but an exception here as I want to clear everything*/
             localStorage.clear()
+            /*Page is refreshed on logout, to clear both Redux store and cached memory.*/
             window.location.reload()
         })
 

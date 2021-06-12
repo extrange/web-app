@@ -20,7 +20,7 @@ import styled from 'styled-components'
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
 import {OverlayScrollbarOptions} from "../theme";
-import {NotificationMenu} from "../../shared/components/notificationMenu";
+import {NotificationMenu} from "./notificationMenu";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentModule, setCurrentModule} from "../appSlice";
 import React from "react";
