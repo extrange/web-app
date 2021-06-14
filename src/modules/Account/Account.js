@@ -1,4 +1,4 @@
-import {AppBar} from "../../app/AppBar/AppBar";
+import {AppBar} from "../../app/app-bar/AppBar";
 import {useState} from "react";
 import {List, ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
 import {BackgroundScreen} from "../../shared/components/backgroundScreen";

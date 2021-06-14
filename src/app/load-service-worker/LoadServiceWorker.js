@@ -22,7 +22,7 @@ const NoServiceWorker = () => {
         <Alert
             severity={'info'}
             onClose={() => setSbOpen(false)}>
-            {'LoadServiceWorker is not supported in your browser'}
+            {'load-service-worker is not supported in your browser'}
         </Alert>
     </Snackbar>
 };

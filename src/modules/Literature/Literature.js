@@ -3,7 +3,7 @@ import {Books} from "./Books";
 import * as Url from "./urls";
 import {capitalize} from "lodash";
 import {List, ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
-import {AppBar} from "../../app/AppBar/AppBar";
+import {AppBar} from "../../app/app-bar/AppBar";
 import HomeIcon from '@material-ui/icons/Home';
 import PeopleIcon from '@material-ui/icons/People';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';

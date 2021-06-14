@@ -8,15 +8,15 @@ import '@fontsource/source-sans-pro' //For codemirror in MarkdownEditor.js
 import './shared/static/fonts/starcraft/starcraft.css' //Stylized font for menu
 import {MuiThemeProvider} from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import {LoadServiceWorker} from "./app/LoadServiceWorker/LoadServiceWorker";
-import {ErrorBoundary} from "./app/ErrorBoundary/ErrorBoundary";
+import {LoadServiceWorker} from "./app/load-service-worker/LoadServiceWorker";
+import {ErrorBoundary} from "./app/error-boundary/ErrorBoundary";
 import 'overlayscrollbars/css/OverlayScrollbars.css'
 import {theme} from "./app/theme";
 import {RandomBackground} from "./shared/components/randomBackground";
 import {App} from "./app/App";
 import {Provider} from 'react-redux'
 import {store} from './app/store'
-import {NetworkError} from "./app/NetworkError/NetworkError";
+import {NetworkError} from "./core/network/NetworkError";
 
 /*Decide whether to run mock service worker for debugging*/
 const USE_MOCK_SERVICE_WORKER = false;

@@ -1,4 +1,4 @@
-import {AppBar} from "../../app/AppBar/AppBar";
+import {AppBar} from "../../app/app-bar/AppBar";
 import {useCallback, useEffect, useState} from "react";
 import {
     Button,

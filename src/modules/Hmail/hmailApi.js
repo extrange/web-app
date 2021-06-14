@@ -1,7 +1,6 @@
-import {baseApi} from "../../app/baseApi";
+import {baseApi} from "../../core/network/baseApi";
 
-
-export const mailApi = baseApi.injectEndpoints({
+export const hmailApi = baseApi.injectEndpoints({
     endpoints: build => ({
         checkIhisMail: build.query({
             query: () => 'hmail/check-ihis-mail/'
@@ -15,4 +14,4 @@ export const mailApi = baseApi.injectEndpoints({
 export const {
     useCheckIhisMailQuery,
     useCheckMohhMailQuery,
-} = mailApi
+} = hmailApi

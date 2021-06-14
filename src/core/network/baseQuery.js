@@ -1,5 +1,5 @@
-import {joinUrl, stripUndefined} from "../shared/util";
-import {NETWORK_ERROR} from "./constants";
+import {stripHtml, stripUndefined} from "../../shared/util";
+import {NETWORK_ERROR} from "../../app/constants";
 
 const defaultValidateStatus = response =>
     (response.status >= 200 && response.status <= 299)
@@ -11,6 +11,9 @@ const responseHandler = response =>
         response.json() :
         response.text()
 
+/*Joins 2 URLs. Will not modify trailing slashes if present*/
+const joinUrl = (base, url) => base.replace(/\/$/, '') + '/' + url.replace(/^\//)
+
 /*Custom query which wraps fetch errors in NetworkError format, instead of throwing.*/
 export const baseQuery = ({
                               baseUrl,
@@ -18,9 +21,9 @@ export const baseQuery = ({
                               fetchFn = fetch,
                               ...baseFetchOptions
                           }) =>
-    async (arg, {signal, getState}) => {
+    async (arg = {}, {signal, getState}) => {
         let {
-            url,
+            url = '',
             method = 'GET',
             headers = new Headers({}),
             body = undefined,
@@ -44,7 +47,6 @@ export const baseQuery = ({
         config.headers.set('content-type', 'application/json')
         config.body = JSON.stringify(body)
 
-
         if (params) {
             const divider = ~url.indexOf('?') ? '&' : '?'
             const query = new URLSearchParams(stripUndefined(params))
@@ -52,6 +54,7 @@ export const baseQuery = ({
         }
 
         url = joinUrl(baseUrl, url)
+
 
         const request = new Request(url, config)
         const requestClone = request.clone()
@@ -73,7 +76,7 @@ export const baseQuery = ({
                     error: {
                         method: request.method,
                         url: request.url,
-                        text: resultData,
+                        text: typeof resultData === 'object' ? JSON.stringify(resultData, undefined, 2) : stripHtml(resultData),
                         status: response.status,
                         type: NETWORK_ERROR.HTTP_ERROR,
 

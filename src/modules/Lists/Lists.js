@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {AppBar} from "../../app/AppBar/AppBar";
+import {AppBar} from "../../app/app-bar/AppBar";
 import {Tasklists} from "./tasklists";
 import {Tasks} from "./tasks";
 import {getTasksUrl, getTaskUrl, TASKLISTS_URL} from "./urls";

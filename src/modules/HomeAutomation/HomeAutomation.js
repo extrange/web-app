@@ -1,4 +1,4 @@
-import {AppBar} from "../../app/AppBar/AppBar";
+import {AppBar} from "../../app/app-bar/AppBar";
 import {Button, FormControl, InputLabel, MenuItem, Select, Snackbar} from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
 import React, {useState} from "react";

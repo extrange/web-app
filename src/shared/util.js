@@ -128,12 +128,6 @@ export const prettifyUAString = uaString => {
     }
 };
 
-/*Joins URLs, adding/removing slashes as necessary
-* Will end with trailing slash*/
-
-export const joinUrl = (...args) =>
-    args.reduce((acc, url) => acc + url.replace(/\/$/, '').replace(/^\//, '') + '/', '')
-
 export const stripHtml = html => {
    let doc = new DOMParser().parseFromString(html, 'text/html');
    return doc.body.textContent || "";

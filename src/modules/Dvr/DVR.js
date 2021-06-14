@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {AppBar} from "../../app/AppBar/AppBar";
+import {AppBar} from "../../app/app-bar/AppBar";
 import {CircularProgress, List, ListItem, ListItemText, Typography} from "@material-ui/core";
 import shaka from 'shaka-player/dist/shaka-player.ui'
 import {DVR_URL, getChannelUrl} from "./urls";

@@ -5,9 +5,9 @@ import {BackgroundScreenRounded} from "../../shared/components/backgroundScreen"
 import {useInput} from "../../shared/useInput";
 import ReCAPTCHA from "react-google-recaptcha";
 import {useDispatch, useSelector} from "react-redux";
-import {selectLoginStatus, setNetworkError} from "../appSlice";
-import {NETWORK_ERROR} from "../constants";
-import {useCheckLoginQuery, useLoginMutation} from "../authApi";
+import {selectLoginStatus, setNetworkError} from "../../app/appSlice";
+import {NETWORK_ERROR} from "../../app/constants";
+import {useCheckLoginQuery, useLoginMutation} from "./authApi";
 import {Loading} from "../../shared/components/loading";
 
 const StyledForm = styled.form`

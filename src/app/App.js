@@ -1,9 +1,10 @@
 import React from "react";
-import {Login} from "./Login/Login";
-import {ModuleSelect} from "./ModuleSelect";
+import {Login} from "../core/auth/Login";
+import {ModuleSelect} from "./modules/ModuleSelect";
 import {useSelector} from "react-redux";
 import {selectLoginStatus} from "./appSlice";
-import {RefreshSession} from "./RefreshSession/RefreshSession";
+import {RefreshSession} from "./refresh-session/RefreshSession";
+import {Hmail} from "../modules/Hmail/Hmail";
 
 /*Checks for login then displays appropriate component*/
 export const App = () => {
@@ -12,6 +13,7 @@ export const App = () => {
 
     return loggedIn ?
         <>
+            <Hmail/>
             <RefreshSession/>
             <ModuleSelect/>
         </> :

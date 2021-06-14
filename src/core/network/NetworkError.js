@@ -2,9 +2,8 @@ import {Button} from "@material-ui/core";
 import React from "react";
 import {AlertSnackbarWithDialog} from "../../shared/components/AlertSnackbarWithDialog";
 import {useDispatch, useSelector} from "react-redux";
-import {clearNetworkError, selectNetworkError} from "../appSlice";
-import {NETWORK_ERROR} from "../constants";
-import {stripHtml} from "../../shared/util";
+import {clearNetworkError, selectNetworkError} from "../../app/appSlice";
+import {NETWORK_ERROR} from "../../app/constants";
 
 /*Displays appropriate snackbars informing users of network state/errors,
 * with remediation options.
@@ -19,8 +18,8 @@ export const NetworkError = () => {
     const {method, url, text, status, type} = networkError
 
     const message = <>
-        <>{method}: {url}</>
-        <p>{stripHtml(text)}</p>
+        <p>{method}: {url}</p>
+        <p>{text}</p>
     </>
 
     switch (type) {
@@ -61,7 +60,12 @@ export const NetworkError = () => {
                     onClose={() => dispatch(clearNetworkError())}/>;
             }
         default:
-            throw new Error(`NetworkError: Uncaught type: ${type}.
-            You must explicitly specify and catch all NETWORK_ERRORs.`);
+            /*Catch non NetworkError rejectedWithValue thunks*/
+            return <AlertSnackbarWithDialog
+                dialogTitle={`Non NetworkError rejectWithValue thunk`}
+                dialogContent={message}
+                severity={'error'}
+                snackbarText={'A network error has occurred.'}
+                onClose={() => dispatch(clearNetworkError())}/>;
     }
 };

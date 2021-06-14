@@ -1,5 +1,5 @@
 import {Typography} from "@material-ui/core";
-import {AppBar} from "../../app/AppBar/AppBar";
+import {AppBar} from "../../app/app-bar/AppBar";
 import React, {useEffect, useState} from "react";
 import {yupResolver} from '@hookform/resolvers/yup'
 import styled from 'styled-components'

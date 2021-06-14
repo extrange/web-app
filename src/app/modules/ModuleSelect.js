@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import {BackgroundScreenRounded} from "../shared/components/backgroundScreen";
+import {BackgroundScreenRounded} from "../../shared/components/backgroundScreen";
 import CallMadeIcon from '@material-ui/icons/CallMade';
 import {useDispatch, useSelector} from "react-redux";
-import {selectCurrentModule, selectLoginStatus, setCurrentModule} from "./appSlice";
+import {selectCurrentModule, selectLoginStatus, setCurrentModule} from "../appSlice";
 import {MODULES} from "./modules";
 import {Button} from "@material-ui/core";
-import {useLogoutMutation} from "./authApi";
+import {useLogoutMutation} from "../../core/auth/authApi";
 
 const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#';
 
@@ -33,22 +33,22 @@ export const ModuleSelect = () => {
     const dispatch = useDispatch()
     const [logout] = useLogoutMutation()
 
-    const currentModule = useSelector(selectCurrentModule)
+    const {id: moduleId, meta} = useSelector(selectCurrentModule)
     const {isSuperUser} = useSelector(selectLoginStatus)
 
-    return currentModule in MODULES ?
-        MODULES[currentModule].jsx :
+    return moduleId in MODULES ?
+        MODULES[moduleId].jsx :
         <FlexContainer>
             <InnerContainer>
                 {
                     Object.entries(MODULES)
-                        .filter(([key, value]) => value.onlySuperUser ? isSuperUser : true)
-                        .map(([key, value]) =>
+                        .filter(([id, value]) => value.onlySuperUser ? isSuperUser : true)
+                        .map(([id, value]) =>
                             <StyledButton
                                 variant={'outlined'}
                                 color={'primary'}
-                                key={key}
-                                onClick={() => dispatch(setCurrentModule(key))}>
+                                key={id}
+                                onClick={() => dispatch(setCurrentModule({id, title: value.displayName}))}>
                                 {value.displayName}
                             </StyledButton>
                         )

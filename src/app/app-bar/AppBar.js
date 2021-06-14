@@ -1,5 +1,6 @@
 import {
     AppBar as MuiAppBar,
+    CircularProgress,
     Drawer,
     IconButton,
     List,
@@ -20,12 +21,11 @@ import styled from 'styled-components'
 import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
 import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
 import {OverlayScrollbarOptions} from "../theme";
-import {NotificationMenu} from "./notificationMenu";
+import {NotificationMenu} from "./NotificationMenu";
 import {useDispatch, useSelector} from "react-redux";
-import {selectCurrentModule, setCurrentModule} from "../appSlice";
+import {selectAppBarDrawerOpen, selectCurrentModuleTitle, setAppBar, setCurrentModule} from "../appSlice";
 import React from "react";
-import {MODULES} from "../modules";
-import {useLogoutMutation} from "../authApi";
+import {useLogoutMutation} from "../../core/auth/authApi";
 
 /*StyledContainer is a flex container for StyledDrawerContainer (flex: 1 0),
 HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
@@ -93,30 +93,32 @@ const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
     }
 }));
 
-/*Shared App Bar among modules*/
+/*Shared App Bar among modules
+* To prevent AppBar from autommatically closing on ListItem click, use
+* e.stopPropagation().*/
 export const AppBar = ({
                            children,
                            drawerContent,
-                           drawerOpen,
-                           setDrawerOpen,
-                           sidebarName: _sidebarName, /*Optional, defaults to module's displayName*/
 
-                           /*Optional, defaults to module's displayName
-                            Typography h6 is recommended with 'noWrap'*/
-                           titleContent: _titleContent,
+                           /*Optional*/
+                           sidebarName: _sidebarName, /*Defaults to title*/
+                           titleContent: _titleContent, /*Defaults to title with typography h6, 'noWrap'*/
                        }) => {
 
     const dispatch = useDispatch()
+    const [logout, {isLoading}] = useLogoutMutation()
+    const drawerOpen = useSelector(selectAppBarDrawerOpen)
+    const title = useSelector(selectCurrentModuleTitle)
 
-    const [logout] = useLogoutMutation()
+    const sidebarName = _sidebarName ?? title
+    const titleContent = _titleContent ?? <Typography variant={"h6"} noWrap>{title}</Typography>
 
     const theme = useTheme();
     const mobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const currentModule = useSelector(selectCurrentModule)
-    const displayName = MODULES[currentModule].displayName
 
-    const sidebarName = _sidebarName ?? displayName
-    const titleContent = _titleContent ?? <Typography variant={"h6"} noWrap>{displayName}</Typography>
+    const openAppBar = () => dispatch(setAppBar({drawerOpen: true}))
+    const closeAppBar = () => dispatch(setAppBar({drawerOpen: false}))
+    const clearCurrentModule = () => dispatch(setCurrentModule({id: null}))
 
     const HideOnScroll = ({children, target}) => {
         const trigger = useScrollTrigger({threshold: 50, target});
@@ -128,22 +130,29 @@ export const AppBar = ({
     const drawer = <OverlayScrollbarsWithMaxWidth
         options={OverlayScrollbarOptions}
         className={'os-host-flexbox'}>
-        <List>
+        <List onClick={closeAppBar}>
             <ListItem>
                 <StyledAppNameDiv>{sidebarName}</StyledAppNameDiv>
             </ListItem>
-            <ListItem button onClick={() => dispatch(setCurrentModule())}>
+            <ListItem button onClick={() => {
+                clearCurrentModule()
+                closeAppBar()
+            }}>
                 <ListItemIcon>
                     <ArrowBackIcon/>
                 </ListItemIcon>
                 <ListItemText primary={'Back to Apps'}/>
             </ListItem>
             {drawerContent}
-            <ListItem button onClick={() => logout()}>
+            <ListItem button onClick={e => {
+                e.stopPropagation()
+                logout()
+            }}>
                 <ListItemIcon>
                     <MeetingRoomIcon/>
                 </ListItemIcon>
                 <ListItemText primary={'Logout'}/>
+                {isLoading && <CircularProgress size={20}/>}
             </ListItem>
         </List>
     </OverlayScrollbarsWithMaxWidth>;
@@ -160,7 +169,7 @@ export const AppBar = ({
                     <StyledIconButton
                         color={"inherit"}
                         edge={'start'}
-                        onClick={() => setDrawerOpen(true)}>
+                        onClick={openAppBar}>
                         <MenuIcon/>
                     </StyledIconButton>
                     {titleContent}
@@ -174,7 +183,7 @@ export const AppBar = ({
             {mobile
                 ? <Drawer
                     open={drawerOpen}
-                    onClose={() => setDrawerOpen(false)}
+                    onClose={closeAppBar}
                 >{drawer}
                 </Drawer>
                 : <TransparentDrawer

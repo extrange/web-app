@@ -1,4 +1,4 @@
-import {baseApi} from "./baseApi";
+import {baseApi} from "../network/baseApi";
 
 export const authApi = baseApi.injectEndpoints({
     endpoints: build => ({

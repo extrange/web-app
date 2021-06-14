@@ -42,7 +42,7 @@ export const AlertSnackbarWithDialog = ({
             <DialogTitle>{dialogTitle}</DialogTitle>
 
             <DialogContent>
-                <DialogContentText component={'div'}>
+                <DialogContentText component={'div'} style={{whiteSpace: 'pre-wrap'}}>
                     {dialogContent}
                 </DialogContentText>
             </DialogContent>
