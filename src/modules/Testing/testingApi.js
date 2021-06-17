@@ -1,5 +1,5 @@
-import {baseApi} from "../../core/network/baseApi";
-import {baseQuery} from "../../core/network/baseQuery";
+import {baseApi} from "../../app/network-core/baseApi";
+import {baseQuery} from "../../app/network-core/baseQuery";
 
 
 export const testingApi = baseApi.injectEndpoints({

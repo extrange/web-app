@@ -1,23 +1,15 @@
 import {createSlice, isAllOf, isRejectedWithValue} from "@reduxjs/toolkit";
 import {NETWORK_ERROR, NETWORK_METHOD} from "./constants";
-import {authApi} from "../core/auth/authApi";
+import {authApi} from "./auth/authApi";
 
 const name = 'app'
 
-/*For localStorage*/
-const CURRENT_MODULE = 'CURRENT_MODULE';
-
 const initialState = {
-    /*Access rights, sub-module state etc*/
+    /*Current module to display
+    * Title and other cosmetic effects are managed by components themselves*/
     module: {
-        id: localStorage.getItem(CURRENT_MODULE) || '',
-        title: '',
+        id: null,
         meta: {}
-    },
-
-    /*Cosmetic*/
-    appBar: {
-        drawerOpen: false,
     },
 
     loginStatus: {
@@ -135,13 +127,7 @@ export const appSlice = createSlice({
     reducers: {
         setNetworkError: setNetworkErrorReducer,
         clearNetworkError: state => void (state.networkError = null),
-        setCurrentModule: {
-            reducer: (state, {payload: {id, meta, title}}) => void (state.module = {id, meta, title}),
-            prepare: ({id, ...args} = {}) => {
-                localStorage.setItem(CURRENT_MODULE, id)
-                return {payload: {id, ...args}}
-            }
-        },
+        setCurrentModule: (state, {payload: {id = null, meta = {}} = {}}) => void (state.module = {id, meta}),
         setAppBar: (state, {payload: {drawerOpen = false}}) => void (state.appBar.drawerOpen = drawerOpen)
     },
     extraReducers: builder => builder
@@ -172,5 +158,3 @@ export const {
 export const selectLoginStatus = state => state[name].loginStatus
 export const selectNetworkError = state => state[name].networkError
 export const selectCurrentModule = state => state[name].module
-export const selectCurrentModuleTitle = state => state[name].module.title
-export const selectAppBarDrawerOpen = state => state[name].appBar.drawerOpen

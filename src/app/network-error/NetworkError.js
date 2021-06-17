@@ -2,8 +2,8 @@ import {Button} from "@material-ui/core";
 import React from "react";
 import {AlertSnackbarWithDialog} from "../../shared/components/AlertSnackbarWithDialog";
 import {useDispatch, useSelector} from "react-redux";
-import {clearNetworkError, selectNetworkError} from "../../app/appSlice";
-import {NETWORK_ERROR} from "../../app/constants";
+import {clearNetworkError, selectNetworkError} from "../appSlice";
+import {NETWORK_ERROR} from "../constants";
 
 /*Displays appropriate snackbars informing users of network state/errors,
 * with remediation options.

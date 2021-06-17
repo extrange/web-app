@@ -1,7 +1,7 @@
 import {configureStore} from "@reduxjs/toolkit";
 import {appSlice} from "./appSlice";
-import {baseApi} from "../core/network/baseApi";
-import {networkErrorMiddleware} from "../core/network/networkErrorMiddleware";
+import {baseApi} from "./network-core/baseApi";
+import {networkErrorMiddleware} from "./network-error/networkErrorMiddleware";
 import {setupListeners} from "@reduxjs/toolkit/query";
 import {notificationSlice} from "./notifications/notificationSlice";
 

@@ -1,4 +1,3 @@
-import {AppBar} from "../../app/app-bar/AppBar";
 import {Button} from "@material-ui/core";
 import {useThrowFetchErrorMutation, useThrowHttpErrorMutation} from "./testingApi";
 import {useDispatch} from "react-redux";
@@ -19,19 +18,16 @@ export const Testing = () => {
     const [throwHttpError] = useThrowHttpErrorMutation()
     const [throwFetchError] = useThrowFetchErrorMutation()
 
-    return <AppBar>
-
-        <StyledDiv>
-            <Button variant={'contained'} onClick={() => throwHttpError(401)}>Throw 401 error</Button>
-            <Button variant={'contained'} onClick={() => throwHttpError(500)}>Throw 500 error</Button>
-            <Button variant={'contained'} onClick={() => throwFetchError()}>Throw fetch error</Button>
-            <Button variant={'contained'} onClick={() => dispatch(throwAsyncThunkReject())}>
-                Throw asyncThunkReject
-            </Button>
-            <Button variant={'contained'} onClick={() => dispatch(throwAsyncThunkRejectWithValue())}>
-                Throw asyncThunkRejectWithValue
-            </Button>
-            <Button variant={'contained'} onClick={() => dispatch(clearNetworkError())}>Clear</Button>
-        </StyledDiv>
-    </AppBar>
+    return <StyledDiv>
+        <Button variant={'contained'} onClick={() => throwHttpError(401)}>Throw 401 error</Button>
+        <Button variant={'contained'} onClick={() => throwHttpError(500)}>Throw 500 error</Button>
+        <Button variant={'contained'} onClick={() => throwFetchError()}>Throw fetch error</Button>
+        <Button variant={'contained'} onClick={() => dispatch(throwAsyncThunkReject())}>
+            Throw asyncThunkReject
+        </Button>
+        <Button variant={'contained'} onClick={() => dispatch(throwAsyncThunkRejectWithValue())}>
+            Throw asyncThunkRejectWithValue
+        </Button>
+        <Button variant={'contained'} onClick={() => dispatch(clearNetworkError())}>Clear</Button>
+    </StyledDiv>
 }

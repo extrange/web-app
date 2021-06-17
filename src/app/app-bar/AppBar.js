@@ -1,48 +1,16 @@
-import {
-    AppBar as MuiAppBar,
-    CircularProgress,
-    Drawer,
-    IconButton,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Slide,
-    Toolbar,
-    Typography,
-    useMediaQuery,
-    useScrollTrigger,
-} from "@material-ui/core";
+import {AppBar as MuiAppBar, IconButton, Slide, Toolbar, Typography, useScrollTrigger,} from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
-import {styled as muiStyled, useTheme} from "@material-ui/core/styles"
+import {styled as muiStyled} from "@material-ui/core/styles"
 import styled from 'styled-components'
-import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
-import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
-import {OverlayScrollbarOptions} from "../theme";
 import {NotificationMenu} from "./NotificationMenu";
-import {useDispatch, useSelector} from "react-redux";
-import {selectAppBarDrawerOpen, selectCurrentModuleTitle, setAppBar, setCurrentModule} from "../appSlice";
-import React from "react";
-import {useLogoutMutation} from "../../core/auth/authApi";
+import {useSelector} from "react-redux";
+import {selectCurrentModule} from "../appSlice";
+import React, {useLayoutEffect, useState} from "react";
+import {ModuleSelect} from "../modules/ModuleSelect";
+import {MODULES} from "../modules/modules";
+import {AppBarDrawer} from "./AppBarDrawer";
 
-/*StyledContainer is a flex container for StyledDrawerContainer (flex: 1 0),
-HideOnScroll (flex: 0 0) and StyledContentContainer (flex: 1 0)*/
-
-const drawerWidth = 300;
-
-const OverlayScrollbarsWithMaxWidth = styled(OverlayScrollbarsComponent)`
-  width: ${drawerWidth}px;
-  max-width: 80vw;
-`;
-
-
-const TransparentDrawer = styled(Drawer)`
-  .MuiDrawer-paper {
-    ${BACKGROUND_COLOR};
-  }
-`;
+export const drawerWidth = 300;
 
 const FlexContainer = styled.div`
   display: flex;
@@ -63,7 +31,7 @@ const TransparentAppBar = muiStyled(MuiAppBar)(({theme}) => ({
 
 }));
 
-const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
+const DrawerContainer = muiStyled('div')(({theme}) => ({
     [theme.breakpoints.up('md')]: {
         width: drawerWidth,
         flexShrink: 0,
@@ -71,21 +39,15 @@ const StyledDrawerContainer = muiStyled('div')(({theme}) => ({
 
 }));
 
-const StyledContentContainer = styled.div`
+const ContentContainer = styled.div`
   flex: 1;
+  overflow-y: scroll;
 `;
 
 const ContentDiv = styled.div`
   height: calc(100% - 48px); //48px is the height of Toolbar (variant=dense)
 `;
 
-const StyledAppNameDiv = styled.div`
-  font-family: 'Starcraft', serif;
-  font-size: 20px;
-  margin: 0 auto;
-  text-align: center;
-  cursor: default;
-`;
 
 const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
     [theme.breakpoints.up('md')]: {
@@ -93,83 +55,47 @@ const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
     }
 }));
 
-/*Shared App Bar among modules
-* To prevent AppBar from autommatically closing on ListItem click, use
+
+/*To prevent AppBar from automatically closing on ListItem click, use
 * e.stopPropagation().*/
-export const AppBar = ({
-                           children,
-                           drawerContent,
+export const AppBar = () => {
 
-                           /*Optional*/
-                           sidebarName: _sidebarName, /*Defaults to title*/
-                           titleContent: _titleContent, /*Defaults to title with typography h6, 'noWrap'*/
-                       }) => {
+    const {id} = useSelector(selectCurrentModule)
 
-    const dispatch = useDispatch()
-    const [logout, {isLoading}] = useLogoutMutation()
-    const drawerOpen = useSelector(selectAppBarDrawerOpen)
-    const title = useSelector(selectCurrentModuleTitle)
+    const trigger = useScrollTrigger({threshold: 50});
 
-    const sidebarName = _sidebarName ?? title
-    const titleContent = _titleContent ?? <Typography variant={"h6"} noWrap>{title}</Typography>
+    /*Hooks are passed to modules*/
+    const [drawerOpen, setDrawerOpen] = useState(false)
+    const [drawerContent, setDrawerContent] = useState(null)
+    const [sidebarName, setSidebarName] = useState('')
+    const [titleContent, setTitleContent] = useState(null)
 
-    const theme = useTheme();
-    const mobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const appBarProps = {setDrawerContent, setTitleContent, setSidebarName, setDrawerOpen}
 
-    const openAppBar = () => dispatch(setAppBar({drawerOpen: true}))
-    const closeAppBar = () => dispatch(setAppBar({drawerOpen: false}))
-    const clearCurrentModule = () => dispatch(setCurrentModule({id: null}))
+    /*useLayoutEffect is critical here, to ensure that this runs BEFORE any
+    * useEffect(s) in the children that might call setTitleContent etc.*/
+    useLayoutEffect(() => {
+        if (!id) {
+            setSidebarName('Modules')
+            setTitleContent(<Typography variant={"h6"}>Modules</Typography>)
+            setDrawerContent(null)
+        } else {
+            setTitleContent(<Typography variant={"h6"}>{MODULES[id].menuName}</Typography>)
+            setSidebarName(MODULES[id].menuName)
+        }
 
-    const HideOnScroll = ({children, target}) => {
-        const trigger = useScrollTrigger({threshold: 50, target});
-        return <Slide direction={'down'} in={!trigger}>
-            {children}
-        </Slide>
-    };
-
-    const drawer = <OverlayScrollbarsWithMaxWidth
-        options={OverlayScrollbarOptions}
-        className={'os-host-flexbox'}>
-        <List onClick={closeAppBar}>
-            <ListItem>
-                <StyledAppNameDiv>{sidebarName}</StyledAppNameDiv>
-            </ListItem>
-            <ListItem button onClick={() => {
-                clearCurrentModule()
-                closeAppBar()
-            }}>
-                <ListItemIcon>
-                    <ArrowBackIcon/>
-                </ListItemIcon>
-                <ListItemText primary={'Back to Apps'}/>
-            </ListItem>
-            {drawerContent}
-            <ListItem button onClick={e => {
-                e.stopPropagation()
-                logout()
-            }}>
-                <ListItemIcon>
-                    <MeetingRoomIcon/>
-                </ListItemIcon>
-                <ListItemText primary={'Logout'}/>
-                {isLoading && <CircularProgress size={20}/>}
-            </ListItem>
-        </List>
-    </OverlayScrollbarsWithMaxWidth>;
+    }, [id, setDrawerContent, setSidebarName, setTitleContent])
 
     return <FlexContainer>
-        <HideOnScroll>
+        <Slide direction={'down'} in={!trigger}>
             <TransparentAppBar
                 position={'fixed'}
-                color={'transparent'}
-
-                // Elevation adds more borders, and makes the page look more busy
-                elevation={0}>
+                color={'transparent'}>
                 <Toolbar variant={"dense"}>
                     <StyledIconButton
                         color={"inherit"}
                         edge={'start'}
-                        onClick={openAppBar}>
+                        onClick={() => setDrawerOpen(true)}>
                         <MenuIcon/>
                     </StyledIconButton>
                     {titleContent}
@@ -177,29 +103,27 @@ export const AppBar = ({
                     <NotificationMenu/>
                 </Toolbar>
             </TransparentAppBar>
-        </HideOnScroll>
+        </Slide>
 
-        <StyledDrawerContainer>
-            {mobile
-                ? <Drawer
-                    open={drawerOpen}
-                    onClose={closeAppBar}
-                >{drawer}
-                </Drawer>
-                : <TransparentDrawer
-                    open
-                    variant={"permanent"}
-                >{drawer}
-                </TransparentDrawer>}
-        </StyledDrawerContainer>
+        <DrawerContainer>
+            <AppBarDrawer
+                drawerOpen={drawerOpen}
+                drawerWidth={drawerWidth}
+                setDrawerOpen={setDrawerOpen}
+                sidebarName={sidebarName}>
+                {drawerContent}
+            </AppBarDrawer>
+        </DrawerContainer>
 
 
-        <StyledContentContainer>
+        <ContentContainer>
             <Toolbar variant={"dense"}/>
             <ContentDiv>
-                {children}
+                {id ?
+                    React.createElement(MODULES[id].element, appBarProps) :
+                    <ModuleSelect {...appBarProps}/>}
             </ContentDiv>
-        </StyledContentContainer>
+        </ContentContainer>
 
     </FlexContainer>
 };

@@ -1,5 +1,5 @@
 import {isRejected, isRejectedWithValue} from "@reduxjs/toolkit";
-import {setNetworkError} from "../../app/appSlice";
+import {setNetworkError} from "../appSlice";
 
 /*Show network errors for rejected thunk actions*/
 export const networkErrorMiddleware = ({dispatch}) => next => action => {

@@ -2,10 +2,10 @@ import styled from "styled-components";
 import {BackgroundScreenRounded} from "../../shared/components/backgroundScreen";
 import CallMadeIcon from '@material-ui/icons/CallMade';
 import {useDispatch, useSelector} from "react-redux";
-import {selectCurrentModule, selectLoginStatus, setCurrentModule} from "../appSlice";
+import {selectLoginStatus, setCurrentModule} from "../appSlice";
 import {MODULES} from "./modules";
 import {Button} from "@material-ui/core";
-import {useLogoutMutation} from "../../core/auth/authApi";
+import React from 'react'
 
 const GDOCS_ATTRACTIONS_URL = 'https://docs.google.com/document/d/1MS6oLLnTWWhdS_FEr1vudNfsnGBMT2V1GtrmHzDd6s0/edit#';
 
@@ -13,7 +13,7 @@ const FlexContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
   margin: 0 auto;
   max-width: 300px;
 `;
@@ -28,44 +28,37 @@ const StyledButton = styled(Button)({
     margin: '10px',
 });
 
-
+/*Also handles persisting of CURRENT_MODULE in localstorage and updates redux store accordingly*/
 export const ModuleSelect = () => {
-    const dispatch = useDispatch()
-    const [logout] = useLogoutMutation()
 
-    const {id: moduleId, meta} = useSelector(selectCurrentModule)
+    const dispatch = useDispatch()
     const {isSuperUser} = useSelector(selectLoginStatus)
 
-    return moduleId in MODULES ?
-        MODULES[moduleId].jsx :
-        <FlexContainer>
-            <InnerContainer>
-                {
-                    Object.entries(MODULES)
-                        .filter(([id, value]) => value.onlySuperUser ? isSuperUser : true)
-                        .map(([id, value]) =>
-                            <StyledButton
-                                variant={'outlined'}
-                                color={'primary'}
-                                key={id}
-                                onClick={() => dispatch(setCurrentModule({id, title: value.displayName}))}>
-                                {value.displayName}
-                            </StyledButton>
-                        )
-                }
-                {isSuperUser && <StyledButton
-                    variant={'outlined'}
-                    color={'primary'}
-                    onClick={() => window.open(GDOCS_ATTRACTIONS_URL, '_blank', 'noopener,noreferrer')}
-                    endIcon={<CallMadeIcon/>}>
-                    Attractions and Food
-                </StyledButton>}
-                <StyledButton
-                    variant={'contained'}
-                    color={'primary'}
-                    onClick={() => logout()}>
-                    Logout
-                </StyledButton>
-            </InnerContainer>
-        </FlexContainer>;
+    const modules = Object.entries(MODULES)
+        .filter(([_, {onlySuperUser}]) => isSuperUser || !onlySuperUser)
+        .map(([id, {menuName}]) =>
+            <StyledButton
+                variant={'outlined'}
+                color={'primary'}
+                key={id}
+                onClick={() => dispatch(setCurrentModule({id}))}>
+                {menuName}
+            </StyledButton>
+        )
+
+    /*Todo get this URL from the server in future*/
+    modules.push(isSuperUser && <StyledButton
+        variant={'outlined'}
+        color={'primary'}
+        key={'attractions'}
+        onClick={() => window.open(GDOCS_ATTRACTIONS_URL, '_blank', 'noopener,noreferrer')}
+        endIcon={<CallMadeIcon/>}>
+        Attractions and Food
+    </StyledButton>)
+
+    return <FlexContainer>
+        <InnerContainer>
+            {modules}
+        </InnerContainer>
+    </FlexContainer>
 };

@@ -2,7 +2,6 @@ import {Badge, Chip, Divider, IconButton, ListItem, ListItemText, Popover, Typog
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import React, {useState} from "react";
 import styled from "styled-components";
-import {formatDistanceToNowStrict} from 'date-fns'
 import {useSelector} from "react-redux";
 import {selectNotificationsSorted} from "../notifications/notificationSlice";
 import {formatDistanceToNowPretty} from "../../shared/util";
@@ -52,25 +51,25 @@ export const NotificationMenu = () => {
             }}>
             {notifications.length > 0 ?
                 notifications.map(e => <React.Fragment key={e.id}>
-                        <ListItem button>
-                            <ListItemText
-                                disableTypography
-                                primary={<>
-                                    <StyledChip
-                                        color={'primary'}
-                                        label={e.source}/>
-                                    {e.title}
-                                </>}
-                                secondary={<>
-                                    <StyledSpan>{e.content}</StyledSpan>
-                                    <Typography variant={'body2'}
-                                                align={'right'}>
-                                        {formatDistanceToNowPretty(new Date(e.timestamp))}
-                                    </Typography>
-                                </>}/>
-                        </ListItem>
-                        <Divider/>
-                    </React.Fragment>) :
+                    <ListItem button>
+                        <ListItemText
+                            disableTypography
+                            primary={<>
+                                <StyledChip
+                                    color={'primary'}
+                                    label={e.source}/>
+                                {e.title}
+                            </>}
+                            secondary={<>
+                                <StyledSpan>{e.content}</StyledSpan>
+                                <Typography variant={'body2'}
+                                            align={'right'}>
+                                    {formatDistanceToNowPretty(new Date(e.timestamp))}
+                                </Typography>
+                            </>}/>
+                    </ListItem>
+                    <Divider/>
+                </React.Fragment>) :
                 <ListItem>
                     <ListItemText
                         primary={'No new notifications'}/>

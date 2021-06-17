@@ -1,4 +1,4 @@
-import {useCheckLoginQuery} from "../../core/auth/authApi";
+import {useCheckLoginQuery} from "../auth/authApi";
 
 const SESSION_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
 

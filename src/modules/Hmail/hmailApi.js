@@ -1,4 +1,4 @@
-import {baseApi} from "../../core/network/baseApi";
+import {baseApi} from "../../app/network-core/baseApi";
 
 export const hmailApi = baseApi.injectEndpoints({
     endpoints: build => ({

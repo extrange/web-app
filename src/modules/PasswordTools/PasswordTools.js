@@ -1,4 +1,3 @@
-import {AppBar} from "../../app/app-bar/AppBar";
 import {useCallback, useEffect, useState} from "react";
 import {
     Button,
@@ -17,14 +16,7 @@ import {
     Tooltip,
     Typography
 } from "@material-ui/core";
-import {
-    formatLargeDuration,
-    generatePassword,
-    generateUsername,
-    getEntropy,
-    getSha1Hash
-} from "./passwordUtil";
-import {HIBP_LOOKUP} from "./urls";
+import {formatLargeDuration, generatePassword, generateUsername, getEntropy, getSha1Hash} from "./passwordUtil";
 import styled from 'styled-components'
 import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
 import ReplayIcon from '@material-ui/icons/Replay';
@@ -36,7 +28,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
-import {send} from "../../app/appSlice";
+import {useHibpLookupMutation} from "./passwordToolsApi";
 
 const Container = styled.div`
   display: flex;
@@ -95,8 +87,9 @@ const DEFAULT_USERNAME_LENGTH = 10;
 const DEFAULT_PASSWORD_LENGTH = 24;
 
 export const PasswordTools = () => {
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const [hashCount, setHashCount] = useState(0);
+    const [lookupHibp, {isLoading, data}] = useHibpLookupMutation()
+    const {count: hashCount} = data ?? {}
+
     const [settings, setSettings] = useState({
         dialogOpen: false,
         dialogType: null,
@@ -115,7 +108,6 @@ export const PasswordTools = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [entropy, setEntropy] = useState({});
 
     let secondsToBruteforce = (2 ** entropy.totalEntropy / (200 * 10 ** 18));
@@ -135,15 +127,9 @@ export const PasswordTools = () => {
 
     // eslint-disable-next-line
     const checkHibp = useCallback(debounce(
-        hash => getSha1Hash(hash)
-            .then(r => send(HIBP_LOOKUP(r)))
-            .then(r => r.json())
-            .then(r => {
-                setHashCount(r.count);
-                setLoading(false)
-            })
-        , 500)
-        , []);
+        passwordStr =>
+            getSha1Hash(passwordStr)
+                .then(lookupHibp), 500), []);
 
     const copyToClipboard = text => navigator.clipboard.writeText(text)
         .then(() => {
@@ -155,7 +141,6 @@ export const PasswordTools = () => {
         });
 
     const onPasswordChange = text => {
-        setLoading(true);
         setPassword(text);
         checkHibp(text);
         setEntropy(getEntropy(text))
@@ -163,10 +148,7 @@ export const PasswordTools = () => {
 
     const closeSettings = () => setSettings(current => ({...current, dialogOpen: false}));
 
-    return <AppBar
-        drawerOpen={drawerOpen}
-        setDrawerOpen={setDrawerOpen}>
-
+    return <>
         <Dialog open={settings.dialogOpen} onClose={closeSettings}>
             <DialogTitle
                 style={{zIndex: 1}}>{settings.dialogType === 'username' ? 'Username' : 'Password'} Options</DialogTitle>
@@ -285,8 +267,8 @@ export const PasswordTools = () => {
                     label={'Type a password'}
                     value={password}
                     fullWidth
-                    error={!loading && Boolean(hashCount)}
-                    helperText={loading ? 'Checking...' :
+                    error={!isLoading && Boolean(hashCount)}
+                    helperText={isLoading ? 'Checking...' :
                         password === '' ? 'Type a password to check, or generate one' :
                             hashCount > 0 ? `Password cracked ${formatNumber.format(hashCount)} times` :
                                 'Password has not been cracked'}
@@ -338,7 +320,8 @@ export const PasswordTools = () => {
                         </IconButton>
                     </Tooltip>
                 </Typography>
-                <Typography variant={'body1'}>{entropy.totalEntropy && (formatDecimal.format(entropy.totalEntropy) + ' bits')}</Typography>
+                <Typography
+                    variant={'body1'}>{entropy.totalEntropy && (formatDecimal.format(entropy.totalEntropy) + ' bits')}</Typography>
 
                 <Typography variant={'body1'}>Time to crack
                     <Tooltip
@@ -351,12 +334,12 @@ export const PasswordTools = () => {
                         </IconButton>
                     </Tooltip>
                 </Typography>
-                <Typography variant={'body1'}>{Number.isFinite(secondsToBruteforce) && formatLargeDuration(secondsToBruteforce)}</Typography>
+                <Typography
+                    variant={'body1'}>{Number.isFinite(secondsToBruteforce) && formatLargeDuration(secondsToBruteforce)}</Typography>
             </PasswordDetailGrid>
 
 
         </Container>
-    </AppBar>
 
-
+    </>
 };

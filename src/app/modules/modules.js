@@ -10,43 +10,43 @@ import {PasswordTools} from "../../modules/PasswordTools/PasswordTools";
 
 export const MODULES = {
     // LISTS: {
-    //     displayName: 'Lists',
+    //     menuName: 'Lists',
     //     onlySuperUser: false,
-    //     jsx: <Lists/>
+    //     element: Lists
     // },
     // LITERATURE: {
-    //     displayName: 'Literature',
+    //     menuName: 'Literature',
     //     onlySuperUser: false,
-    //     jsx: <Literature/>
+    //     element: Literature
     // },
     // ACCOUNT: {
-    //     displayName: 'Account',
+    //     menuName: 'Account',
     //     onlySuperUser: false,
-    //     jsx: <Account/>
+    //     element: Account
     // },
     PASSWORDS: {
-        displayName: 'Password Tools',
+        menuName: 'Password Tools',
         onlySuperUser: false,
-        jsx: <PasswordTools/>
+        element: PasswordTools,
     },
     // HOME_AUTOMATION: {
-    //     displayName: 'Home Automation',
+    //     menuName: 'Home Automation',
     //     onlySuperUser: true,
-    //     jsx: <HomeAutomation/>
+    //     element: HomeAutomation
     // },
     // DVR: {
-    //     displayName: 'DVR',
+    //     menuName: 'DVR',
     //     onlySuperUser: true,
-    //     jsx: <DVR/>
+    //     element: DVR
     // },
     // OPTION_HEDGE_CALCULATOR: {
-    //     displayName: 'Option Hedge Calculator',
+    //     menuName: 'Option Hedge Calculator',
     //     onlySuperUser: false,
-    //     jsx: <OptionHedgeCalculator/>
+    //     element: OptionHedgeCalculator
     // },
     TEST: {
-        displayName: 'Testing',
+        menuName: 'Testing',
         onlySuperUser: true,
-        jsx: <Testing/>
+        element: Testing
     }
 }

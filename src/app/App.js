@@ -1,21 +1,21 @@
 import React from "react";
-import {Login} from "../core/auth/Login";
-import {ModuleSelect} from "./modules/ModuleSelect";
+import {Login} from "./auth/Login";
 import {useSelector} from "react-redux";
 import {selectLoginStatus} from "./appSlice";
 import {RefreshSession} from "./refresh-session/RefreshSession";
 import {Hmail} from "../modules/Hmail/Hmail";
+import {AppBar} from "./app-bar/AppBar";
 
 /*Checks for login then displays appropriate component*/
 export const App = () => {
 
-    const {loggedIn} = useSelector(selectLoginStatus)
+    const {loggedIn, isSuperUser} = useSelector(selectLoginStatus)
 
     return loggedIn ?
         <>
-            <Hmail/>
+            {isSuperUser && <Hmail/>}
             <RefreshSession/>
-            <ModuleSelect/>
+            <AppBar/>
         </> :
         <Login/>;
 };

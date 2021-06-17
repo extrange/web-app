@@ -1,5 +1,5 @@
 import {stripHtml, stripUndefined} from "../../shared/util";
-import {NETWORK_ERROR} from "../../app/constants";
+import {NETWORK_ERROR} from "../constants";
 
 const defaultValidateStatus = response =>
     (response.status >= 200 && response.status <= 299)
