@@ -8,6 +8,7 @@
 import {Testing} from "../../modules/Testing/Testing";
 import {PasswordTools} from "../../modules/PasswordTools/PasswordTools";
 import {HomeAutomation} from "../../modules/HomeAutomation/HomeAutomation";
+import {OptionHedgeCalculator} from "../../modules/OptionHedgeCalculator/OptionHedgeCalculator";
 
 export const MODULES = {
     // LISTS: {
@@ -40,11 +41,11 @@ export const MODULES = {
     //     onlySuperUser: true,
     //     element: DVR
     // },
-    // OPTION_HEDGE_CALCULATOR: {
-    //     menuName: 'Option Hedge Calculator',
-    //     onlySuperUser: false,
-    //     element: OptionHedgeCalculator
-    // },
+    OPTION_HEDGE_CALCULATOR: {
+        menuName: 'Option Hedge Calculator',
+        onlySuperUser: false,
+        element: OptionHedgeCalculator
+    },
     TEST: {
         menuName: 'Testing',
         onlySuperUser: true,

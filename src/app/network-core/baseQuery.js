@@ -12,7 +12,15 @@ const responseHandler = response =>
         response.text()
 
 /*Joins 2 URLs. Will not modify trailing slashes if present*/
-const joinUrl = (base, url) => base.replace(/\/$/, '') + '/' + url.replace(/^\//)
+const joinUrl = (base, url) => {
+    if (!base) {
+        return url
+    }
+    if (!url) {
+        return base
+    }
+    return base.replace(/\/$/, '') + '/' + url.replace(/^\//)
+}
 
 /*Custom query which wraps fetch errors in NetworkError format, instead of throwing.*/
 export const baseQuery = ({
