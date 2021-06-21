@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/shared/static/fonts/starcraft/starcraft.css"],"names":[],"mappings":"AAAA,WACI,uBAAwB,CACxB,uIACJ","file":"main.3947e07d.chunk.css","sourcesContent":["@font-face {\n    font-family: 'Starcraft';\n    src: url('Starcraft-Normal.woff2') format('woff2'), url('Starcraft-Normal.woff') format('woff');\n}"]}
