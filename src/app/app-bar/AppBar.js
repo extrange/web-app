@@ -2,7 +2,7 @@ import {AppBar as MuiAppBar, IconButton, Slide, Toolbar, Typography, useScrollTr
 import MenuIcon from "@material-ui/icons/Menu";
 import {styled as muiStyled} from "@material-ui/core/styles"
 import styled from 'styled-components'
-import {NotificationMenu} from "./NotificationMenu";
+import {NotificationMenu} from "../notifications/NotificationMenu";
 import {useSelector} from "react-redux";
 import {selectCurrentModule} from "../appSlice";
 import React, {useLayoutEffect, useState} from "react";

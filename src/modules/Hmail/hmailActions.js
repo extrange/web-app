@@ -1,6 +1,5 @@
 import {addNotifications, removeNotificationsFromSource} from "../../app/notifications/notificationSlice";
-import {parseJSON} from "date-fns";
-import {formatDistanceToNowPretty} from "../../shared/util";
+import {format, isToday, parseJSON} from "date-fns";
 
 export const handleMailAction = (data, source) => dispatch => {
     dispatch(removeNotificationsFromSource(source))
@@ -8,9 +7,9 @@ export const handleMailAction = (data, source) => dispatch => {
         let date = parseJSON(e.date)
         return ({
             title: e.title,
-            content: `(${formatDistanceToNowPretty(date)}) ` + [e.from.join(', '), e.preview].join(' - '),
+            content: `${format(date, isToday(date) ? 'p' : 'd/M')} ` + [e.from.join(', '), e.preview].join(' - '),
             source,
-            sortTimestamp: date.getTime()
+            timestamp: date.getTime()
         })
     })))
 }

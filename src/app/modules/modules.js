@@ -7,6 +7,7 @@
 // import {OptionHedgeCalculator} from "../modules/OptionHedgeCalculator/OptionHedgeCalculator";
 import {Testing} from "../../modules/Testing/Testing";
 import {PasswordTools} from "../../modules/PasswordTools/PasswordTools";
+import {HomeAutomation} from "../../modules/HomeAutomation/HomeAutomation";
 
 export const MODULES = {
     // LISTS: {
@@ -29,11 +30,11 @@ export const MODULES = {
         onlySuperUser: false,
         element: PasswordTools,
     },
-    // HOME_AUTOMATION: {
-    //     menuName: 'Home Automation',
-    //     onlySuperUser: true,
-    //     element: HomeAutomation
-    // },
+    HOME_AUTOMATION: {
+        menuName: 'Home Automation',
+        onlySuperUser: true,
+        element: HomeAutomation
+    },
     // DVR: {
     //     menuName: 'DVR',
     //     onlySuperUser: true,

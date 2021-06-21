@@ -1,7 +1,8 @@
 import {baseApi} from "../../app/network-core/baseApi";
 
 
-export const passwordToolsApi = baseApi.injectEndpoints({
+
+const passwordToolsApi = baseApi.injectEndpoints({
     endpoints: build => ({
         hibpLookup: build.mutation({
             query: hash => ({

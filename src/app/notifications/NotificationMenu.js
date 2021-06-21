@@ -3,7 +3,7 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import React, {useState} from "react";
 import styled from "styled-components";
 import {useSelector} from "react-redux";
-import {selectNotificationsSorted} from "../notifications/notificationSlice";
+import {selectNotificationsSorted} from "./notificationSlice";
 import {formatDistanceToNowPretty} from "../../shared/util";
 
 const StyledChip = styled(Chip)`

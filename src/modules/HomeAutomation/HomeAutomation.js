@@ -1,12 +1,9 @@
-import {AppBar} from "../../app/app-bar/AppBar";
 import {Button, FormControl, InputLabel, MenuItem, Select, Snackbar} from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
 import React, {useState} from "react";
 import styled from 'styled-components'
-import {COMMANDS, HOME_AUTOMATION_URL} from "./urls";
 import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
-import {NETWORK_METHOD} from "../../app/constants";
-import {useSend} from "../../shared/useSend";
+import {useSendCommandMutation} from "./homeAutomationApi";
 
 const StyledContainer = styled.form`
   display: flex;
@@ -18,27 +15,31 @@ const StyledContainer = styled.form`
   ${BACKGROUND_COLOR};
 `;
 
+export const COMMANDS = {
+    gate_toggle: 'Gate: Toggle',
+    ac_off: 'AC: Off',
+    ac_on_24: 'AC: On @ 24°C',
+    ac_on_25: 'AC: On @ 25°C',
+    ceiling_fan_on: 'Ceiling Fan: On',
+    ceiling_fan_off: 'Ceiling Fan: Off',
+    dyson_fan_on: 'Dyson Fan: On',
+    dyson_fan_off: 'Dyson Fan: Off',
+};
+
 export const HomeAutomation = () => {
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [sendCommand] = useSendCommandMutation()
+
     const [snackbar, setSnackbar] = useState();
     const [disabled, setDisabled] = useState(false);
-    const send = useSend()
-
-    const sendCommand = command => send(HOME_AUTOMATION_URL, {
-        method: NETWORK_METHOD.POST,
-        body: {command}
-    });
 
     const handleSubmit = e => {
         e.preventDefault();
         setDisabled(true);
         setTimeout(() => setDisabled(false), 2000);
-        sendCommand(e.target.command.value).then(() => setSnackbar(true));
+        sendCommand(e.target.command.value).unwrap().then(() => setSnackbar(true));
     };
 
-    return <AppBar
-        drawerOpen={drawerOpen}
-        setDrawerOpen={setDrawerOpen}>
+    return <>
         <Snackbar
             anchorOrigin={{vertical: 'top', horizontal: 'center'}}
             open={snackbar}
@@ -66,9 +67,9 @@ export const HomeAutomation = () => {
                 disabled={disabled}
                 variant={'contained'}
                 color={'primary'}
-                type={'submit'}
-            >Send command
+                type={'submit'}>
+                Send command
             </Button>
         </StyledContainer>
-    </AppBar>
+    </>
 };
