@@ -11,7 +11,8 @@ const StyledDialog = styled(Dialog)`
   // Blur effect only if supported
   @supports (backdrop-filter: blur(5px)) {
     .MuiDialog-container {
-      backdrop-filter: blur(5px);
+      // backdrop-filter: blur(5px);
+    
     }
 
     .MuiDialog-paper {

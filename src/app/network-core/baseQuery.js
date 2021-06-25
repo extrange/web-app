@@ -22,9 +22,11 @@ const joinUrl = (base, url) => {
     return base.replace(/\/$/, '') + '/' + url.replace(/^\//)
 }
 
-/*Custom query which wraps fetch errors in NetworkError format, instead of throwing.*/
+/*Custom query which wraps fetch errors in NetworkError format.
+* Will consider 4xx/5xx statuses to be errors, regardless of login status.*/
 export const baseQuery = ({
                               baseUrl,
+                              defaultHeaders = {},
                               prepareHeaders = (x) => x,
                               fetchFn = fetch,
                               ...baseFetchOptions
@@ -37,22 +39,19 @@ export const baseQuery = ({
             body = undefined,
             params = undefined,
             validateStatus = defaultValidateStatus,
-            ...rest
         } = typeof arg == 'string' ? {url: arg} : arg
         let config = {
             ...baseFetchOptions,
             method,
             signal,
             body,
-            ...rest,
         }
 
         config.headers = await prepareHeaders(
-            new Headers(stripUndefined(headers)),
+            new Headers(stripUndefined({...defaultHeaders, ...headers})),
             {getState}
         )
 
-        config.headers.set('content-type', 'application/json')
         config.body = JSON.stringify(body)
 
         if (params) {

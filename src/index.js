@@ -19,7 +19,7 @@ import {store} from './app/store'
 import {NetworkError} from "./app/network-error/NetworkError";
 
 /*Decide whether to run mock service worker for debugging*/
-const USE_MOCK_SERVICE_WORKER = false;
+const USE_MOCK_SERVICE_WORKER = true;
 if (process.env.NODE_ENV === 'development' && USE_MOCK_SERVICE_WORKER) {
     const {worker} = require('./test/mocks/browser');
     worker.start()

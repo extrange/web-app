@@ -11,7 +11,8 @@ export const baseApi = createApi({
     reducerPath: 'api',
     baseQuery: baseQuery({
         baseUrl: API_URL,
-        credentials: "include"
+        credentials: "include",
+        defaultHeaders: {'content-type': 'application/json'}
     }),
-    endpoints: () => ({})
+    endpoints: () => ({}),
 })

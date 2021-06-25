@@ -9,13 +9,14 @@ import {Testing} from "../../modules/Testing/Testing";
 import {PasswordTools} from "../../modules/PasswordTools/PasswordTools";
 import {HomeAutomation} from "../../modules/HomeAutomation/HomeAutomation";
 import {OptionHedgeCalculator} from "../../modules/OptionHedgeCalculator/OptionHedgeCalculator";
+import {Lists} from "../../modules/Lists/Lists";
 
 export const MODULES = {
-    // LISTS: {
-    //     menuName: 'Lists',
-    //     onlySuperUser: false,
-    //     element: Lists
-    // },
+    LISTS: {
+        menuName: 'Lists',
+        onlySuperUser: false,
+        element: Lists
+    },
     // LITERATURE: {
     //     menuName: 'Literature',
     //     onlySuperUser: false,

@@ -10,7 +10,6 @@ const optionHedgeCalculatorApi = baseApi.injectEndpoints({
             queryFn: (arg, api) => baseQuery({
                 baseUrl: ENDPOINT,
             })(arg, api),
-            transformResponse: resp => resp.c
         })
     })
 })

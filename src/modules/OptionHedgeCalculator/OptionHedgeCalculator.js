@@ -93,7 +93,7 @@ export const OptionHedgeCalculator = () => {
         }
     });
 
-    useEffect(() => void data && setValue(FIELDS.spyPrice, data), [data, setValue])
+    useEffect(() => void (data && setValue(FIELDS.spyPrice, data.c, {shouldValidate: true})), [data, setValue, fulfilledTimeStamp])
 
 
     return <Container>

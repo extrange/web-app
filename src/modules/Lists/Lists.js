@@ -1,86 +1,71 @@
-import {useEffect, useState} from "react";
-import {AppBar} from "../../app/app-bar/AppBar";
-import {Tasklists} from "./tasklists";
-import {Tasks} from "./tasks";
-import {getTasksUrl, getTaskUrl, TASKLISTS_URL} from "./urls";
-import {CircularProgress, IconButton, Typography} from "@material-ui/core";
+import {useEffect} from "react";
+import {ListItems} from "./ListItems";
+import {CircularProgress, IconButton, List, Typography} from "@material-ui/core";
 import SyncIcon from '@material-ui/icons/Sync';
-import {useAsyncError} from "../../shared/useAsyncError";
-import {crudMethods, send} from "../../app/appSlice";
-import {useSend} from "../../shared/useSend";
+import {useDeleteItemMutation, useGetItemsQuery, useGetListsQuery} from "./listApi";
+import {CreateTasklist} from "./createTasklist";
+import {Tasklist} from "./tasklist";
+import {useDispatch, useSelector} from "react-redux";
+import {selectCurrentList, setCurrentList} from "./listsSlice";
+import {Loading} from "../../shared/components/loading";
+import { useState } from "react";
 
-const LIST_CURRENT_LIST = 'LIST_CURRENT_LIST';
 
-//todo move into urls as static methods
-const get = crudMethods(getTasksUrl, getTaskUrl)[0];
+export const Lists = ({setDrawerContent, setTitleContent}) => {
 
-export const Lists = () => {
+    const dispatch = useDispatch()
 
     // There is a chance the listId stored is invalid - useEffect below checks for this
-    const [currentListId, setCurrentListId] = useState(null);
-    const [tasklists, setTasklists] = useState(null);
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [items, setItems] = useState([]);
-    const setError = useAsyncError();
-    const send = useSend()
+    const currentList = useSelector(selectCurrentList)
 
-    const setAndSaveCurrentList = listId => {
-        setCurrentListId(listId);
-        localStorage.setItem(LIST_CURRENT_LIST, listId);
-    };
+    const {data: lists, isFetching: isFetchingLists} = useGetListsQuery()
+    const {isFetching: isFetchingItems, refetch: refetchItems} = useGetItemsQuery(currentList?.id, {skip: !currentList})
 
-    const listTasklists = () => send(TASKLISTS_URL)
-        .then(json => setTasklists(json));
+    const [loading, setLoading] = useState(false)
+    const allLoading = isFetchingLists || isFetchingItems || loading
 
-    //todo use Abort controller to cancel requests
-    const listItems = list => {
-        setLoading(true);
-        get(list).then(result => {
-            setLoading(false);
-            setItems(result);
-        }).catch(e => setError(e));
-    };
+    /*Show Lists in app-bar drawer*/
 
-    useEffect(() => void listTasklists(), []);
+    useEffect(() => void setDrawerContent(<List disablePadding dense>
+            {isFetchingLists ?
+                'Loading...' :
+                [
+                    <CreateTasklist
+                        key={0}
+                        promptCreateTasklist={() => {
+                            let title = prompt('Enter title:');
+                            if (title) {
+                                // createTasklist(title).then(() => setDrawerOpen(false));
+                            }
+                        }}
+                    />,
+                    lists?.map(e =>
+                        (<Tasklist
+                            key={e.id}
+                            id={e.id}
+                            value={e.title}
+                            onClick={() => dispatch(setCurrentList(e))}
+                            // handleDelete={() => deleteTasklist(e.id)}
+                        />)
+                    )
+                ]}
+        </List>),
+        [dispatch, isFetchingLists, lists, setDrawerContent])
 
-    // Only set currentListId to saved id if valid
-    useEffect(() => {
-        let savedListId = localStorage.getItem(LIST_CURRENT_LIST);
-        if (tasklists && tasklists.map(e => e.id).includes(savedListId)) {
-            setCurrentListId(savedListId)
-        }
-    }, [tasklists]);
+    /*Show app-bar loading and title*/
+    useEffect(() => void setTitleContent(<>
+        <Typography variant={"h6"} noWrap>{currentList?.title}</Typography>
+        {allLoading ?
+            <CircularProgress size={20} style={{margin: '12px'}}/> :
+            (currentList && <IconButton onClick={refetchItems}><SyncIcon/></IconButton>)}
+    </>), [currentList, allLoading, refetchItems, setTitleContent])
+
+    if (!currentList) return <Loading
+        fullscreen={false}
+        showSpinner={false}
+        message={'Select a list'}/>
 
 
-    const getTasklistTitle = listId => {
-        if (listId && tasklists)
-            return tasklists.find(e => e.id === listId)?.title;
-    };
-
-    const title = <>
-        <Typography variant={"h6"} noWrap>{getTasklistTitle(currentListId)}</Typography>
-        {loading
-            ? <CircularProgress size={20} style={{margin: '12px'}}/>
-            : <IconButton onClick={() => currentListId ? listItems(currentListId) : 0}><SyncIcon/></IconButton>}
-    </>;
-
-    return <AppBar
-        drawerOpen={drawerOpen}
-        setDrawerOpen={setDrawerOpen}
-        titleContent={title}
-        drawerContent={<Tasklists
-            currentListId={currentListId}
-            setAndSaveCurrentList={setAndSaveCurrentList}
-            tasklists={tasklists}
-            listTasklists={listTasklists}
-            setDrawerOpen={setDrawerOpen}/>}>
-        <Tasks
-            currentList={currentListId}
-            setLoading={setLoading}
-            items={items}
-            setItems={setItems}
-            listItems={listItems}
-        />
-    </AppBar>
-};
+    return <ListItems setLoading={setLoading}/>
+}
+;
