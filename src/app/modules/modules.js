@@ -1,10 +1,7 @@
 // /*Add new modules here*/
-// import {Lists} from "../modules/Lists/Lists";
 // import {Literature} from "../modules/Literature/Literature";
 // import {Account} from "../modules/Account/Account";
-// import {HomeAutomation} from "../modules/HomeAutomation/HomeAutomation";
-// import {DVR} from "../modules/Dvr/DVR";
-// import {OptionHedgeCalculator} from "../modules/OptionHedgeCalculator/OptionHedgeCalculator";
+import { Dvr } from "../../modules/Dvr/Dvr"; 
 import {Testing} from "../../modules/Testing/Testing";
 import {PasswordTools} from "../../modules/PasswordTools/PasswordTools";
 import {HomeAutomation} from "../../modules/HomeAutomation/HomeAutomation";
@@ -37,11 +34,11 @@ export const MODULES = {
         onlySuperUser: true,
         element: HomeAutomation
     },
-    // DVR: {
-    //     menuName: 'DVR',
-    //     onlySuperUser: true,
-    //     element: DVR
-    // },
+    DVR: {
+        menuName: 'Dvr',
+        onlySuperUser: true,
+        element: Dvr
+    },
     OPTION_HEDGE_CALCULATOR: {
         menuName: 'Option Hedge Calculator',
         onlySuperUser: false,
