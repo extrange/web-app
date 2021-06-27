@@ -1,15 +1,24 @@
-import {IconButton, ListItemText} from "@material-ui/core";
+import { IconButton, ListItemText } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
-import {StyledListItem, StyledListItemSecondaryAction} from "../../shared/components/styledListItem";
-import {useDeleteItemMutation} from "./listApi";
-import {useSelector} from "react-redux";
-import {selectCurrentList} from "./listsSlice";
+import React from 'react';
+import { useSelector } from "react-redux";
+import { ItemSkeleton, StyledListItem, StyledListItemSecondaryAction } from "../../shared/components/styledListItem";
+import { useDeleteItemMutation } from "./listApi";
+import { selectCurrentList } from "./listsSlice";
 
-
-export const Item = ({setEditingItem, item}) => {
-    const {id, title, notes} = item
+/**
+ * Will show a skeleton if item.isSkeleton is true
+ */
+export const Item = ({ setEditingItem, item }) => {
+    const { id, title, notes, isSkeleton } = item
     const [deleteItem] = useDeleteItemMutation()
     const currentListId = useSelector(selectCurrentList)?.id
+
+    if (isSkeleton) {
+        return <StyledListItem>
+            <ItemSkeleton />
+        </StyledListItem>
+    }
 
     return <StyledListItem
         button
@@ -18,15 +27,15 @@ export const Item = ({setEditingItem, item}) => {
         <ListItemText
             primary={title}
             secondary={notes}
-            secondaryTypographyProps={{noWrap: true}}/>
+            secondaryTypographyProps={{ noWrap: true }} />
         <StyledListItemSecondaryAction>
             <IconButton
                 edge={'end'}
                 onClick={e => {
                     e.stopPropagation();
-                    deleteItem({list: currentListId, id})
+                    deleteItem({ list: currentListId, id })
                 }}>
-                <DeleteIcon/>
+                <DeleteIcon />
             </IconButton>
         </StyledListItemSecondaryAction>
 

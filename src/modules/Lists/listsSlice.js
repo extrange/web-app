@@ -1,13 +1,13 @@
 import {createSlice} from "@reduxjs/toolkit";
 
-const name = 'lists'
+export const listsSliceName = 'lists'
 
 const initialState = {
     currentList: null
 }
 
 export const listsSlice = createSlice({
-    name,
+    name: listsSliceName,
     initialState,
     reducers: {
         setCurrentList: (state, {payload}) => void (state.currentList = payload)
@@ -18,4 +18,4 @@ export const {
     setCurrentList
 } = listsSlice.actions
 
-export const selectCurrentList = state => state[name].currentList
+export const selectCurrentList = state => state[listsSliceName].currentList

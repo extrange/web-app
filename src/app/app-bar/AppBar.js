@@ -1,14 +1,15 @@
-import {AppBar as MuiAppBar, IconButton, Slide, Toolbar, Typography, useScrollTrigger,} from "@material-ui/core";
+import { AppBar as MuiAppBar, IconButton, Slide, Toolbar, Typography, useScrollTrigger } from "@material-ui/core";
+import { styled as muiStyled } from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
-import {styled as muiStyled} from "@material-ui/core/styles"
-import styled from 'styled-components'
-import {NotificationMenu} from "../notifications/NotificationMenu";
-import {useSelector} from "react-redux";
-import {selectCurrentModule} from "../appSlice";
-import React, {useLayoutEffect, useState} from "react";
-import {ModuleSelect} from "../modules/ModuleSelect";
-import {MODULES} from "../modules/modules";
-import {AppBarDrawer} from "./AppBarDrawer";
+import React, { useLayoutEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import styled from 'styled-components';
+import { selectCurrentModule } from "../appSlice";
+import { MODULES } from "../modules/modules";
+import { ModuleSelect } from "../modules/ModuleSelect";
+import { NotificationMenu } from "../notifications/NotificationMenu";
+import { AppBarDrawer } from "./AppBarDrawer";
+import { AppBarNetworkLoading } from "./AppBarNetworkLoading";
 
 export const drawerWidth = 300;
 
@@ -17,7 +18,7 @@ const FlexContainer = styled.div`
   height: 100vh;
 `;
 
-const TransparentAppBar = muiStyled(MuiAppBar)(({theme}) => ({
+const TransparentAppBar = muiStyled(MuiAppBar)(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: drawerWidth,
@@ -31,7 +32,7 @@ const TransparentAppBar = muiStyled(MuiAppBar)(({theme}) => ({
 
 }));
 
-const DrawerContainer = muiStyled('div')(({theme}) => ({
+const DrawerContainer = muiStyled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
         width: drawerWidth,
         flexShrink: 0,
@@ -49,20 +50,21 @@ const ContentDiv = styled.div`
 `;
 
 
-const StyledIconButton = muiStyled(IconButton)(({theme}) => ({
+const StyledIconButton = muiStyled(IconButton)(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
         display: 'none',
     }
 }));
 
 
-/*To prevent AppBar from automatically closing on ListItem click, use
-* e.stopPropagation().*/
+/*A globally shared app bar.
+To prevent AppBar from automatically closing on ListItem click, use 
+e.stopPropagation().*/
 export const AppBar = () => {
 
-    const {id} = useSelector(selectCurrentModule)
+    const { id } = useSelector(selectCurrentModule)
 
-    const trigger = useScrollTrigger({threshold: 50});
+    const trigger = useScrollTrigger({ threshold: 50 });
 
     /*Hooks are passed to modules*/
     const [drawerOpen, setDrawerOpen] = useState(false)
@@ -70,7 +72,7 @@ export const AppBar = () => {
     const [sidebarName, setSidebarName] = useState('')
     const [titleContent, setTitleContent] = useState(null)
 
-    const appBarProps = {setDrawerContent, setTitleContent, setSidebarName, setDrawerOpen}
+    const appBarProps = { setDrawerContent, setTitleContent, setSidebarName, setDrawerOpen }
 
     /*useLayoutEffect is critical here, to ensure that this runs BEFORE any
     * useEffect(s) in the children that might call setTitleContent etc.*/
@@ -96,11 +98,12 @@ export const AppBar = () => {
                         color={"inherit"}
                         edge={'start'}
                         onClick={() => setDrawerOpen(true)}>
-                        <MenuIcon/>
+                        <MenuIcon />
                     </StyledIconButton>
                     {titleContent}
-                    <div style={{flex: 1}}/>
-                    <NotificationMenu/>
+                    <div style={{ flex: 1 }} />
+                    <AppBarNetworkLoading/>
+                    <NotificationMenu />
                 </Toolbar>
             </TransparentAppBar>
         </Slide>
@@ -117,11 +120,11 @@ export const AppBar = () => {
 
 
         <ContentContainer>
-            <Toolbar variant={"dense"}/>
+            <Toolbar variant={"dense"} />
             <ContentDiv>
                 {id ?
                     React.createElement(MODULES[id].element, appBarProps) :
-                    <ModuleSelect {...appBarProps}/>}
+                    <ModuleSelect {...appBarProps} />}
             </ContentDiv>
         </ContentContainer>
 

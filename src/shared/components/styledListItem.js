@@ -1,7 +1,8 @@
+import { ListItem, ListItemSecondaryAction, ListItemText } from "@material-ui/core";
 import styled from "styled-components";
-import {ListItem, ListItemSecondaryAction} from "@material-ui/core";
-import {BACKGROUND_COLOR} from "./backgroundScreen";
-import {theme} from "../../app/theme";
+import { theme } from "../../app/theme";
+import { BACKGROUND_COLOR } from "./backgroundScreen";
+import { Skeleton } from "@material-ui/lab";
 
 export const StyledListItem = styled(ListItem)`
   ::before {
@@ -11,11 +12,11 @@ export const StyledListItem = styled(ListItem)`
     height: 100%;
     position: absolute;
     z-index: -1;
-    ${({$hideBackground}) => $hideBackground ? '' : BACKGROUND_COLOR};
+    ${({ $hideBackground }) => $hideBackground ? '' : BACKGROUND_COLOR};
   }
 
   ${theme.breakpoints.up('md')} {
-    ${({$reserveSpace}) => $reserveSpace ? 'padding-right: 48px' : 'padding-right: 16px'};
+    ${({ $reserveSpace }) => $reserveSpace ? 'padding-right: 48px' : 'padding-right: 16px'};
   }
   
   .MuiListItem-container:hover & {
@@ -34,3 +35,10 @@ export const StyledListItemSecondaryAction = styled(ListItemSecondaryAction)`
     display: block;
   }
 `;
+
+export const ItemSkeleton = () => <ListItemText
+    primary={<Skeleton animation={'wave'} width={'min(80%, 300px)'} />}
+    secondary={<Skeleton animation={'wave'} width={'min(60%, 240px)'} />} />
+
+export const ListSkeleton = () => <ListItemText
+primary={<Skeleton animation={'wave'} width={'min(80%, 300px)'} />}/>

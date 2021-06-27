@@ -1,17 +1,17 @@
 import styled from "styled-components";
-import {OverlayScrollbarsComponent} from "overlayscrollbars-react";
-import {Dialog} from "@material-ui/core";
-import {OverlayScrollbarOptions, theme} from "../../app/theme";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import { Dialog } from "@material-ui/core";
+import { OverlayScrollbarOptions, theme } from "../../app/theme";
 
 const StyledDialog = styled(Dialog)`
   .MuiDialog-paper {
-    width: min(100vw - 32px, ${({$maxWidth}) => $maxWidth}px);
+    width: min(100vw - 32px, ${({ $maxWidth }) => $maxWidth}px);
   }
 
   // Blur effect only if supported
   @supports (backdrop-filter: blur(5px)) {
     .MuiDialog-container {
-      // backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
     
     }
 
@@ -54,16 +54,16 @@ const StyledOverlayScrollbarsComponent = styled(OverlayScrollbarsComponent)`
 `;
 
 /* Dialog with overlayscrollbars (does not scroll footer component)*/
-export const DialogBlurResponsive = ({children, footer, maxWidth=800, ...props}) =>
-    <StyledDialog
-        maxWidth={false}
-        $maxWidth={maxWidth}
-        disableScrollLock
-        {...props}>
-        <StyledOverlayScrollbarsComponent
-            options={OverlayScrollbarOptions}
-            className={'os-host-flexbox'}>
-            {children}
-        </StyledOverlayScrollbarsComponent>
-        {footer}
-    </StyledDialog>;
+export const DialogBlurResponsive = ({ children, footer, maxWidth = 800, ...props }) =>
+  <StyledDialog
+    maxWidth={false}
+    $maxWidth={maxWidth}
+    disableScrollLock
+    {...props}>
+    <StyledOverlayScrollbarsComponent
+      options={OverlayScrollbarOptions}
+      className={'os-host-flexbox'}>
+      {children}
+    </StyledOverlayScrollbarsComponent>
+    {footer}
+  </StyledDialog>;

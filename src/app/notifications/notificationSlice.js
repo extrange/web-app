@@ -1,7 +1,7 @@
 import {createSelector, createSlice, nanoid} from "@reduxjs/toolkit";
 import {isPlainObject} from 'lodash'
 
-const name = 'notifications'
+export const notificationsSliceName = 'notifications'
 
 const shape = [
     'title',
@@ -41,7 +41,7 @@ const validateShape = (arg) => {
 }
 
 export const notificationSlice = createSlice({
-    name,
+    name: notificationsSliceName,
     initialState: [],
     reducers: {
         addNotifications: {
@@ -64,6 +64,6 @@ export const {
 } = notificationSlice.actions
 
 export const selectNotificationsSorted = createSelector(
-    state => state[name],
+    state => state[notificationsSliceName],
     items => items.slice().sort((a, b) => b.timestamp - a.timestamp)
 )
