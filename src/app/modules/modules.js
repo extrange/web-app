@@ -1,6 +1,6 @@
 // /*Add new modules here*/
 // import {Literature} from "../modules/Literature/Literature";
-// import {Account} from "../modules/Account/Account";
+import { Account } from "../../modules/Account/Account";
 import { Dvr } from "../../modules/Dvr/Dvr"; 
 import {Testing} from "../../modules/Testing/Testing";
 import {PasswordTools} from "../../modules/PasswordTools/PasswordTools";
@@ -19,11 +19,11 @@ export const MODULES = {
     //     onlySuperUser: false,
     //     element: Literature
     // },
-    // ACCOUNT: {
-    //     menuName: 'Account',
-    //     onlySuperUser: false,
-    //     element: Account
-    // },
+    ACCOUNT: {
+        menuName: 'Account',
+        onlySuperUser: false,
+        element: Account
+    },
     PASSWORDS: {
         menuName: 'Password Tools',
         onlySuperUser: false,

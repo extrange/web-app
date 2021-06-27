@@ -1,55 +1,52 @@
-import {AppBar} from "../../app/app-bar/AppBar";
-import {useState} from "react";
-import {List, ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
-import {BackgroundScreen} from "../../shared/components/backgroundScreen";
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import { List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import PublicIcon from '@material-ui/icons/Public';
-import {TwoFactor} from "./TwoFactor";
-import {Browsers} from "./Browsers";
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import { useEffect, useState } from "react";
+import { BackgroundScreen } from "../../shared/components/backgroundScreen";
+import { Browsers } from "./Browsers";
+import { TwoFactor } from "./TwoFactor";
 
 const SUBMODULES = {
     BROWSERS: {
         name: 'Browsers',
         appDrawer: <>
             <ListItemIcon>
-                <PublicIcon/>
+                <PublicIcon />
             </ListItemIcon>
-            <ListItemText primary={'Browsers'}/>
+            <ListItemText primary={'Browsers'} />
         </>,
-        jsx: <Browsers/>
+        jsx: <Browsers />
     },
     TWOFACTOR: {
         name: '2FA Settings',
         appDrawer: <>
             <ListItemIcon>
-                <VpnKeyIcon/>
+                <VpnKeyIcon />
             </ListItemIcon>
-            <ListItemText primary={'2FA Settings'}/>
+            <ListItemText primary={'2FA Settings'} />
         </>,
-        jsx: <TwoFactor/>
+        jsx: <TwoFactor />
     }
 };
 
-export const Account = () => {
-    const [drawerOpen, setDrawerOpen] = useState(false);
+export const Account = ({ setTitleContent, setDrawerContent }) => {
     const [submodule, setSubmodule] = useState(Object.keys(SUBMODULES)[0]);
 
-    const drawerContent = <List disablePadding>
-        {Object.entries(SUBMODULES).map(([k, v]) =>
-            <ListItem key={k}
-                      button
-                      onClick={() => setSubmodule(k)}
-            >{v.appDrawer}</ListItem>)}
-    </List>;
+    useEffect(() => {
+        setDrawerContent(<List disablePadding>
+            {Object.entries(SUBMODULES).map(([k, v]) =>
+                <ListItem key={k}
+                    button
+                    onClick={() => setSubmodule(k)}
+                >{v.appDrawer}</ListItem>)}
+        </List>)
+    }, [setDrawerContent])
 
-    return <AppBar
-        drawerContent={drawerContent}
-        drawerOpen={drawerOpen}
-        setDrawerOpen={setDrawerOpen}
-        titleContent={<Typography variant={'h6'}>{SUBMODULES[submodule].name}</Typography>}>
-        <BackgroundScreen>
-            {SUBMODULES[submodule].jsx}
-        </BackgroundScreen>
+    useEffect(() => {
+        setTitleContent(<Typography variant={'h6'}>{SUBMODULES[submodule].name}</Typography>)
+    }, [setTitleContent, submodule])
 
-    </AppBar>
+    return <BackgroundScreen>
+        {SUBMODULES[submodule].jsx}
+    </BackgroundScreen>
 };
