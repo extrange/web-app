@@ -1,13 +1,14 @@
-import {forwardRef, useEffect, useRef, useState} from "react";
-import {Item} from "./item";
-import {Virtuoso} from 'react-virtuoso/dist'
-import {Fab, List} from "@material-ui/core";
-import styled from 'styled-components'
-import {useSelector} from "react-redux";
-import {selectCurrentList} from "./listsSlice";
-import {useGetItemsQuery} from "./listApi";
+import { Fab, List } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import {EditItem} from "./EditItem";
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import { useSelector } from "react-redux";
+import { Virtuoso } from 'react-virtuoso/dist';
+import styled from 'styled-components';
+import { ItemSkeleton, StyledListItem } from "../../shared/components/styledListItem";
+import { EditItem } from "./EditItem";
+import { Item } from "./Item";
+import { useGetItemsQuery } from "./listApi";
+import { selectCurrentList } from "./listsSlice";
 
 const StyledFab = styled(Fab)`
   position: fixed;
@@ -21,30 +22,36 @@ const StyledDiv = styled.div`
   height: 100%;
 `;
 
-export const ListItems = ({setLoading}) => {
+export const ListItems = () => {
 
     const currentList = useSelector(selectCurrentList)
     const [editingItem, setEditingItem] = useState(null);
     const virtuosoRef = useRef();
 
-    const {data: items} = useGetItemsQuery(currentList?.id, {skip: !currentList})
+    const { data: items, isFetching } = useGetItemsQuery(currentList?.id, { skip: !currentList })
 
     useEffect(() => {
         if (!currentList) return;
 
         // Prevent virtuoso from remembering the scroll position of the previously viewed list
         if (virtuosoRef.current) {
-            virtuosoRef.current.scrollToIndex({align: 'top', behavior: 'smooth'})
+            virtuosoRef.current.scrollToIndex({ align: 'top', behavior: 'smooth' })
         }
         // eslint-disable-next-line
     }, [currentList]);
 
-    if (!items) return null
+    if (isFetching) return <List
+        disablePadding
+        dense>
+        {[...Array(3)].map(() => <StyledListItem>
+            <ItemSkeleton />
+        </StyledListItem>)}
+    </List>
 
     const list = items.map(e => <Item
         setEditingItem={setEditingItem}
         key={e.id}
-        item={e}/>);
+        item={e} />);
 
     return <>
         <StyledFab
@@ -54,13 +61,12 @@ export const ListItems = ({setLoading}) => {
                 title: '',
                 notes: '',
             })}>
-            <AddIcon/>
+            <AddIcon />
         </StyledFab>
 
         {editingItem && <EditItem
             editingItem={editingItem}
-            setLoading={setLoading}
-            closeEdit={() => void setEditingItem(null)}/>}
+            closeEdit={() => void setEditingItem(null)} />}
 
         <StyledDiv>
             <Virtuoso
@@ -68,7 +74,7 @@ export const ListItems = ({setLoading}) => {
                 totalCount={items.length}
                 itemContent={index => list[index]}
                 components={{
-                    List: forwardRef(({children, ...props}, listRef) =>
+                    List: forwardRef(({ children, ...props }, listRef) =>
                         <List
                             {...props}
                             disablePadding
@@ -76,7 +82,7 @@ export const ListItems = ({setLoading}) => {
                             ref={listRef}>
                             {children}
                         </List>)
-                }}/>
+                }} />
         </StyledDiv>
     </>
 };

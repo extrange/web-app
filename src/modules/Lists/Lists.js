@@ -1,71 +1,77 @@
-import {useEffect} from "react";
-import {ListItems} from "./ListItems";
-import {CircularProgress, IconButton, List, Typography} from "@material-ui/core";
+import { Button, CircularProgress, IconButton, List as MuiList, Typography } from "@material-ui/core";
 import SyncIcon from '@material-ui/icons/Sync';
-import {useDeleteItemMutation, useGetItemsQuery, useGetListsQuery} from "./listApi";
-import {CreateTasklist} from "./createTasklist";
-import {Tasklist} from "./tasklist";
-import {useDispatch, useSelector} from "react-redux";
-import {selectCurrentList, setCurrentList} from "./listsSlice";
-import {Loading} from "../../shared/components/loading";
-import { useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import styled from "styled-components";
+import { Loading } from "../../shared/components/loading";
+import { List } from "./List";
+import { useCreateListMutation, useGetItemsQuery, useGetListsQuery } from "./listApi";
+import { ListItems } from "./ListItems";
+import { selectCurrentList, setCurrentList } from "./listsSlice";
 
+const StyledButton = styled(Button)({
+    margin: '10px',
+});
 
-export const Lists = ({setDrawerContent, setTitleContent}) => {
+export const Lists = ({ setDrawerContent, setTitleContent }) => {
 
     const dispatch = useDispatch()
 
     // There is a chance the listId stored is invalid - useEffect below checks for this
     const currentList = useSelector(selectCurrentList)
 
-    const {data: lists, isFetching: isFetchingLists} = useGetListsQuery()
-    const {isFetching: isFetchingItems, refetch: refetchItems} = useGetItemsQuery(currentList?.id, {skip: !currentList})
-
-    const [loading, setLoading] = useState(false)
-    const allLoading = isFetchingLists || isFetchingItems || loading
+    const { data: lists, isFetching: isLoadingLists, refetch: refetchLists } = useGetListsQuery()
+    const { isFetching: isFetchingGetItems, refetch: refetchItems } = useGetItemsQuery(currentList?.id, { skip: !currentList })
+    const [createList] = useCreateListMutation()
 
     /*Show Lists in app-bar drawer*/
 
-    useEffect(() => void setDrawerContent(<List disablePadding dense>
-            {isFetchingLists ?
-                'Loading...' :
-                [
-                    <CreateTasklist
-                        key={0}
-                        promptCreateTasklist={() => {
-                            let title = prompt('Enter title:');
-                            if (title) {
-                                // createTasklist(title).then(() => setDrawerOpen(false));
-                            }
-                        }}
-                    />,
-                    lists?.map(e =>
-                        (<Tasklist
-                            key={e.id}
-                            id={e.id}
-                            value={e.title}
-                            onClick={() => dispatch(setCurrentList(e))}
-                            // handleDelete={() => deleteTasklist(e.id)}
-                        />)
-                    )
-                ]}
-        </List>),
-        [dispatch, isFetchingLists, lists, setDrawerContent])
+    useEffect(() => void setDrawerContent(<MuiList disablePadding dense>
+        {isLoadingLists ?
+            <div style={{ display: 'flex', 'justifyContent': 'center' }}>
+                <CircularProgress size={20} />
+            </div> :
+            [
+                <StyledButton
+                    variant={'contained'}
+                    color={'secondary'}
+                    onClick={() => {
+                        let title = prompt('Enter title:');
+                        if (title) {
+                            createList({ title })
+                        }
+                    }}>
+                    Create new Tasklist
+                </StyledButton>,
 
-    /*Show app-bar loading and title*/
+                lists?.map(list => <List
+                    key={list.id}
+                    list={list}
+                    onClick={() => dispatch(setCurrentList(list))} />)
+            ]}
+    </MuiList>),
+        [createList, dispatch, isLoadingLists, lists, setDrawerContent])
+
     useEffect(() => void setTitleContent(<>
-        <Typography variant={"h6"} noWrap>{currentList?.title}</Typography>
-        {allLoading ?
-            <CircularProgress size={20} style={{margin: '12px'}}/> :
-            (currentList && <IconButton onClick={refetchItems}><SyncIcon/></IconButton>)}
-    </>), [currentList, allLoading, refetchItems, setTitleContent])
+        <Typography variant={"h6"} noWrap>
+            {currentList?.title}
+        </Typography>
+        <IconButton
+            onClick={() => {
+                refetchLists()
+                refetchItems()
+            }}
+            disabled={isFetchingGetItems}>
+            <SyncIcon />
+        </IconButton>
+    </>), [currentList, isFetchingGetItems, refetchItems, refetchLists, setTitleContent])
 
     if (!currentList) return <Loading
         fullscreen={false}
         showSpinner={false}
-        message={'Select a list'}/>
+        message={'Select a list'} />
 
 
-    return <ListItems setLoading={setLoading}/>
+    return <ListItems />
 }
-;
+    ;

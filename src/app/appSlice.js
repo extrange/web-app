@@ -1,8 +1,8 @@
-import {createSlice, isAllOf, isRejectedWithValue} from "@reduxjs/toolkit";
-import {NETWORK_ERROR, NETWORK_METHOD} from "./constants";
-import {authApi} from "./auth/authApi";
+import { createSlice, isAllOf, isRejectedWithValue } from "@reduxjs/toolkit";
+import { NETWORK_ERROR, NETWORK_METHOD } from "./constants";
+import { authApi } from "./auth/authApi";
 
-const name = 'app'
+export const appSliceName = 'app'
 
 const initialState = {
     /*Current module to display
@@ -20,6 +20,7 @@ const initialState = {
         loggedIn: false,
     },
     networkError: null,
+    pendingNetworkActions: []
 }
 
 export const send = () => {
@@ -45,7 +46,7 @@ export const crudMethods = (url, detailUrl) => {
         typeof url === 'function' ?
             url(...params) :
             url,
-        {method: NETWORK_METHOD.GET});
+        { method: NETWORK_METHOD.GET });
 
     let add = (object, ...params) => send(
         typeof url === 'function' ?
@@ -65,7 +66,7 @@ export const crudMethods = (url, detailUrl) => {
 
     let del = (id, ...params) => send(
         detailUrl(id, ...params),
-        {method: NETWORK_METHOD.DELETE}); //Note - for a DELETE operation, nothing is returned by the server
+        { method: NETWORK_METHOD.DELETE }); //Note - for a DELETE operation, nothing is returned by the server
 
     return [get, add, update, del]
 }
@@ -118,17 +119,25 @@ const setNetworkErrorReducer = (state, action) => {
         [401, 403].includes(status)) {
         return
     }
-    state.networkError = {method, url, text, status, type}
+    state.networkError = { method, url, text, status, type }
 }
 
 export const appSlice = createSlice({
-    name,
+    name: appSliceName,
     initialState,
     reducers: {
         setNetworkError: setNetworkErrorReducer,
         clearNetworkError: state => void (state.networkError = null),
-        setCurrentModule: (state, {payload: {id = null, meta = {}} = {}}) => void (state.module = {id, meta}),
-        setAppBar: (state, {payload: {drawerOpen = false}}) => void (state.appBar.drawerOpen = drawerOpen)
+        setCurrentModule: (state, { payload: { id = null, meta = {} } = {} }) => void (state.module = { id, meta }),
+        setAppBar: (state, { payload: { drawerOpen = false } }) => void (state.appBar.drawerOpen = drawerOpen),
+        addNetworkAction: (state, { payload }) => {
+            if (!state.pendingNetworkActions.includes(payload))
+                state.pendingNetworkActions.push(payload)
+        },
+        removeNetworkAction: (state, { payload }) => {
+            if (state.pendingNetworkActions.includes(payload))
+                state.pendingNetworkActions.splice(state.pendingNetworkActions.indexOf(payload), 1)
+        },
     },
     extraReducers: builder => builder
         .addMatcher(authApi.endpoints.checkLogin.matchFulfilled, handleLoginFulfilled)
@@ -153,8 +162,11 @@ export const {
     clearNetworkError,
     setCurrentModule,
     setAppBar,
+    addNetworkAction,
+    removeNetworkAction
 } = appSlice.actions
 
-export const selectLoginStatus = state => state[name].loginStatus
-export const selectNetworkError = state => state[name].networkError
-export const selectCurrentModule = state => state[name].module
+export const selectLoginStatus = state => state[appSliceName].loginStatus
+export const selectNetworkError = state => state[appSliceName].networkError
+export const selectCurrentModule = state => state[appSliceName].module
+export const selectPendingNetworkActions = state => state[appSliceName].pendingNetworkActions
