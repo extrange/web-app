@@ -5,13 +5,7 @@ import { authApi } from "./auth/authApi";
 export const appSliceName = 'app'
 
 const initialState = {
-    /*Current module to display
-    * Title and other cosmetic effects are managed by components themselves*/
-    module: {
-        id: null,
-        meta: {}
-    },
-
+    module: null,
     loginStatus: {
         user: null,
         expiry: null,
@@ -89,14 +83,13 @@ const handleLoginFulfilled = (state, {
 
 const setNetworkErrorReducer = (state, action) => {
 
-    let payload = action.payload
     let {
         method = 'Method not specified',
         url = 'URL not specified',
         text = '',
         status = null, /*Must be specified if HTTP_ERROR*/
         type
-    } = payload
+    } = action.payload
 
     /*Type not specified:  rejected thunk with value which is NOT a NetworkError object*/
     if (!type) {
@@ -128,7 +121,7 @@ export const appSlice = createSlice({
     reducers: {
         setNetworkError: setNetworkErrorReducer,
         clearNetworkError: state => void (state.networkError = null),
-        setCurrentModule: (state, { payload: { id = null, meta = {} } = {} }) => void (state.module = { id, meta }),
+        setCurrentModule: (state, { payload}) => void (state.module = payload),
         setAppBar: (state, { payload: { drawerOpen = false } }) => void (state.appBar.drawerOpen = drawerOpen),
         addNetworkAction: (state, { payload }) => {
             if (!state.pendingNetworkActions.includes(payload))

@@ -36,12 +36,12 @@ export const ModuleSelect = () => {
 
     const modules = Object.entries(MODULES)
         .filter(([_, {onlySuperUser}]) => isSuperUser || !onlySuperUser)
-        .map(([id, {menuName}]) =>
+        .map(([moduleKey, {menuName}]) =>
             <StyledButton
                 variant={'outlined'}
                 color={'primary'}
-                key={id}
-                onClick={() => dispatch(setCurrentModule({id}))}>
+                key={moduleKey}
+                onClick={() => dispatch(setCurrentModule( moduleKey))}>
                 {menuName}
             </StyledButton>
         )

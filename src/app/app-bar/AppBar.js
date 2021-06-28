@@ -62,7 +62,7 @@ To prevent AppBar from automatically closing on ListItem click, use
 e.stopPropagation().*/
 export const AppBar = () => {
 
-    const { id } = useSelector(selectCurrentModule)
+    const module = useSelector(selectCurrentModule)
 
     const trigger = useScrollTrigger({ threshold: 50 });
 
@@ -77,16 +77,16 @@ export const AppBar = () => {
     /*useLayoutEffect is critical here, to ensure that this runs BEFORE any
     * useEffect(s) in the children that might call setTitleContent etc.*/
     useLayoutEffect(() => {
-        if (!id) {
+        if (!module) {
             setSidebarName('Modules')
             setTitleContent(<Typography variant={"h6"}>Modules</Typography>)
             setDrawerContent(null)
         } else {
-            setTitleContent(<Typography variant={"h6"}>{MODULES[id].menuName}</Typography>)
-            setSidebarName(MODULES[id].menuName)
+            setTitleContent(<Typography variant={"h6"}>{MODULES[module].menuName}</Typography>)
+            setSidebarName(MODULES[module].menuName)
         }
 
-    }, [id, setDrawerContent, setSidebarName, setTitleContent])
+    }, [module, setDrawerContent, setSidebarName, setTitleContent])
 
     return <FlexContainer>
         <Slide direction={'down'} in={!trigger}>
@@ -122,8 +122,8 @@ export const AppBar = () => {
         <ContentContainer>
             <Toolbar variant={"dense"} />
             <ContentDiv>
-                {id ?
-                    React.createElement(MODULES[id].element, appBarProps) :
+                {module ?
+                    React.createElement(MODULES[module].element, appBarProps) :
                     <ModuleSelect {...appBarProps} />}
             </ContentDiv>
         </ContentContainer>
