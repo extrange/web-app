@@ -35,7 +35,7 @@ const TransparentDrawer = styled(Drawer)`
 export const AppBarDrawer = ({drawerOpen, drawerWidth, setDrawerOpen, sidebarName, children}) => {
 
     const dispatch = useDispatch()
-    const {id} = useSelector(selectCurrentModule)
+    const module = useSelector(selectCurrentModule)
 
     const [logout, {isLoading}] = useLogoutMutation()
 
@@ -43,6 +43,8 @@ export const AppBarDrawer = ({drawerOpen, drawerWidth, setDrawerOpen, sidebarNam
     const mobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const closeAppBar = () => setDrawerOpen(false)
+
+    const clearModule = () => dispatch(setCurrentModule(null))
 
     return <TransparentDrawer
         $transparent={!mobile}
@@ -57,7 +59,7 @@ export const AppBarDrawer = ({drawerOpen, drawerWidth, setDrawerOpen, sidebarNam
                 <ListItem>
                     <AppNameDiv>{sidebarName}</AppNameDiv>
                 </ListItem>
-                {id && <ListItem button onClick={() => dispatch(setCurrentModule())}>
+                {module && <ListItem button onClick={clearModule}>
                     <ListItemIcon>
                         <ArrowBackIcon/>
                     </ListItemIcon>

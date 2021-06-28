@@ -41,7 +41,7 @@ export const ModuleSelect = () => {
                 variant={'outlined'}
                 color={'primary'}
                 key={moduleKey}
-                onClick={() => dispatch(setCurrentModule({id: moduleKey}))}>
+                onClick={() => dispatch(setCurrentModule( moduleKey))}>
                 {menuName}
             </StyledButton>
         )

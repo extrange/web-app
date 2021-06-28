@@ -1,5 +1,5 @@
 // /*Add new modules here*/
-// import {Literature} from "../modules/Literature/Literature";
+// import {Literature} from "../../modules/Literature/Literature";
 import { Account } from "../../modules/Account/Account";
 import { Dvr } from "../../modules/Dvr/Dvr"; 
 import {Testing} from "../../modules/Testing/Testing";
