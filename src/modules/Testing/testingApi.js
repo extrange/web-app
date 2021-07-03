@@ -1,5 +1,5 @@
-import {baseApi} from "../../app/network-core/baseApi";
-import {baseQuery} from "../../app/network-core/baseQuery";
+import { baseApi } from "../../app/network-core/baseApi";
+import { baseQueryWithRetry } from "../../app/network-core/baseQuery";
 
 
 export const testingApi = baseApi.injectEndpoints({
@@ -12,15 +12,19 @@ export const testingApi = baseApi.injectEndpoints({
         }),
         throwFetchError: build.mutation({
             queryFn: (arg, api, extraOptions) =>
-                baseQuery({
+                baseQueryWithRetry({
                     baseUrl: 'https://dummy.nicholaslyz.com',
                     credentials: "include"
                 })(arg, api, extraOptions)
+        }),
+        mutationTest: build.mutation({
+            query: () => 'test/mutationTest/'
         })
     })
 })
 
 export const {
     useThrowHttpErrorMutation,
-    useThrowFetchErrorMutation
+    useThrowFetchErrorMutation,
+    useMutationTestMutation,
 } = testingApi

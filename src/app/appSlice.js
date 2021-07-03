@@ -1,5 +1,5 @@
 import { createSlice, isAllOf, isRejectedWithValue } from "@reduxjs/toolkit";
-import { NETWORK_ERROR, NETWORK_METHOD } from "./constants";
+import { NETWORK_ERROR } from "./constants";
 import { authApi } from "./auth/authApi";
 
 export const appSliceName = 'app'
@@ -15,54 +15,6 @@ const initialState = {
     },
     networkError: null,
     pendingNetworkActions: []
-}
-
-export const send = () => {
-}
-
-/**
- * Convenience methods for obtaining get, add, update and delete methods from a URL
- * These must be dispatched with
- *
- * <pre>
- * get: function(...params) => url(...params)
- * add: function(object, ...params) => url(...params)
- * update: function (object, id, ...params) => detailUrl(id, ...params)
- * del: function (id, ...params) => detailUrl(id, ...params)
- * </pre>
- *
- * @param url str or function(...params) => url to obtain object list
- * @param detailUrl function(id, ...params) => url to obtain object details
- * @returns {[function(): Promise<unknown>, function(*=): Promise<unknown>, function(*=): Promise<unknown>, function(*=): Promise<unknown>]}
- */
-export const crudMethods = (url, detailUrl) => {
-    let get = (...params) => send(
-        typeof url === 'function' ?
-            url(...params) :
-            url,
-        { method: NETWORK_METHOD.GET });
-
-    let add = (object, ...params) => send(
-        typeof url === 'function' ?
-            url(...params) :
-            url,
-        {
-            method: NETWORK_METHOD.POST,
-            body: JSON.stringify(object),
-        });
-
-    let update = (object, id, ...params) => send(
-        detailUrl(id, ...params),
-        {
-            method: NETWORK_METHOD.PUT,
-            body: JSON.stringify(object),
-        });
-
-    let del = (id, ...params) => send(
-        detailUrl(id, ...params),
-        { method: NETWORK_METHOD.DELETE }); //Note - for a DELETE operation, nothing is returned by the server
-
-    return [get, add, update, del]
 }
 
 const handleLoginFulfilled = (state, {

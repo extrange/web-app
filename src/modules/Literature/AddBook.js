@@ -1,19 +1,5 @@
-import React, {useCallback, useState} from 'react';
-import * as Url from "./urls";
-import styled from "styled-components";
-import {KeyboardDatePicker} from "@material-ui/pickers/DatePicker";
-import {MuiPickersUtilsProvider} from "@material-ui/pickers/MuiPickersUtilsProvider"
-import DateFns from '@date-io/date-fns'
-import {Controller, useForm} from 'react-hook-form'
-import {yupResolver} from "@hookform/resolvers/yup";
-import {
-    BOOK_FIELDS,
-    DEFAULT_BOOK_VALUES,
-    isBookDataEqual,
-    transformFromServer,
-    transformToServer,
-    YUP_SCHEMA
-} from "./schema";
+import DateFns from '@date-io/date-fns';
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
     Button,
     Checkbox,
@@ -28,15 +14,28 @@ import {
     Snackbar,
     Typography
 } from "@material-ui/core";
-import {isEmpty} from "lodash";
-import {DialogBlurResponsive} from "../../shared/components/dialogBlurResponsive";
-import {Alert} from "@material-ui/lab";
-import {useAsyncError} from "../../shared/useAsyncError";
-import {AutocompleteWithCreate} from "../../shared/components/AutocompleteWithCreate";
-import {TextFieldClearable} from "../../shared/components/textFieldClearable";
-import {TextFieldMultilineEllipsis} from "../../shared/components/textFieldMultilineEllipsis";
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import {mapGenres} from "./utils";
+import { Alert } from "@material-ui/lab";
+import { KeyboardDatePicker } from "@material-ui/pickers/DatePicker";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers/MuiPickersUtilsProvider";
+import { isEmpty } from "lodash";
+import React, { useCallback, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import styled from "styled-components";
+import { AutocompleteWithCreate } from "../../shared/components/AutocompleteWithCreate";
+import { DialogBlurResponsive } from "../../shared/components/DialogBlurResponsive";
+import { TextFieldClearable } from "../../shared/components/textFieldClearable";
+import { TextFieldMultilineEllipsis } from "../../shared/components/textFieldMultilineEllipsis";
+import { useCreateAuthorMutation, useCreateBookMutation, useCreateGenreMutation, useCreateTypeMutation, useGetAuthorsQuery, useGetGenresQuery, useGetTypesQuery, useUpdateBookMutation } from './literatureApi';
+import {
+    BOOK_FIELDS,
+    DEFAULT_BOOK_VALUES,
+    isBookDataEqual,
+    transformFromServer,
+    transformToServer,
+    YUP_SCHEMA
+} from "./schema";
+import { mapGenres } from "./utils";
 
 const FieldContainer = styled.div`
   display: grid;
@@ -62,23 +61,22 @@ const ButtonFlexDiv = styled.div`
 `;
 
 export const AddBook = ({
-                            books,
-                            setBooks,
-                            authors,
-                            setAuthors,
-                            genres,
-                            setGenres,
-                            types,
-                            setTypes,
-                            getBooks,
-                            getAuthors,
-                            getGenres,
-                            getTypes,
+    bookData,
+    onClose,
+    setAddedSnackbar
+}) => {
 
-                            bookData,
-                            onClose,
-                            setAddedSnackbar
-                        }) => {
+    /* Books.js will prevent AddBook.js displaying until these queries have loaded initially,
+    so they're guaranteed to be defined */
+    const { data: authors } = useGetAuthorsQuery()
+    const { data: genres } = useGetGenresQuery()
+    const { data: types } = useGetTypesQuery()
+
+    const [createBook] = useCreateBookMutation()
+    const [updateBook] = useUpdateBookMutation()
+    const [createAuthor] = useCreateAuthorMutation()
+    const [createGenre] = useCreateGenreMutation()
+    const [createType] = useCreateTypeMutation()
 
     const {
         handleSubmit,
@@ -103,8 +101,6 @@ export const AddBook = ({
     const [saveDialog, setSaveDialog] = useState(false);
     const [infoDialog, setInfoDialog] = useState(false);
 
-    const setError = useAsyncError();
-
     const sortedGenres = genres.map(e => mapGenres(e, genres)).sort((a, b) => a.fullName.localeCompare(b.fullName))
 
     const onSubmit = handleSubmit(
@@ -114,7 +110,7 @@ export const AddBook = ({
 
                 /*Editing book, no actual changes made*/
                 (!isEmpty(bookData) && isBookDataEqual(bookData, transformToServer(data)))) {
-                setAddedSnackbar({message: 'No changes were detected'});
+                setAddedSnackbar({ message: 'No changes were detected' });
                 onClose();
                 return
             }
@@ -123,23 +119,21 @@ export const AddBook = ({
 
             if (isEmpty(bookData) || !('id' in bookData)) {
                 /*User is adding book*/
-                Url.addBook(transformedData)
+                createBook(transformedData)
+                    .unwrap()
                     .then(() => {
-                        getBooks();
-                        setAddedSnackbar({message: 'Book added'});
-                        onClose()
+                        setAddedSnackbar({ message: 'Book added' });
                     })
-                    .catch(setError);
+                onClose()
             } else {
                 /* Changes were made in editing book*/
-                Url.updateBook(transformedData, bookData['id'])
+                updateBook({ id: bookData['id'], ...transformedData })
+                    .unwrap()
                     .then(() => {
-                        getBooks();
-                        setAddedSnackbar({message: 'Changes saved'});
-                        onClose()
+                        setAddedSnackbar({ message: 'Changes saved' });
                     })
-                    .catch(setError);
-            }
+                }
+                onClose()
         },
         () => {
             setErrorSnackbar(true)
@@ -155,29 +149,29 @@ export const AddBook = ({
         <IconButton
             tabIndex={-1}
             onClick={() => setInfoDialog(true)}>
-            <InfoOutlinedIcon/>
+            <InfoOutlinedIcon />
         </IconButton>
         <Button onClick={handleDiscard}>Discard</Button>
         <Button onClick={onSubmit} color={'primary'}> Save </Button>
     </ButtonFlexDiv>;
 
-    const StandardField = useCallback(({Component, name, label, getComponentProps = () => ({}), ...props}) =>
+    const StandardField = useCallback(({ Component, name, label, getComponentProps = () => ({}), ...props }) =>
         <Controller
             control={control}
             name={name}
             render={controllerProps => {
-                const {field: {ref, ...field}, fieldState: {error}} = controllerProps
+                const { field: { ref, ...field }, fieldState: { error } } = controllerProps
                 return <Component
                     error={Boolean(error)}
                     label={label}
                     helperText={error?.message}
                     size={'small'}
-                    style={{gridArea: field.name}}
+                    style={{ gridArea: field.name }}
                     variant={'outlined'}
                     {...props}
                     {...field}
-                    {...getComponentProps({...controllerProps, name, label})}/>
-            }}/>, [control])
+                    {...getComponentProps({ ...controllerProps, name, label })} />
+            }} />, [control])
 
     return <>
         <Dialog
@@ -186,7 +180,7 @@ export const AddBook = ({
             <DialogTitle>Discard changes?</DialogTitle>
             <DialogActions>
                 <Button onClick={() => {
-                    setAddedSnackbar({message: 'Changes discarded'});
+                    setAddedSnackbar({ message: 'Changes discarded' });
                     onClose()
                 }}> Discard </Button>
                 <Button onClick={() => setSaveDialog(false)} color={'primary'}>Cancel</Button>
@@ -250,7 +244,7 @@ export const AddBook = ({
                 <StandardField
                     name={BOOK_FIELDS.title}
                     label={'Title'}
-                    Component={TextFieldMultilineEllipsis}/>
+                    Component={TextFieldMultilineEllipsis} />
 
                 <StandardField
                     name={BOOK_FIELDS.authors}
@@ -259,9 +253,9 @@ export const AddBook = ({
 
                     autoComplete
                     autoHighlight
-                    createOption={e => Url.addAuthor({name: e})}
+                    createOption={name => createAuthor({ name }).unwrap()}
                     filterSelectedOptions
-                    getComponentProps={({field: {name}, fieldState: {error}, label}) => ({
+                    getComponentProps={({ field: { name }, fieldState: { error }, label }) => ({
                         getValue: () => getValues(name),
                         renderProps: {
                             label,
@@ -271,7 +265,6 @@ export const AddBook = ({
                         }
                     })}
                     getOptionLabel={e => e.name}
-                    getOptions={getAuthors}
                     getOptionSelected={(option, value) => option.id === value.id}
                     multiple={true}
                     options={authors}
@@ -284,9 +277,9 @@ export const AddBook = ({
 
                     autoComplete
                     autoHighlight
-                    createOption={e => Url.addType({name: e})}
+                    createOption={name => createType({ name }).unwrap()}
                     filterSelectedOptions
-                    getComponentProps={({fieldState: {error}, label}) => ({
+                    getComponentProps={({ fieldState: { error }, label }) => ({
                         renderProps: {
                             label,
                             variant: 'outlined',
@@ -295,16 +288,15 @@ export const AddBook = ({
                         }
                     })}
                     getOptionLabel={e => e.name}
-                    getOptions={getTypes}
                     getOptionSelected={(option, value) => option.id === value.id}
                     maxOptionsToShow={0}
                     multiple={false}
-                    options={types}/>
+                    options={types} />
 
                 <StandardField
                     name={BOOK_FIELDS.description}
                     label={'Description'}
-                    Component={TextFieldMultilineEllipsis}/>
+                    Component={TextFieldMultilineEllipsis} />
 
                 {/*todo Very hacky. Write this better*/}
                 <StandardField
@@ -314,9 +306,9 @@ export const AddBook = ({
 
                     autoComplete
                     autoHighlight
-                    createOption={e => Url.addGenre({name: e})}
+                    createOption={name => createGenre({ name })}
                     filterSelectedOptions
-                    getComponentProps={({field: {name}, fieldState: {error}, label}) => ({
+                    getComponentProps={({ field: { name }, fieldState: { error }, label }) => ({
                         getValue: () => getValues(name),
                         renderProps: {
                             label,
@@ -326,14 +318,13 @@ export const AddBook = ({
                         }
                     })}
                     getOptionLabel={e => e.name}
-                    getOptions={getGenres}
                     getOptionSelected={(option, value) => option.id === value.id}
                     groupBy={e => e.ancestors?.length ? e.ancestors.join(' > ') : ''}
                     maxOptionsToShow={0}
                     multiple={true}
                     options={sortedGenres}
                     renderOption={e => e.ancestors?.length ?
-                        <Typography style={{marginLeft: '20px'}}>{e.name}</Typography> : (e.name || `Add '${e._name}'`)}
+                        <Typography style={{ marginLeft: '20px' }}>{e.name}</Typography> : (e.name || `Add '${e._name}'`)}
 
                 />
 
@@ -341,31 +332,31 @@ export const AddBook = ({
                     name={BOOK_FIELDS.read_next}
                     control={control}
                     render={({
-                                 field: {onChange, value, ...field},
-                                 fieldState: {error},
-                             }) => <>
-                        <FormControlLabel
-                            {...field}
-                            checked={value}
-                            control={<Checkbox/>}
-                            label={'Read next?'}
-                            labelPlacement={'end'}
-                            onChange={e => {
-                                setValue(BOOK_FIELDS.date_read, DEFAULT_BOOK_VALUES[BOOK_FIELDS.date_read])
-                                onChange(e)
-                            }}
-                            style={{gridArea: field.name}}
-                        />
-                        <FormHelperText
-                            error={Boolean(error)}>
-                            {error?.message}
-                        </FormHelperText>
-                    </>}/>
+                        field: { onChange, value, ...field },
+                        fieldState: { error },
+                    }) => <>
+                            <FormControlLabel
+                                {...field}
+                                checked={value}
+                                control={<Checkbox />}
+                                label={'Read next?'}
+                                labelPlacement={'end'}
+                                onChange={e => {
+                                    setValue(BOOK_FIELDS.date_read, DEFAULT_BOOK_VALUES[BOOK_FIELDS.date_read])
+                                    onChange(e)
+                                }}
+                                style={{ gridArea: field.name }}
+                            />
+                            <FormHelperText
+                                error={Boolean(error)}>
+                                {error?.message}
+                            </FormHelperText>
+                        </>} />
 
                 <StandardField
                     name={BOOK_FIELDS.rating}
                     label={'Rating'}
-                    Component={TextFieldClearable}/>
+                    Component={TextFieldClearable} />
 
                 <MuiPickersUtilsProvider utils={DateFns}>
                     <StandardField
@@ -387,44 +378,44 @@ export const AddBook = ({
                     name={BOOK_FIELDS.image_url}
                     label={'Image URL'}
                     Component={TextFieldClearable}
-                    type={'url'}/>
+                    type={'url'} />
 
                 <StandardField
                     name={BOOK_FIELDS.published}
                     label={'Year Published'}
-                    Component={TextFieldClearable}/>
+                    Component={TextFieldClearable} />
 
                 <StandardField
                     name={BOOK_FIELDS.google_id}
                     label={'Google ID'}
-                    Component={TextFieldClearable}/>
+                    Component={TextFieldClearable} />
 
                 <StandardField
                     name={BOOK_FIELDS.goodreads_book_id}
                     label={'Goodreads ID'}
-                    Component={TextFieldClearable}/>
+                    Component={TextFieldClearable} />
 
                 <StandardField
                     name={BOOK_FIELDS.series}
                     label={'Series Name'}
-                    Component={TextFieldClearable}/>
+                    Component={TextFieldClearable} />
 
                 <StandardField
                     name={BOOK_FIELDS.series_position}
                     label={'Series Position'}
-                    Component={TextFieldClearable}/>
+                    Component={TextFieldClearable} />
 
                 <StandardField
                     name={BOOK_FIELDS.my_review}
                     label={'My Review'}
                     Component={TextFieldMultilineEllipsis}
-                    placeholder={'Not good, read others, highlight specific chapters, etc'}/>
+                    placeholder={'Not good, read others, highlight specific chapters, etc'} />
 
                 <StandardField
                     name={BOOK_FIELDS.notes}
                     label={'Notes'}
                     Component={TextFieldMultilineEllipsis}
-                    placeholder={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'}/>
+                    placeholder={'Specific edition, comments on metadata, somebody recommended me, want to buy etc'} />
 
             </FieldContainer>
         </DialogBlurResponsive>

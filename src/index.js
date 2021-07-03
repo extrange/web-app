@@ -31,7 +31,7 @@ const prepare = () => {
 prepare().then(() => {
     ReactDOM.render(
         <StrictMode>
-            <MuiThemeProvider theme={theme}>
+            <MuiThemeProvider theme={theme}> 
                 <CssBaseline />
                 <RandomBackground />
                 <ErrorBoundary>

@@ -42,7 +42,6 @@ const DrawerContainer = muiStyled('div')(({ theme }) => ({
 
 const ContentContainer = styled.div`
   flex: 1;
-  overflow-y: scroll;
 `;
 
 const ContentDiv = styled.div`
@@ -120,6 +119,7 @@ export const AppBar = () => {
 
 
         <ContentContainer>
+            {/* Blank toolbar purely for spacing */}
             <Toolbar variant={"dense"} />
             <ContentDiv>
                 {module ?

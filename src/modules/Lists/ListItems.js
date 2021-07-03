@@ -1,25 +1,19 @@
-import { Fab, List } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import { List } from "@material-ui/core";
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useSelector } from "react-redux";
 import { Virtuoso } from 'react-virtuoso/dist';
 import styled from 'styled-components';
-import { ItemSkeleton, StyledListItem } from "../../shared/components/styledListItem";
+import { StyledListItem } from "../../shared/components/StyledListItem";
+import {ItemSkeleton} from '../../shared/components/ItemSkeleton'
 import { EditItem } from "./EditItem";
 import { Item } from "./Item";
 import { useGetItemsQuery } from "./listApi";
 import { selectCurrentList } from "./listsSlice";
-
-const StyledFab = styled(Fab)`
-  position: fixed;
-  z-index: 1;
-  bottom: 20px;
-  right: 20px;
-`;
+import { AddButton } from './../../shared/components/AddButton';
 
 const StyledDiv = styled.div`
-  max-width: 800px;
-  height: 100%;
+  max-width: 800px; 
+  height: 100%; 
 `;
 
 export const ListItems = () => {
@@ -54,15 +48,12 @@ export const ListItems = () => {
         item={e} />);
 
     return <>
-        <StyledFab
-            color={'primary'}
+        <AddButton
             onClick={() => setEditingItem({
                 id: null,
                 title: '',
                 notes: '',
-            })}>
-            <AddIcon />
-        </StyledFab>
+            })} />
 
         {editingItem && <EditItem
             editingItem={editingItem}

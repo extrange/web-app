@@ -2,7 +2,9 @@ import { IconButton, ListItemText } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import React from 'react';
 import { useSelector } from "react-redux";
-import { ItemSkeleton, StyledListItem, StyledListItemSecondaryAction } from "../../shared/components/styledListItem";
+import { ItemSkeleton } from '../../shared/components/ItemSkeleton';
+import { StyledListItem } from "../../shared/components/StyledListItem";
+import { StyledListItemSecondaryAction } from "../../shared/components/StyledListItemSecondaryAction";
 import { useDeleteItemMutation } from "./listApi";
 import { selectCurrentList } from "./listsSlice";
 

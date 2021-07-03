@@ -3,7 +3,7 @@ import SyncIcon from '@material-ui/icons/Sync';
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { Loading } from "../../shared/components/loading";
+import { Loading } from "../../shared/components/Loading";
 import { List } from "./List";
 import { useCreateListMutation, useGetItemsQuery, useGetListsQuery } from "./listApi";
 import { ListItems } from "./ListItems";
@@ -33,6 +33,7 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
             </div> :
             [
                 <StyledButton
+                    key={'CREATE_LIST'}
                     variant={'contained'}
                     color={'secondary'}
                     onClick={() => {

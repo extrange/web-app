@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import { DialogBlurResponsive } from "../../shared/components/dialogBlurResponsive";
+import { DialogBlurResponsive } from "../../shared/components/DialogBlurResponsive";
 import { MarkdownEditor } from "../../shared/components/MarkdownEditor/MarkdownEditor";
 import { useAutosave } from "../../shared/useAutosave";
 import { formatDistanceToNowPretty } from "../../shared/util";
@@ -13,7 +13,7 @@ import { useCreateItemMutation, useDeleteItemMutation, useUpdateItemMutation } f
 import { selectCurrentList } from "./listsSlice";
 
 const FooterRight = styled.div`
-  display: flex;
+  display: flex; 
   justify-content: flex-end;
   align-items: center;
 `;

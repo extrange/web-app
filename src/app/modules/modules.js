@@ -1,5 +1,5 @@
 // /*Add new modules here*/
-// import {Literature} from "../../modules/Literature/Literature";
+import {Literature} from "../../modules/Literature/Literature";
 import { Account } from "../../modules/Account/Account";
 import { Dvr } from "../../modules/Dvr/Dvr"; 
 import {Testing} from "../../modules/Testing/Testing";
@@ -14,11 +14,11 @@ export const MODULES = {
         onlySuperUser: false,
         element: Lists
     },
-    // LITERATURE: {
-    //     menuName: 'Literature',
-    //     onlySuperUser: false,
-    //     element: Literature
-    // },
+    LITERATURE: {
+        menuName: 'Literature',
+        onlySuperUser: false,
+        element: Literature
+    },
     ACCOUNT: {
         menuName: 'Account',
         onlySuperUser: false,

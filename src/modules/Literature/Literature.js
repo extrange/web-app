@@ -1,144 +1,74 @@
-import {useCallback, useEffect, useState} from 'react';
-import {Books} from "./Books";
-import * as Url from "./urls";
-import {capitalize} from "lodash";
-import {List, ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
-import {AppBar} from "../../app/app-bar/AppBar";
-import HomeIcon from '@material-ui/icons/Home';
-import PeopleIcon from '@material-ui/icons/People';
-import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
-import TitleIcon from '@material-ui/icons/Title';
-import {GenericAddDeleteCreate} from "./genericAddDeleteCreate";
-import {Genres} from "./Genres";
+import { IconButton, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
+import SyncIcon from '@material-ui/icons/Sync';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useGetAuthorsQuery, useGetBooksQuery, useGetGenresQuery, useGetTypesQuery } from "./literatureApi";
+import { selectLiteratureSubmodule, setLiteratureSubmodule } from "./literatureSlice";
+import { submodules } from './submodules';
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
-import {HTML5Backend} from "react-dnd-html5-backend";
-import {DndProvider} from "react-dnd";
+export const Literature = ({ setDrawerContent, setTitleContent }) => {
 
-const LITERATURE_CURRENT_SUBMODULE = 'LITERATURE_CURRENT_SUBMODULE';
+    const { refetch: refetchBooks, isFetching: isFetchingBooks } = useGetBooksQuery()
+    const { refetch: refetchAuthors, isFetching: isFetchingAuthors } = useGetAuthorsQuery()
+    const { refetch: refetchGenres, isFetching: isFetchingGenres } = useGetGenresQuery()
+    const { refetch: refetchTypes, isFetching: isFetchingTypes } = useGetTypesQuery()
 
-const LITERATURE_MODULES = (props = {}) => ({
-    BOOKS: {
-        appDrawer: <><ListItemIcon>
-            <HomeIcon/>
-        </ListItemIcon>
-            <ListItemText primary={'Books'}/>
-        </>,
-        jsx: <Books {...props}/>
-    },
-    AUTHORS: {
-        appDrawer: <><ListItemIcon>
-            <PeopleIcon/>
-        </ListItemIcon>
-            <ListItemText primary={'Authors'}/></>,
-        jsx: <GenericAddDeleteCreate
-            types={props.authors}
-            addType={Url.addAuthor}
-            deleteType={Url.deleteAuthor}
-            getType={props.getAuthors}
-            updateType={Url.updateAuthor}
-        />
-    },
-    GENRES: {
-        appDrawer: <><ListItemIcon>
-            <InsertDriveFileIcon/>
-        </ListItemIcon>
-            <ListItemText primary={'Genres'}/></>,
-        jsx: <Genres
-            books={props.books}
-            genres={props.genres}
-            addGenre={Url.addGenre}
-            deleteGenre={Url.deleteGenre}
-            getGenres={props.getGenres}
-            updateGenre={Url.updateGenre}
-            setTitleEndAdornment={props.setTitleEndAdornment}
-        />
-    },
-    TYPES: {
-        appDrawer: <><ListItemIcon>
-            <TitleIcon/>
-        </ListItemIcon>
-            <ListItemText primary={'Types'}/></>,
-        jsx: <GenericAddDeleteCreate
-            types={props.types}
-            addType={Url.addType}
-            deleteType={Url.deleteType}
-            getType={props.getTypes}
-            updateType={Url.updateType}
-        />
-    }
-});
+    const isFetching = isFetchingBooks || isFetchingAuthors || isFetchingGenres || isFetchingTypes
 
-export const Literature = () => {
+    const dispatch = useDispatch()
+    const literatureSubmodule = useSelector(selectLiteratureSubmodule) || Object.keys(submodules)[0]
 
-    const storedSubModule = sessionStorage.getItem(LITERATURE_CURRENT_SUBMODULE);
-
-    const saveCurrentSubModule = key => sessionStorage.setItem(LITERATURE_CURRENT_SUBMODULE, key);
-
-    // Default to first module in LITERATURE_MODULES
-    const [currentSubModule, setCurrentSubModule] = useState(storedSubModule ?? Object.keys(LITERATURE_MODULES())[0]);
-
-    const [books, setBooks] = useState([]);
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const [authors, setAuthors] = useState([]);
-    const [genres, setGenres] = useState([]);
-    const [types, setTypes] = useState([]);
-
+    /* Used by Genres to display genre rules */
     const [titleEndAdornment, setTitleEndAdornment] = useState(null)
 
-
-    const getBooks = useCallback(() => Url.getBooks().then(json => setBooks(json)), []);
-
-    const getAuthors = useCallback(() => Url.getAuthors().then(result => setAuthors(result)), []);
-    const getGenres = useCallback(() => Url.getGenres().then(result => setGenres(result)), []);
-    const getTypes = useCallback(() => Url.getTypes().then(result => setTypes(result)), []);
+    useEffect(() => {
+        setDrawerContent(<List disablePadding>
+            {
+                Object.entries(submodules)
+                    .map(([key, { Icon, name }]) =>
+                        <ListItem
+                            key={key}
+                            button
+                            onClick={() => dispatch(setLiteratureSubmodule(key))}>
+                            <ListItemIcon>
+                                <Icon />
+                            </ListItemIcon>
+                            <ListItemText primary={name} />
+                        </ListItem>)
+            }
+        </List>)
+    }, [dispatch, setDrawerContent])
 
     useEffect(() => {
-        void getBooks();
-        void getAuthors();
-        void getGenres();
-        void getTypes();
-    }, [getAuthors, getBooks, getGenres, getTypes]);
+        setTitleContent(<>
+            <Typography variant={"h6"}>
+                {submodules[literatureSubmodule].name}
+            </Typography>
+            <IconButton
+                onClick={() => {
+                    refetchBooks()
+                    refetchAuthors()
+                    refetchGenres()
+                    refetchTypes()
+                }}
+                disabled={isFetching}>
+                <SyncIcon />
+            </IconButton>
+            {titleEndAdornment}
+        </>)
+    }, [isFetching, literatureSubmodule, refetchAuthors, refetchBooks, refetchGenres, refetchTypes, setTitleContent, titleEndAdornment])
 
-    const drawerContent = <List disablePadding>
-        {Object.entries(LITERATURE_MODULES()).map(([key, value]) => <ListItem
-            key={key}
-            button
-            onClick={() => {
-                setCurrentSubModule(key);
-                saveCurrentSubModule(key);
-                setDrawerOpen(false)
-            }}>
-            {value.appDrawer}</ListItem>)}
-    </List>;
+    const { jsx, props } = submodules[literatureSubmodule]
 
-    return (
-        <AppBar
-            titleContent={<>
-                <Typography variant={"h6"} noWrap>
-                    {capitalize(currentSubModule)}
-                </Typography>
-                {titleEndAdornment}
-            </>}
-            drawerOpen={drawerOpen}
-            setDrawerOpen={setDrawerOpen}
-            drawerContent={drawerContent}>
-            <DndProvider backend={HTML5Backend}>
-                {LITERATURE_MODULES({
-                    getBooks,
-                    books,
-                    setBooks,
-                    authors,
-                    setAuthors,
-                    genres,
-                    setGenres,
-                    types,
-                    setTypes,
-                    getAuthors,
-                    getGenres,
-                    getTypes,
-                    setTitleEndAdornment,
-                })[currentSubModule].jsx}
-            </DndProvider>
-        </AppBar>
-    );
+
+    /* NOTE: Required versions as follows:
+    - "react-dnd-html5-backend": "^11.1.3",
+    - "react-dnd": "^11.1.3", 
+    Provider should appear above Mui-Datatable component, so that it doesn't try to
+    add another DndProvider and cause the 'Cannot have 2 HTML5 backends...' error*/
+    return <DndProvider backend={HTML5Backend}>
+        {React.createElement(jsx, { setTitleEndAdornment, ...props })}
+    </DndProvider >
 };

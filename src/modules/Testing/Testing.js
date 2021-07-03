@@ -1,5 +1,5 @@
 import {Button} from "@material-ui/core";
-import {useThrowFetchErrorMutation, useThrowHttpErrorMutation} from "./testingApi";
+import {useMutationTestMutation, useThrowFetchErrorMutation, useThrowHttpErrorMutation} from "./testingApi";
 import {useDispatch} from "react-redux";
 import {throwAsyncThunkReject, throwAsyncThunkRejectWithValue} from "./util";
 import styled from 'styled-components'
@@ -17,6 +17,7 @@ export const Testing = () => {
     const dispatch = useDispatch()
     const [throwHttpError] = useThrowHttpErrorMutation()
     const [throwFetchError] = useThrowFetchErrorMutation()
+    const [mutationTest, {data: mutationData}] = useMutationTestMutation()
 
     return <StyledDiv>
         <Button variant={'contained'} onClick={() => throwHttpError(401)}>Throw 401 error</Button>
@@ -28,6 +29,7 @@ export const Testing = () => {
         <Button variant={'contained'} onClick={() => dispatch(throwAsyncThunkRejectWithValue())}>
             Throw asyncThunkRejectWithValue
         </Button>
+        <Button variant={'contained'} onClick={() => mutationTest()}>Mutation Test - Current Data: {JSON.stringify(mutationData)}</Button>
         <Button variant={'contained'} onClick={() => dispatch(clearNetworkError())}>Clear</Button>
     </StyledDiv>
 }

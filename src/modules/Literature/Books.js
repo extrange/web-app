@@ -1,30 +1,28 @@
-//Books in a series should be collapsible
-import {useMemo, useState} from 'react';
-import {Checkbox, Fab, FormControlLabel, Snackbar, TableContainer, TextField} from "@material-ui/core";
-import styled from 'styled-components'
-import {BACKGROUND_COLOR} from "../../shared/components/backgroundScreen";
+import { Checkbox, Fab, FormControlLabel, Snackbar, TableContainer, TextField } from "@material-ui/core";
+import { ThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core/styles'; //todo replace with v5 when out
 import AddIcon from "@material-ui/icons/Add";
-import {AddBook} from "./AddBook";
-import {isBefore, parseISO, subMonths, subWeeks, subYears} from 'date-fns'
-import {Alert, Autocomplete} from "@material-ui/lab";
-import * as Url from './urls'
-import {BOOK_INFO} from './urls'
-import {formatDistanceToNowPretty, sanitizeString} from "../../shared/util";
-import {matchSorter} from "match-sorter";
-import {BOOK_FIELDS, DEFAULT_BOOK_VALUES} from "./schema";
-import {Waypoint} from 'react-waypoint';
-import {ThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme} from '@material-ui/core/styles'; //todo replace with v5 when out
-import MUIDataTable, {debounceSearchRender} from "mui-datatables";
-import {SearchBooks} from "./searchBooks";
-import {mergeWith} from "lodash";
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
-import {useSend} from "../../shared/useSend";
-
+import { Alert, Autocomplete } from "@material-ui/lab";
+import { isBefore, parseISO, subMonths, subWeeks, subYears } from 'date-fns';
+import { matchSorter } from "match-sorter";
+import MUIDataTable, { debounceSearchRender } from "mui-datatables";
+import { useMemo, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { Waypoint } from 'react-waypoint';
+import styled from 'styled-components';
+import { BACKGROUND_COLOR } from "../../shared/components/backgroundScreen";
+import { formatDistanceToNowPretty } from "../../shared/util";
+import { Loading } from '../../shared/components/Loading';
+import { AddBook } from "./AddBook";
+import { useDeleteBookMutation, useGetAuthorsQuery, useGetBooksQuery, useGetGenresQuery, useGetTypesQuery } from './literatureApi';
+import { selectDisplayedColumns, setDisplayedColumn } from './literatureSlice';
+import { BOOK_FIELDS } from "./schema";
+import { SearchBooks } from "./SearchBooks";
 
 const StyledTableContainer = styled(TableContainer)`
   ${BACKGROUND_COLOR};
 `;
-
+ 
 const StyledFab = styled(Fab)`
   position: fixed;
   z-index: 1;
@@ -32,53 +30,30 @@ const StyledFab = styled(Fab)`
   right: 20px;
 `;
 
-const BOOK_COLUMN_STATE = 'BOOK_COLUMN_STATE';
+// TODO books in a series should be collapsible
 
-const DEFAULT_COLUMN_STATES = {
-    [BOOK_FIELDS.image_url]: true,
-    [BOOK_FIELDS.title]: true,
-    [BOOK_FIELDS.authors]: true,
-    [BOOK_FIELDS.genres]: true,
-};
+/**
+ * Book search, addition, table view/sort
+ */
+export const Books = () => {
 
-export const Books = ({
-                          getBooks,
-                          books,
-                          setBooks,
-                          authors,
-                          setAuthors,
-                          genres,
-                          setGenres,
-                          types,
-                          setTypes,
-                          getAuthors,
-                          getGenres,
-                          getTypes
-                      }) => {
+    const dispatch = useDispatch()
+    const displayedColumns = useSelector(selectDisplayedColumns)
+
+    /* I have to set a default value, because useMemo below cannot be called conditionally */
+    const { data: books = [], isLoading: booksLoading } = useGetBooksQuery()
+    const { data: authors = [], isLoading: authorsLoading } = useGetAuthorsQuery()
+    const { data: genres = [], isLoading: genresLoading } = useGetGenresQuery()
+    const { data: types = [], isLoading: typesLoading } = useGetTypesQuery()
+    const [deleteBook] = useDeleteBookMutation()
+
     const [searchBookOpen, setSearchBookOpen] = useState(false);
     const [bookData, setBookData] = useState(null);
     const [addedSnackbar, setAddedSnackbar] = useState(null);
-    const [filteredItemsLength, setFilteredItemsLength] = useState(books.length);
-    const [count, setCount] = useState(10);
-    const send = useSend()
+    const [filteredItemsLength, setFilteredItemsLength] = useState();
+    const [numBooksToShow, setNumBooksToShow] = useState(10);
 
-    const getColumnState = column => localStorage.getItem(BOOK_COLUMN_STATE) ?
-        JSON.parse(localStorage.getItem(BOOK_COLUMN_STATE))[column] :
-        DEFAULT_COLUMN_STATES[column];
-
-    const setColumnState = (column, state) => {
-        let columnState = localStorage.getItem(BOOK_COLUMN_STATE)
-
-        let parsedColumnState = columnState ? JSON.parse(columnState) : DEFAULT_COLUMN_STATES;
-        localStorage.setItem(BOOK_COLUMN_STATE, JSON.stringify({
-            ...parsedColumnState,
-            [column]: state
-        }));
-    };
-
-    // These methods get 'published', 'series_name', 'series_position', 'description'
-    const getGoogleBookInfo = isbn => send(`${BOOK_INFO}?isbn=${isbn}`);
-    const getGoodreadsBookInfo = (work_id, book_id) => send(`${BOOK_INFO}?work_id=${work_id}&book_id=${book_id}`);
+    const loading = booksLoading || authorsLoading || genresLoading || typesLoading
 
     const dateOptions = useMemo(() => [
         {
@@ -99,58 +74,35 @@ export const Books = ({
         }
     ], [])
 
-    /*Get book description from results
-    * todo Note: Goodreads is getting deprecated...*/
-    const handleSearch = result => {
-        let type = result.from;
-        let request;
-        if (type === 'google') {
-            // Use ISBN_13 if available, otherwise ISBN_10
-            request = getGoogleBookInfo(result.ISBN_13 || result.ISBN_10)
-        } else {
-            request = getGoodreadsBookInfo(result.goodreads_work_id, result.goodreads_book_id)
-        }
-        return request.then(r => {
-            let mergedResult = mergeWith({}, result, r,
-                //preferentially choose srcVal over existing values if both present
-                (objVal, srcVal) => srcVal || objVal);
-
-            let authorsToAdd = []; // [] of {id, name, notes}
-            let authorsToCreate = []; // [] of String
-
-            mergedResult.authors.forEach(e => {
-                let val = authors.find(author => sanitizeString(author.name) === sanitizeString(e));
-                if (val) {
-                    // Author already exists
-                    authorsToAdd.push(val)
-                } else {
-                    // Author doesn't exist, to create
-                    authorsToCreate.push(e)
-                }
-            });
-
-            let bookResult = Object.assign({}, DEFAULT_BOOK_VALUES);
-
-            [
-                BOOK_FIELDS.description,
-                BOOK_FIELDS.google_id,
-                BOOK_FIELDS.goodreads_book_id,
-                BOOK_FIELDS.image_url,
-                BOOK_FIELDS.published,
-                BOOK_FIELDS.title,
-                BOOK_FIELDS.series,
-                BOOK_FIELDS.series_position
-            ].forEach(e => mergedResult[e] && (bookResult[e] = mergedResult[e]));
-
-            return Promise
-                .all(authorsToCreate.map(name => Url.addAuthor({name: name})))
-                .then(r => {
-                    bookResult[BOOK_FIELDS.authors] = [...authorsToAdd, ...r].map(e => e.id);
-                    return getAuthors().then(() => bookResult);
-                });
-
-        });
-    };
+    const options = useMemo(() => ({
+        count: numBooksToShow,
+        customFooter: () =>
+            <Waypoint
+                bottomOffset={-400}
+                scrollableAncestor={'window'}
+                onEnter={() => setNumBooksToShow(row => row + 10)}> 
+                <tfoot /> 
+            </Waypoint>,
+        customSearchRender: debounceSearchRender(200),
+        draggableColumns: {
+            enabled: true,
+        },
+        onFilterChange: () => setNumBooksToShow(20),
+        onRowClick: (rowData, { dataIndex }) =>
+            setBookData(books[dataIndex]),
+        onRowsDelete: (rowsDeleted, data, newTableData) => rowsDeleted.data.forEach(e => deleteBook({ id: books[e.dataIndex].id })),
+        onTableChange: (action, tableState) => setFilteredItemsLength(tableState.displayData.length),
+        onViewColumnsChange: (changedColumn, action) =>
+            dispatch(setDisplayedColumn(changedColumn, action === 'add')),
+        pagination: false,
+        responsive: 'simple',
+        setTableProps: () => ({
+            padding: 'none',
+            size: 'small',
+        }),
+        searchPlaceholder: `Search ${books.length} items`,
+        tableBodyMaxHeight: '100%'
+    }), [books, deleteBook, dispatch, numBooksToShow]);
 
     const columns = useMemo(() => [
         {
@@ -161,7 +113,7 @@ export const Books = ({
                 searchable: false,
                 sort: false,
                 customBodyRenderLite: dataIndex => books[dataIndex][BOOK_FIELDS.image_url] ?
-                    <img alt={''} src={books[dataIndex][BOOK_FIELDS.image_url]} style={{maxHeight: '80px'}}/> : null,
+                    <img alt={''} src={books[dataIndex][BOOK_FIELDS.image_url]} style={{ maxHeight: '80px' }} /> : null,
             },
         },
         {
@@ -193,7 +145,7 @@ export const Books = ({
                             filterOptions={(options, state) =>
                                 matchSorter(options,
                                     state.inputValue,
-                                    {keys: ['name']}
+                                    { keys: ['name'] }
                                 ).slice(0, 10)}
                             getOptionLabel={option => option.name}
                             multiple
@@ -201,7 +153,7 @@ export const Books = ({
                                 onChange(value, index, column)
                             }}
                             options={authors}
-                            renderInput={params => <TextField {...params} label={'Author'}/>}
+                            renderInput={params => <TextField {...params} label={'Author'} />}
                             value={filterList[index]}
                         />
                 },
@@ -227,7 +179,7 @@ export const Books = ({
                             filterOptions={(options, state) =>
                                 matchSorter(options,
                                     state.inputValue,
-                                    {keys: ['name']}
+                                    { keys: ['name'] }
                                 )}
                             getOptionLabel={option => option.name}
                             multiple
@@ -235,7 +187,7 @@ export const Books = ({
                                 onChange(value, index, column)
                             }}
                             options={genres}
-                            renderInput={params => <TextField {...params} label={'Genre'}/>}
+                            renderInput={params => <TextField {...params} label={'Genre'} />}
                             value={filterList[index]}
                         />
                 },
@@ -281,7 +233,7 @@ export const Books = ({
                             onChange={(event, value) =>
                                 onChange(value ? [value] : [], index, column)}
                             options={dateOptions}
-                            renderInput={params => <TextField {...params} label={'Date Added'}/>}
+                            renderInput={params => <TextField {...params} label={'Date Added'} />}
                             value={filterList[index].length ? filterList[index][0] : dateOptions[0]}
                         />
                 },
@@ -295,7 +247,7 @@ export const Books = ({
             name: BOOK_FIELDS.read_next,
             options: {
                 customBodyRenderLite: dataIndex => books[dataIndex][BOOK_FIELDS.read_next] ?
-                    <ErrorOutlineOutlinedIcon color={'secondary'}/> : '',
+                    <ErrorOutlineOutlinedIcon color={'secondary'} /> : '',
                 customFilterListOptions: {
                     render: () => 'Read Next'
                 },
@@ -307,7 +259,7 @@ export const Books = ({
                                 checked={Boolean(filterList[index][0])}
                                 onChange={e => onChange(e.target.checked ? [true] : [], index, column)}
                             />}
-                            label={'Read Next'}/>
+                            label={'Read Next'} />
                 },
                 filterType: 'custom',
                 searchable: false,
@@ -333,7 +285,7 @@ export const Books = ({
                             onChange={(event, value) =>
                                 onChange(value ? [value] : [], index, column)}
                             options={dateOptions}
-                            renderInput={params => <TextField {...params} label={'Date Read'}/>}
+                            renderInput={params => <TextField {...params} label={'Date Read'} />}
                             value={filterList[index].length ? filterList[index][0] : dateOptions[0]}
                         />
                 },
@@ -377,7 +329,7 @@ export const Books = ({
                                 onChange(value, index, column)
                             }}
                             options={[...new Set(books.map(e => e[BOOK_FIELDS.series]).filter(e => Boolean(e)))]}
-                            renderInput={params => <TextField {...params} label={'Series'}/>}
+                            renderInput={params => <TextField {...params} label={'Series'} />}
                             value={filterList[index]}
                         />
                 },
@@ -423,7 +375,7 @@ export const Books = ({
                             onChange={(event, value) =>
                                 onChange(value ? [value] : [], index, column)}
                             options={dateOptions}
-                            renderInput={params => <TextField {...params} label={'Updated'}/>}
+                            renderInput={params => <TextField {...params} label={'Updated'} />}
                             value={filterList[index].length ? filterList[index][0] : dateOptions[0]}
                         />
                 },
@@ -436,74 +388,29 @@ export const Books = ({
         ...e,
         options: {
             ...e.options,
-            display: getColumnState(e.name),
+            display: !!displayedColumns[e.name],
             sortThirdClickReset: true,
         }
-    })), [authors, books, dateOptions, genres, types]);
+    })), [authors, books, dateOptions, displayedColumns, genres, types]);
 
-    const options = useMemo(() => ({
-        count: count,
-        customFooter: () =>
-            <Waypoint
-                bottomOffset={-400}
-                onEnter={() => setCount(row => row + 10)}
-                scrollableAncestor={window}
-            >
-                <tfoot/>
-            </Waypoint>,
-        customSearchRender: debounceSearchRender(200),
-        draggableColumns: {
-            enabled: true,
-        },
-        onFilterChange: () => setCount(20),
-        onRowClick: (rowData, {dataIndex}) =>
-            setBookData(books[dataIndex]),
-        onRowsDelete: (rowsDeleted, data, newTableData) => {
-            Promise.all(rowsDeleted.data.map(e => Url.deleteBook(books[e.dataIndex].id)))
-                .then(getBooks)
-        },
-        onTableChange: (action, tableState) => setFilteredItemsLength(tableState.displayData.length),
-        onViewColumnsChange: (changedColumn, action) => action === 'add' ?
-            setColumnState(changedColumn, true) :
-            setColumnState(changedColumn, false),
-        pagination: false,
-        responsive: 'simple',
-        setTableProps: () => ({
-            padding: 'none',
-            size: 'small',
-        }),
-        searchPlaceholder: `Search ${filteredItemsLength} items`,
-        tableBodyMaxHeight: '100%'
-    }), [books, filteredItemsLength, getBooks, count]);
+    if (loading) return <Loading fullscreen={false} />
 
     return <>
         <StyledFab color={'primary'} onClick={() => setSearchBookOpen(true)}>
-            <AddIcon/>
+            <AddIcon />
         </StyledFab>
-        {bookData && <AddBook
-            getBooks={getBooks}
-            books={books}
-            setBooks={setBooks}
-            authors={authors}
-            setAuthors={setAuthors}
-            genres={genres}
-            setGenres={setGenres}
-            types={types}
-            setTypes={setTypes}
-            getAuthors={getAuthors}
-            getGenres={getGenres}
-            getTypes={getTypes}
 
-            bookData={bookData}
-            onClose={() => setBookData(null)}
-            setAddedSnackbar={setAddedSnackbar}
-        />}
-        {searchBookOpen && <SearchBooks
-            books={books}
-            closeSearch={() => setSearchBookOpen(false)}
-            handleSearch={handleSearch}
-            setBookData={setBookData}
-        />}
+        {bookData &&
+            <AddBook
+                bookData={bookData}
+                onClose={() => setBookData(null)}
+                setAddedSnackbar={setAddedSnackbar} />}
+
+        {searchBookOpen &&
+            <SearchBooks
+                closeSearch={() => setSearchBookOpen(false)}
+                setBookData={setBookData} />}
+
         <Snackbar
             open={Boolean(addedSnackbar)}
             onClose={() => setAddedSnackbar(false)}
@@ -538,6 +445,7 @@ export const Books = ({
                         filterPaper: {
                             maxWidth: 'calc(100% - 32px) !important',
                         }
+
                     }
                 }
             })}>
@@ -546,7 +454,7 @@ export const Books = ({
                     columns={columns}
                     data={books}
                     options={options}
-                    title={`${filteredItemsLength} items`}
+                    title={`${filteredItemsLength || books.length} items`}
                 />
             </ThemeProvider>
         </StyledTableContainer>

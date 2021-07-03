@@ -15,7 +15,6 @@ const StyledCircularProgress = styled(CircularProgress)`
 const propTypes = {
     createOption: PropTypes.func,
     getOptionLabel: PropTypes.func,
-    getOptions: PropTypes.func.isRequired,
     getOptionSelected: PropTypes.func,
     getValue: PropTypes.func, // Required if multiple=true (to get the current state in a callback)
     maxOptionsToShow: PropTypes.number,
@@ -26,11 +25,13 @@ const propTypes = {
     value: PropTypes.any
 };
 
+/**
+ * 'getOptions' is unnecessary - 'options' should update on creation automatically
+ */
 export const AutocompleteWithCreate = ({
                                            createOption,
                                            error, // Not used
                                            getOptionLabel = e => e,
-                                           getOptions,
                                            getOptionSelected = (a, b) => a === b,
                                            getValue,
                                            helperText, // Not used
@@ -126,10 +127,7 @@ export const AutocompleteWithCreate = ({
                     el._justAdded = false;
                     createOption(el._name)
                         .then(obj => {
-                            // Refresh options with newly added option
-                            getOptions();
-
-                            // Get current state and then replace new option with server returned object (it now has id)
+                            // Get current state and then replace new option with server created object (it now has id)
                             onChange(getValue().map(e => e._name === el._name ? obj : e))
                         })
 
@@ -141,10 +139,6 @@ export const AutocompleteWithCreate = ({
                 setLoading(true);
                 createOption(newValue._name)
                     .then(obj => {
-
-                        // Refresh options with newly added option
-                        getOptions();
-
                         // Input is disabled while this is happening
                         onChange(obj);
                         setLoading(false)

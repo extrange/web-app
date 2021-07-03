@@ -145,3 +145,16 @@ export const stripUndefined = obj => {
     }
     return copy
 }
+
+/**
+ * Joins 2 URLs. Will not modify/add trailing slashes if present/absent
+ * */
+export const joinUrl = (base, url) => {
+    if (!base) {
+        return url
+    }
+    if (!url) {
+        return base
+    }
+    return String(base).replace(/\/$/, '') + '/' + String(url).replace(/^\//)
+}

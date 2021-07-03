@@ -1,8 +1,7 @@
-import { ListItem, ListItemSecondaryAction, ListItemText } from "@material-ui/core";
+import { ListItem } from "@material-ui/core";
 import styled from "styled-components";
 import { theme } from "../../app/theme";
 import { BACKGROUND_COLOR } from "./backgroundScreen";
-import { Skeleton } from "@material-ui/lab";
 
 export const StyledListItem = styled(ListItem)`
   ::before {
@@ -26,19 +25,3 @@ export const StyledListItem = styled(ListItem)`
     background-color: rgba(255, 255, 255, 0.08);
   }
 `;
-export const StyledListItemSecondaryAction = styled(ListItemSecondaryAction)`
-  ${theme.breakpoints.up('md')}  {
-    display: none;
-  }
-
-  .MuiListItem-container:hover & {
-    display: block;
-  }
-`;
-
-export const ItemSkeleton = () => <ListItemText
-    primary={<Skeleton animation={'wave'} width={'min(80%, 300px)'} />}
-    secondary={<Skeleton animation={'wave'} width={'min(60%, 240px)'} />} />
-
-export const ListSkeleton = () => <ListItemText
-primary={<Skeleton animation={'wave'} width={'min(80%, 300px)'} />}/>

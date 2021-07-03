@@ -20,8 +20,8 @@ const listApi = baseApi.injectEndpoints({
                 body: { title }
             }),
 
-            /* Invalidate cache for now since I'm not sure if lists are sorted
-            alphabetically by the server */
+            /* TODO Invalidate cache for now since I'm not sure if lists are sorted
+            alphabetically by the server. Optimistically create in the future */
             invalidatesTags: ['lists']
         }),
 
@@ -58,7 +58,6 @@ const listApi = baseApi.injectEndpoints({
 
         getItems: build.query({
             query: list => `tasks/tasklists/${list}/tasks/`,
-            providesTags: (_result, _error, list) => [{ type: 'lists', id: list }],
         }),
 
         createItem: build.mutation({
