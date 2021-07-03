@@ -2,10 +2,10 @@ import { IconButton, ListItemText } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import React from 'react';
 import { useSelector } from "react-redux";
-import { ItemSkeleton, StyledListItem, StyledListItemSecondaryAction } from "../../shared/components/styledListItem";
+import { ItemSkeleton, StyledListItem, StyledListItemSecondaryAction } from "../../shared/components/StyledListItem";
 import { useDeleteItemMutation } from "./listApi";
 import { selectCurrentList } from "./listsSlice";
-
+ 
 /**
  * Will show a skeleton if item.isSkeleton is true
  */
@@ -22,7 +22,7 @@ export const Item = ({ setEditingItem, item }) => {
 
     return <StyledListItem
         button
-        onClick={() => setEditingItem(item)}
+        onClick={() => setEditingItem(item)} 
         $reserveSpace={true}>
         <ListItemText
             primary={title}

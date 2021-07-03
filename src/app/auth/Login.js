@@ -8,7 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {selectLoginStatus, setNetworkError} from "../appSlice";
 import {NETWORK_ERROR} from "../constants";
 import {useCheckLoginQuery, useLoginMutation} from "./authApi";
-import {Loading} from "../../shared/components/loading";
+import {Loading} from "../../shared/components/Loading";
 
 const StyledForm = styled.form`
   display: flex;

@@ -1,7 +1,7 @@
 import { IconButton, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useState } from 'react';
-import { StyledListItem, StyledListItemSecondaryAction } from "../../shared/components/styledListItem";
+import { StyledListItem, StyledListItemSecondaryAction } from "../../shared/components/StyledListItem";
 import { useDeleteListMutation, useUpdateListMutation } from "./listApi";
 
 export const List = ({ onClick, list: { title, id } }) => {

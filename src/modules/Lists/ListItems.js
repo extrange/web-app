@@ -4,14 +4,14 @@ import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { useSelector } from "react-redux";
 import { Virtuoso } from 'react-virtuoso/dist';
 import styled from 'styled-components';
-import { ItemSkeleton, StyledListItem } from "../../shared/components/styledListItem";
+import { ItemSkeleton, StyledListItem } from "../../shared/components/StyledListItem";
 import { EditItem } from "./EditItem";
 import { Item } from "./Item";
 import { useGetItemsQuery } from "./listApi";
 import { selectCurrentList } from "./listsSlice";
 
 const StyledFab = styled(Fab)`
-  position: fixed;
+  position: fixed; 
   z-index: 1;
   bottom: 20px;
   right: 20px;
