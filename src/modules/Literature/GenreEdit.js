@@ -92,11 +92,7 @@ export const GenreEdit = ({
         <StyledFooter>
             <StyledDiv />
             {id && <Button onClick={() => setDeleteDialog(true)}>Delete</Button>}
-            <Button 
-            onClick={onSubmit}
-            color={'primary'}>
-                Submit
-            </Button>
+            <Button onClick={onSubmit} color={'primary'}>Submit</Button>
         </StyledFooter>
     )
 
@@ -107,8 +103,8 @@ export const GenreEdit = ({
             onClose={() => setSaveDialog(false)}>
             <DialogTitle>Discard changes?</DialogTitle>
             <DialogActions>
-                <Button onClick={closeEdit}>Discard</Button>
-                <Button onClick={() => setSaveDialog(false)} color={'primary'}>Cancel</Button>
+                <Button onClick={closeEdit} color={'primary'}>Discard</Button>
+                <Button onClick={() => setSaveDialog(false)}>Cancel</Button>
             </DialogActions>
         </Dialog>
         <Dialog
@@ -116,11 +112,15 @@ export const GenreEdit = ({
             onClose={() => setDeleteDialog(false)}>
             <DialogTitle>Delete '{name}'?</DialogTitle>
             <DialogActions>
-                <Button onClick={() => {
-                    deleteGenre({id})
-                    closeEdit()
-                }}>Delete</Button>
-                <Button onClick={() => setDeleteDialog(false)} color={'primary'}>Cancel</Button>
+                <Button
+                    onClick={() => {
+                        deleteGenre({ id })
+                        closeEdit()
+                    }}
+                    color={'primary'}>
+                    Delete
+                </Button>
+                <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
             </DialogActions>
         </Dialog>
         <DialogBlurResponsive

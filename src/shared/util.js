@@ -158,3 +158,6 @@ export const joinUrl = (base, url) => {
     }
     return String(base).replace(/\/$/, '') + '/' + String(url).replace(/^\//)
 }
+
+/* Truncate string with ellipsis after 'len' characters */
+export const truncateString = (string, len) => string.length < len ? string : `${string.slice(0, len)}...`
