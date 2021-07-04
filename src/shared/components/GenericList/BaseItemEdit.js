@@ -23,7 +23,8 @@ const StyledTextField = styled(TextField)`
   margin: 5px 0;
 `;
 
-/*A generic item editor*/
+/*A generic item editor with useAutosave
+Will not trigger `updateItem` if value in first field of defaultFieldValues is blank*/
 export const BaseItemEdit =
     defaultFieldValues =>
         function BaseItemEditComponent({
@@ -40,21 +41,24 @@ export const BaseItemEdit =
             const [createItem] = createItemMutation()
             const [updateItem] = updateItemMutation()
             const [deleteItem] = deleteItemMutation()
+            
+            const keys = useMemo(() => Object.keys(defaultFieldValues), [])
 
             const useAutosaveOptions = useMemo(() => ({
                 id: editingItem[itemIdField], // if undefined, will create new item
-                updateItem: (id, data) => updateItem({ [itemIdField]: id, ...context, ...data }),
+                updateItem: (id, data) => {
+                    if (!data[keys[0]]) return
+                    updateItem({ [itemIdField]: id, ...context, ...data })
+                },
                 createItem: data => createItem({ ...context, ...data }).unwrap().then(res => res[itemIdField]),
                 deleteItem: id => deleteItem({ ...context, [itemIdField]: id }),
                 itemIsEmpty: isItemEmpty,
-            }), [context, createItem, deleteItem, editingItem, isItemEmpty, itemIdField, updateItem])
+            }), [context, createItem, deleteItem, editingItem, isItemEmpty, itemIdField, keys, updateItem])
 
 
             const { onChange, flush } = useAutosave(useAutosaveOptions)
 
             const { register, getValues, setValue } = useForm({ defaultValues: editingItem[itemIdField] ? editingItem : defaultFieldValues });
-
-            const keys = useMemo(() => Object.keys(defaultFieldValues), [])
 
             keys.forEach(register)
 

@@ -1,8 +1,6 @@
 import { debounce } from 'lodash';
 import { useCallback, useRef } from "react";
 
-const defaultState = { id: null, data: null, pendingData: false, creationInProgress: false, flushing: true }
-
 /**
  * Autosave hook.
  * Saves items via updateItem on debounced intervals.
@@ -51,7 +49,13 @@ export const useAutosave = ({
     }
 
     /* Store a copy of the item's id (updated on props change via useEffect) */
-    const state = useRef({ ...defaultState, id })
+    const state = useRef({
+        id,
+        data: null,
+        pendingData: false,
+        creationInProgress: false,
+        flushing: false
+    })
 
     /* Update item (or delete, if flushing) */
     const updateOrDelete = useCallback((id, data) => {
