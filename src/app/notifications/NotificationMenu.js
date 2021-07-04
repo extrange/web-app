@@ -14,6 +14,7 @@ const StyledChip = styled(Chip)`
 const StyledPopover = styled(Popover)`
   .MuiPopover-paper {
     max-width: min(calc(100% - 32px), 600px);
+    max-height: calc(100% - 56px);
   }
 `;
 
@@ -44,6 +45,7 @@ export const NotificationMenu = () => {
         <StyledPopover
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
+            transformOrigin={{ vertical: 'top', horizontal: 'left',}}
             onClose={onClose}
             anchorOrigin={{
                 vertical: 'bottom',
