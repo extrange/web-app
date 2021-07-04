@@ -1,29 +1,19 @@
 import { baseApi } from './../../app/network-core/baseApi';
-import { generateCrudApi } from '../../shared/generateCrudApi';
+import { BaseGetCreateSkeleton, generateCrudApi } from '../../shared/generateCrudApi';
 
-const generateStub = name => generateCrudApi(`literature/${name.toLowerCase()}s/`, baseApi, {
+const generateStub = (name, getCreateSkeleton = BaseGetCreateSkeleton) => generateCrudApi(`literature/${name.toLowerCase()}s/`, baseApi, {
     get: `get${name}s`,
     create: `create${name}`,
     update: `update${name}`,
-    delete: `delete${name}`
+    delete: `delete${name}`,
+    getCreateSkeleton,
 })
 
 /* Exclude create method from generateCrudApi for book, for now, because of issues displaying skeletons */
-const bookApi = generateCrudApi('literature/books/', baseApi, {
-    get: 'getBooks',
-    update: 'updateBook',
-    delete: 'deleteBook',
-})
-
+const bookApi = generateStub('Book', null)
 const authorApi = generateStub('Author')
-
 /* Exclude create method from generateCrudApi for book, for now, because of issues displaying skeletons */
-const genreApi = generateCrudApi('literature/genres/', baseApi, {
-    get: 'getGenres',
-    update: 'updateGenre',
-    delete: 'deleteGenre',
-})
-
+const genreApi = generateStub('Genre', null)
 const typeApi = generateStub('Type')
 
 const literatureApi = baseApi.injectEndpoints({
@@ -46,40 +36,6 @@ const literatureApi = baseApi.injectEndpoints({
                 url: 'literature/bookinfo/',
                 params: {work_id: workId, book_id: bookId}
             })
-        }),
-        createBook: build.mutation({
-            query: data => ({
-                url: 'literature/books/',
-                method: 'POST',
-                body: data,
-            }),
-            onQueryStarted: (_arg, { dispatch, queryFulfilled }) => {
-
-                /* Update getItems with the newly created item on success*/
-                queryFulfilled
-                    .then(({ data }) => {
-                        dispatch(baseApi.util.updateQueryData('getBooks', undefined, draft => {
-                            draft.unshift(data);
-                        }));
-                    })
-            }
-        }),
-        createGenre: build.mutation({
-            query: data => ({
-                url: 'literature/genres/',
-                method: 'POST',
-                body: data,
-            }),
-            onQueryStarted: (_arg, { dispatch, queryFulfilled }) => {
-
-                /* Update getItems with the newly created item on success*/
-                queryFulfilled
-                    .then(({ data }) => {
-                        dispatch(baseApi.util.updateQueryData('getGenres', undefined, draft => {
-                            draft.unshift(data);
-                        }));
-                    })
-            }
         }),
         ...bookApi(build),
         ...authorApi(build),

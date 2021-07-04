@@ -92,7 +92,9 @@ export const GenreEdit = ({
         <StyledFooter>
             <StyledDiv />
             {id && <Button onClick={() => setDeleteDialog(true)}>Delete</Button>}
-            <Button onClick={onSubmit}>
+            <Button 
+            onClick={onSubmit}
+            color={'primary'}>
                 Submit
             </Button>
         </StyledFooter>

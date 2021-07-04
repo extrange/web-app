@@ -170,7 +170,7 @@ export const AddBook = ({
                     variant={'outlined'}
                     {...props}
                     {...field}
-                    {...getComponentProps({ ...controllerProps, name, label })} />
+                    {...getComponentProps({ ...controllerProps, label })} />
             }} />, [control])
 
     return <>
@@ -279,7 +279,8 @@ export const AddBook = ({
                     autoHighlight
                     createOption={name => createType({ name }).unwrap()}
                     filterSelectedOptions
-                    getComponentProps={({ fieldState: { error }, label }) => ({
+                    getComponentProps={({field: { name }, fieldState: { error }, label }) => ({
+                        getValue: () => getValues(name),
                         renderProps: {
                             label,
                             variant: 'outlined',
@@ -306,7 +307,7 @@ export const AddBook = ({
 
                     autoComplete
                     autoHighlight
-                    createOption={name => createGenre({ name })}
+                    createOption={name => createGenre({ name }).unwrap()}
                     filterSelectedOptions
                     getComponentProps={({ field: { name }, fieldState: { error }, label }) => ({
                         getValue: () => getValues(name),

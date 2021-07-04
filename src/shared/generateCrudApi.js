@@ -1,16 +1,27 @@
 import { joinUrl } from "./util";
 import { nanoid } from '@reduxjs/toolkit';
 
+export const BaseGetCreateSkeleton = queryArg => ({ isSkeleton: true, id: nanoid() })
+
 /**
  * Helper function to generate CRUD endpoints.
  * Can be used with GenericList.
+ * 
+ * Assumes URL endpoints are of the form 'itemType/itemId/'
+ * Will not pass any arguments to cache update logic
  * 
  * Optimistic update and delete (create doesn't show a skeleton due to
  *  problems rendering a skeleton in tables (for now))
  * 
  * No cache invalidation (cache is modified optimistically and rolled back if necessary)
  */
-export const generateCrudApi = (url, api, { get, create, update, delete: _delete }) => build => {
+export const generateCrudApi = (url, api, {
+    get,
+    create,
+    update,
+    delete: _delete,
+    getCreateSkeleton = BaseGetCreateSkeleton
+}) => build => {
 
     let obj = {}
 
@@ -31,22 +42,22 @@ export const generateCrudApi = (url, api, { get, create, update, delete: _delete
                 method: 'POST',
                 body: data,
             }),
-            onQueryStarted: (_arg, { dispatch, queryFulfilled }) => {
-                /* Optimistically show skeleton */
-                let id = nanoid()
-                let result = dispatch(api.util.updateQueryData(get, undefined, draft => {
-                    draft.unshift({ isSkeleton: true, id })
-                }))
+            onQueryStarted: (queryArg, { dispatch, queryFulfilled }) => {
+                /* Optimistically show skeleton if enabled*/
+                if (getCreateSkeleton) {
+                    let result = dispatch(api.util.updateQueryData(get, undefined, draft => {
+                        draft.unshift(getCreateSkeleton(queryArg))
+                    }))
+                    queryFulfilled.then(result.undo).catch(result.undo)
+                }
 
                 /* Update getItems with the newly created item on success*/
                 queryFulfilled
                     .then(({ data }) => {
-                        result.undo()
                         dispatch(api.util.updateQueryData(get, undefined, draft => {
                             draft.unshift(data);
                         }));
                     })
-                    .catch(result.undo)
             }
         })
     }

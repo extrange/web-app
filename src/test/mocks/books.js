@@ -29,7 +29,7 @@ export const books = [
         const idx = staticFakeBookData.findIndex(e => e.id === book)
         if (idx !== -1)
             return res(
-                context.delay(10000),
+                context.delay(),
                 context.status(200),
             )
         else
@@ -53,9 +53,9 @@ export const books = [
             let newAuthor = { id: id++, name, notes: '' };
             authors.push(newAuthor);
             return res(
+                context.delay(),
                 context.status(201),
                 context.json(newAuthor),
-                context.delay(10000)
             );
         } else return res(
             context.status(400),
@@ -76,9 +76,9 @@ export const books = [
             let newGenre = { id: id++, name, notes: '' };
             genres.push(newGenre);
             return res(
+                context.delay(),
                 context.status(201),
                 context.json(newGenre),
-                context.delay(10000)
             );
         } else return res(
             context.status(400),
@@ -99,9 +99,9 @@ export const books = [
             let newType = { id: id++, name, notes: '' };
             types.push(newType);
             return res(
+                context.delay(),
                 context.status(201),
                 context.json(newType),
-                context.delay(3000)
             );
         } else return res(
             context.status(400),

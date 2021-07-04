@@ -22,6 +22,7 @@ export const Genres = ({ setTitleEndAdornment }) => {
 
     return <>
         <Dialog
+            fullScreen={false}
             disableScrollLock
             open={genreInfoDialogOpen}
             onClose={() => setGenreInfoDialogOpen(false)}>
