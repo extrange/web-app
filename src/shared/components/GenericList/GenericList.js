@@ -1,45 +1,19 @@
-import { ListItem } from '@material-ui/core';
 import { useState } from 'react';
-import styled from 'styled-components';
-import { theme } from './../../../app/theme';
 import { AddButton } from './../AddButton';
-import { BACKGROUND_COLOR } from './../backgroundScreen';
 import { BaseItemEdit } from './BaseItemEdit';
 import { BaseList } from './BaseList';
 
-
-export const StyledListItem = styled(ListItem)`
-  ::before {
-    margin-left: -16px;
-    content: '';
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    z-index: -1;
-    ${({ $hideBackground }) => $hideBackground ? '' : BACKGROUND_COLOR};
-  }
-
-  ${theme.breakpoints.up('md')} {
-    ${({ $reserveSpace }) => $reserveSpace ? 'padding-right: 48px' : 'padding-right: 16px'};
-  }
-  
-  .MuiListItem-container:hover & {
-    padding-right: 48px;
-    
-    // Highlight entire item even when secondary action is hovered
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-`;
-
 /* Can't be passed as a default option, otherwise it will continuously trigger re-renders */
 const DefaultItemEdit = BaseItemEdit({ name: '', notes: '' })
+const DefaultList = BaseList()
 
 /**
  * Note: assumes API endpoints take objects as arguments
  * 
  * context: argument passed (via spread) to all query/mutation requests
- * defaultItemValues: Object containing all fields and their default values.
- * Used by BaseItemEdit to determine how many fields to render.
+ * defaultItemValues: Object containing all fields (except id) and their default values.
+ * Received as a prop on new item addition, and 
+ * used by BaseItemEdit to determine how many fields to render.
  * 
  * List: renderer for list and items.
  * ItemEdit: renderer for editing items. 
@@ -59,7 +33,7 @@ export const GenericList = ({
   defaultItemValues,
   context,
 
-  List = BaseList,
+  List = DefaultList,
   ItemEdit = DefaultItemEdit,
   isItemEmpty = e => !e.name && !e.notes,
   itemIdField = 'id',

@@ -1,12 +1,12 @@
 import { IconButton, ListItemText } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import React from 'react';
-import { StyledListItem } from "../StyledListItem";
-import { StyledListItemSecondaryAction } from "../StyledListItemSecondaryAction";
-import { ItemSkeleton } from "../ItemSkeleton";
+import { StyledListItem } from "./StyledListItem";
+import { StyledListItemSecondaryAction } from "./StyledListItemSecondaryAction";
+import { ItemSkeleton } from "./ItemSkeleton";
 
 /**
- * Generic ListItemComponent renderer for GenericList
+ * A ListItem component which can show title, notes and a delete button on hover.
  */
 export const BaseListItem =
     ({

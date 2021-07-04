@@ -3,14 +3,11 @@ import { useTheme } from "@material-ui/core/styles";
 import { parseJSON } from "date-fns";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { DialogBlurResponsive } from "../../shared/components/DialogBlurResponsive";
 import { MarkdownEditor } from "../../shared/components/MarkdownEditor/MarkdownEditor";
 import { useAutosave } from "../../shared/useAutosave";
 import { formatDistanceToNowPretty } from "../../shared/util";
-import { useCreateItemMutation, useDeleteItemMutation, useUpdateItemMutation } from "./listApi";
-import { selectCurrentList } from "./listsSlice";
 
 const FooterRight = styled.div`
   display: flex; 
@@ -29,27 +26,34 @@ const StyledTextField = styled(TextField)`
   margin: 5px 0;
 `;
 
-/*If editingTask.id is null, a new task is being created*/
-export const EditItem = ({ closeEdit, editingItem }) => {
+export const ListItemEdit = ({
+    editingItem,
+    closeEdit,
+    context,
+    isItemEmpty,
+    itemIdField,
+    createItemMutation,
+    updateItemMutation,
+    deleteItemMutation,
+}) => {
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-    const currentListId = useSelector(selectCurrentList)?.id
 
-    const [createItem, { isLoading: isLoadingCreateItem, startedTimeStamp: createItemStarted }] = useCreateItemMutation()
-    const [updateItem, { isLoading: isLoadingUpdateItem, startedTimeStamp: updateItemStarted }] = useUpdateItemMutation()
-    const [deleteItem, { isLoading: isLoadingDeleteItem }] = useDeleteItemMutation()
+    const [createItem, { isLoading: isLoadingCreateItem, startedTimeStamp: createItemStarted }] = createItemMutation()
+    const [updateItem, { isLoading: isLoadingUpdateItem, startedTimeStamp: updateItemStarted }] = updateItemMutation()
+    const [deleteItem, { isLoading: isLoadingDeleteItem }] = deleteItemMutation()
 
     /* Purely for within the dialog - the appBar already shows a global loading indicator */
     const loading = isLoadingCreateItem || isLoadingUpdateItem || isLoadingDeleteItem
 
     const useAutosaveOptions = useMemo(() => ({
-        id: editingItem?.id,
-        updateItem: (id, data) => updateItem({ list: currentListId, id, ...data }),
-        createItem: data => createItem({ list: currentListId, ...data }).unwrap().then(res => res.id),
-        deleteItem: id => deleteItem({ list: currentListId, id }),
-        itemIsEmpty: data => !data.title && !data.notes,
-    }),[createItem, currentListId, deleteItem, editingItem?.id, updateItem])
+        id: editingItem[itemIdField],
+        updateItem: (id, data) => updateItem({ ...context, [itemIdField]: id, ...data }),
+        createItem: data => createItem({ ...context, ...data }).unwrap().then(res => res.id),
+        deleteItem: id => deleteItem({ ...context, [itemIdField]: id }),
+        itemIsEmpty: isItemEmpty,
+    }), [context, createItem, deleteItem, editingItem, isItemEmpty, itemIdField, updateItem])
 
 
     const { onChange, flush } = useAutosave(useAutosaveOptions)

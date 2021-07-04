@@ -1,79 +1,44 @@
-import { List } from "@material-ui/core";
-import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useSelector } from "react-redux";
-import { Virtuoso } from 'react-virtuoso/dist';
-import styled from 'styled-components';
-import { StyledListItem } from "../../shared/components/StyledListItem";
-import {ItemSkeleton} from '../../shared/components/ItemSkeleton'
-import { EditItem } from "./EditItem";
-import { Item } from "./Item";
-import { useGetItemsQuery } from "./listApi";
+import { BaseList } from "../../shared/components/GenericList/BaseList";
+import { BaseListItem } from "../../shared/components/GenericList/BaseListItem";
+import { GenericList } from "../../shared/components/GenericList/GenericList";
+import { ListItemEdit } from "./ListItemEdit";
+import { useCreateItemMutation, useDeleteItemMutation, useGetItemsQuery, useUpdateItemMutation } from "./listApi";
 import { selectCurrentList } from "./listsSlice";
-import { AddButton } from './../../shared/components/AddButton';
 
-const StyledDiv = styled.div`
-  max-width: 800px; 
-  height: 100%; 
-`;
+const List = BaseList({Item: BaseListItem({
+    primaryTextKey: 'title',
+    secondaryTextKey: 'notes',
+})})
 
+/* List of items, for a particular List. */
 export const ListItems = () => {
 
     const currentList = useSelector(selectCurrentList)
-    const [editingItem, setEditingItem] = useState(null);
-    const virtuosoRef = useRef();
 
-    const { data: items, isFetching } = useGetItemsQuery(currentList?.id, { skip: !currentList })
 
-    useEffect(() => {
-        if (!currentList) return;
+    // useEffect(() => {
+    //     if (!currentList) return;
 
-        // Prevent virtuoso from remembering the scroll position of the previously viewed list
-        if (virtuosoRef.current) {
-            virtuosoRef.current.scrollToIndex({ align: 'top', behavior: 'smooth' })
-        }
-        // eslint-disable-next-line
-    }, [currentList]);
+    //     // Prevent virtuoso from remembering the scroll position of the previously viewed list
+    //     if (virtuosoRef.current) {
+    //         virtuosoRef.current.scrollToIndex({ align: 'top', behavior: 'smooth' })
+    //     }
+    //     // eslint-disable-next-line
+    // }, [currentList]);
 
-    if (isFetching) return <List
-        disablePadding
-        dense>
-        {[...Array(3)].map(() => <StyledListItem>
-            <ItemSkeleton />
-        </StyledListItem>)}
-    </List>
+    return (
+        <GenericList
+            getItemsQuery={useGetItemsQuery}
+            createItemMutation={useCreateItemMutation}
+            updateItemMutation={useUpdateItemMutation}
+            deleteItemMutation={useDeleteItemMutation}
+            defaultItemValues={{ title: '', notes: '' }}
+            context={{ list: currentList.id }}
+            itemIdField={'id'}
 
-    const list = items.map(e => <Item
-        setEditingItem={setEditingItem}
-        key={e.id}
-        item={e} />);
-
-    return <>
-        <AddButton
-            onClick={() => setEditingItem({
-                id: null,
-                title: '',
-                notes: '',
-            })} />
-
-        {editingItem && <EditItem
-            editingItem={editingItem}
-            closeEdit={() => void setEditingItem(null)} />}
-
-        <StyledDiv>
-            <Virtuoso
-                ref={virtuosoRef}
-                totalCount={items.length}
-                itemContent={index => list[index]}
-                components={{
-                    List: forwardRef(({ children, ...props }, listRef) =>
-                        <List
-                            {...props}
-                            disablePadding
-                            dense
-                            ref={listRef}>
-                            {children}
-                        </List>)
-                }} />
-        </StyledDiv>
-    </>
+            List={List}
+            ItemEdit={ListItemEdit}
+            isItemEmpty={e => !e.title && !e.notes} />
+    )
 };

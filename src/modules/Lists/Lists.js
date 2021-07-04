@@ -21,7 +21,7 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
     const currentList = useSelector(selectCurrentList)
 
     const { data: lists, isFetching: isLoadingLists, refetch: refetchLists } = useGetListsQuery()
-    const { isFetching: isFetchingGetItems, refetch: refetchItems } = useGetItemsQuery(currentList?.id, { skip: !currentList })
+    const { isFetching: isFetchingGetItems, refetch: refetchItems } = useGetItemsQuery({list: currentList?.id}, { skip: !currentList })
     const [createList] = useCreateListMutation()
 
     /*Show Lists in app-bar drawer*/

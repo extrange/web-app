@@ -1,10 +1,11 @@
 import { IconButton, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useState } from 'react';
-import { StyledListItem } from "../../shared/components/StyledListItem";
-import {StyledListItemSecondaryAction } from '../../shared/components/StyledListItemSecondaryAction'
+import { StyledListItem } from '../../shared/components/GenericList/StyledListItem'
+import {StyledListItemSecondaryAction } from '../../shared/components/GenericList/StyledListItemSecondaryAction'
 import { useDeleteListMutation, useUpdateListMutation } from "./listApi";
  
+/* An individual list shown in the drawer. */
 export const List = ({ onClick, list: { title, id } }) => {
 
     const [deleteList] = useDeleteListMutation()

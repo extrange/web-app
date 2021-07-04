@@ -57,7 +57,7 @@ const listApi = baseApi.injectEndpoints({
         }),
 
         getItems: build.query({
-            query: list => `tasks/tasklists/${list}/tasks/`,
+            query: ({list}) => `tasks/tasklists/${list}/tasks/`,
         }),
 
         createItem: build.mutation({
@@ -70,14 +70,14 @@ const listApi = baseApi.injectEndpoints({
             onQueryStarted: ({ list }, { dispatch, queryFulfilled }) => {
                 /* Optimistically show skeleton */
                 let id = nanoid()
-                let result = dispatch(listApi.util.updateQueryData('getItems', list, draft => {
+                let result = dispatch(listApi.util.updateQueryData('getItems', {list}, draft => {
                     draft.unshift({ isSkeleton: true, id })
                 }))
 
                 /* Update getItems with the newly created item on success, and remove skeleton*/
                 queryFulfilled
                     .then(({ data }) => {
-                        dispatch(listApi.util.updateQueryData('getItems', list, draft => {
+                        dispatch(listApi.util.updateQueryData('getItems', {list}, draft => {
                             draft.unshift(data);
                             let idx = draft.findIndex(e => e.id === id)
                             if (idx !== -1)
@@ -98,7 +98,7 @@ const listApi = baseApi.injectEndpoints({
             /* Optimistically update the item (it will exist in cache IF createItem was successful,
                 due to onQueryStarted in createItem) */
             onQueryStarted: ({ list, id, ...data }, { dispatch, queryFulfilled }) => {
-                let result = dispatch(listApi.util.updateQueryData('getItems', list, draft => {
+                let result = dispatch(listApi.util.updateQueryData('getItems', {list}, draft => {
                     let obj = draft.find(e => e.id === id)
                     Object.assign(obj, data)
                 }))
@@ -114,7 +114,7 @@ const listApi = baseApi.injectEndpoints({
 
             /* Optimistically delete item */
             onQueryStarted: ({ list, id }, { dispatch, queryFulfilled }) => {
-                let result = dispatch(listApi.util.updateQueryData('getItems', list, draft => draft.filter(e => e.id !== id)))
+                let result = dispatch(listApi.util.updateQueryData('getItems', {list}, draft => draft.filter(e => e.id !== id)))
                 queryFulfilled.catch(result.undo)
             }
         })

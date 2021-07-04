@@ -11,7 +11,7 @@ const StyledDiv = styled.div`
 
 const DefaultItem = BaseListItem({ primaryTextKey: 'name', secondaryTextKey: 'notes' })
 
-export const BaseList = ({
+export const BaseList = ({ Item = DefaultItem }={}) => ({
     context,
     deleteItemMutation,
     items,
@@ -25,7 +25,7 @@ export const BaseList = ({
         <List
             disablePadding
             dense>
-            {[...Array(3)].map((_, idx) => <DefaultItem
+            {[...Array(3)].map((_, idx) => <Item
                 context={context}
                 deleteItemMutation={deleteItemMutation}
                 itemIdField={itemIdField}
@@ -38,7 +38,7 @@ export const BaseList = ({
 
     const itemsArray =
         items.map(e => (
-            <DefaultItem
+            <Item
                 context={context}
                 deleteItemMutation={deleteItemMutation}
                 itemIdField={itemIdField}

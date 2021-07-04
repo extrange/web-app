@@ -23,9 +23,7 @@ const StyledTextField = styled(TextField)`
   margin: 5px 0;
 `;
 
-/*
-A list-like view, suitable for list items
-If editingTask.id is null, a new task is being created*/
+/*A generic item editor*/
 export const BaseItemEdit =
     defaultFieldValues =>
         function BaseItemEditComponent({
