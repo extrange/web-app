@@ -4,26 +4,28 @@ import { Dialog } from "@material-ui/core";
 import { OverlayScrollbarOptions, theme } from "../../app/theme";
 
 const StyledDialog = styled(Dialog)`
+
   .MuiDialog-paper {
-    width: min(100vw - 32px, ${({ $maxWidth }) => $maxWidth}px);
+    width: min(100vw, 600px);
+    box-shadow: 0px 0px 17px 12px rgba(0,0,0,0.71);
   }
 
-  // Blur effect only if supported
-  @supports (backdrop-filter: blur(5px)) {
-    .MuiDialog-container {
-      backdrop-filter: blur(5px);
-    
-    }
+  // Start from top of screen regardless of content height
+  .MuiDialog-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+  }
 
+  .MuiDialog-paper {
+      background: black;
+  }
+
+  @supports (backdrop-filter: blur(5px)) {
     .MuiDialog-paper {
+      backdrop-filter: blur(5px);
       background: none;
     }
-  }
-
-  .MuiDialog-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
   }
 
   // Reduce margins when on mobile
@@ -35,13 +37,16 @@ const StyledDialog = styled(Dialog)`
     }
 
     // Extend height
-    .MuiDialog-paperScrollPaper {
-      max-height: 100%;
+    .MuiDialog-container {
+      height: 100%;
     }
 
-    // Add some margin to the top, and remove bottom margin settings
     .MuiDialog-paper {
-      margin: 16px 0 0;
+      // Keep taskbar visible
+      margin: 48px 0 0;
+
+      // Fill up screen
+      max-height: initial;
     }
 
   }
@@ -54,16 +59,25 @@ const StyledOverlayScrollbarsComponent = styled(OverlayScrollbarsComponent)`
 `;
 
 /* Dialog with overlayscrollbars (does not scroll footer component)*/
-export const DialogBlurResponsive = ({ children, footer, maxWidth = 800, ...props }) =>
+export const DialogBlurResponsive = ({
+  children,
+  footer,
+  fullscreen = false,
+  ...props }) =>
+
   <StyledDialog
     maxWidth={false}
-    $maxWidth={maxWidth}
     disableScrollLock
+    disablePortal
+    $fullscreen={fullscreen}
     {...props}>
+
     <StyledOverlayScrollbarsComponent
       options={OverlayScrollbarOptions}
       className={'os-host-flexbox'}>
       {children}
     </StyledOverlayScrollbarsComponent>
+
     {footer}
+
   </StyledDialog>;

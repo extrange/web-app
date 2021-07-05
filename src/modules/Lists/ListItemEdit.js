@@ -1,4 +1,4 @@
-import { Button, CircularProgress, TextField, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, TextField, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import { parseJSON } from "date-fns";
 import { useMemo } from "react";
@@ -40,12 +40,9 @@ export const ListItemEdit = ({
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [createItem, { isLoading: isLoadingCreateItem, startedTimeStamp: createItemStarted }] = createItemMutation()
-    const [updateItem, { isLoading: isLoadingUpdateItem, startedTimeStamp: updateItemStarted }] = updateItemMutation()
-    const [deleteItem, { isLoading: isLoadingDeleteItem }] = deleteItemMutation()
-
-    /* Purely for within the dialog - the appBar already shows a global loading indicator */
-    const loading = isLoadingCreateItem || isLoadingUpdateItem || isLoadingDeleteItem
+    const [createItem, { startedTimeStamp: createItemStarted }] = createItemMutation()
+    const [updateItem, { startedTimeStamp: updateItemStarted }] = updateItemMutation()
+    const [deleteItem] = deleteItemMutation()
 
     const useAutosaveOptions = useMemo(() => ({
         id: editingItem[itemIdField],
@@ -115,7 +112,6 @@ export const ListItemEdit = ({
                 </Typography>
             </Tooltip>
             <FooterRight>
-                {loading && <CircularProgress color="inherit" size={20} />}
                 <Button
                     variant={'text'}
                     color={'primary'}

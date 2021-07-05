@@ -237,8 +237,7 @@ export const AddBook = ({
         <DialogBlurResponsive
             open
             footer={footer}
-            disableBackdropClick
-            onBackdropClick={handleDiscard}>
+            onClose={handleDiscard}>
             <FieldContainer>
 
                 <StandardField

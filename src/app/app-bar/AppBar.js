@@ -63,8 +63,6 @@ export const AppBar = () => {
 
     const module = useSelector(selectCurrentModule)
 
-    const trigger = useScrollTrigger({ threshold: 50 });
-
     /*Hooks are passed to modules*/
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [drawerContent, setDrawerContent] = useState(null)
@@ -88,24 +86,22 @@ export const AppBar = () => {
     }, [module, setDrawerContent, setSidebarName, setTitleContent])
 
     return <FlexContainer>
-        <Slide direction={'down'} in={!trigger}>
-            <TransparentAppBar
-                position={'fixed'}
-                color={'transparent'}>
-                <Toolbar variant={"dense"}>
-                    <StyledIconButton
-                        color={"inherit"}
-                        edge={'start'}
-                        onClick={() => setDrawerOpen(true)}>
-                        <MenuIcon />
-                    </StyledIconButton>
-                    {titleContent}
-                    <div style={{ flex: 1 }} />
-                    <AppBarNetworkLoading/>
-                    <NotificationMenu />
-                </Toolbar>
-            </TransparentAppBar>
-        </Slide>
+        <TransparentAppBar
+            position={'fixed'}
+            color={'transparent'}>
+            <Toolbar variant={"dense"}>
+                <StyledIconButton
+                    color={"inherit"}
+                    edge={'start'}
+                    onClick={() => setDrawerOpen(true)}>
+                    <MenuIcon />
+                </StyledIconButton>
+                {titleContent}
+                <div style={{ flex: 1 }} />
+                <AppBarNetworkLoading />
+                <NotificationMenu />
+            </Toolbar>
+        </TransparentAppBar>
 
         <DrawerContainer>
             <AppBarDrawer
