@@ -12,6 +12,7 @@ import {formatDistanceToNowStrict} from 'date-fns'
 import {TextFieldClearableInfoCurrency} from "./TextFieldClearableInfoCurrency";
 import {FieldUseWatch} from "./FieldUseWatch";
 import {useGetSpyPriceQuery} from "./optionHedgeCalculatorApi";
+import {explanatoryText} from './explanatoryText'
 
 const FIELDS = {
     portfolioValue: 'portfolioValue',
@@ -35,8 +36,8 @@ const Container = styled.div`
 `;
 
 const StyledTypography = styled(Typography)`
-  &.MuiTypography-root {
-    white-space: pre-line;
+  p {
+      margin: 0 0 10px;
   }
 `;
 
@@ -55,16 +56,7 @@ const StyledTextFieldClearableInfoCurrency = styled(TextFieldClearableInfoCurren
   width: min(300px, calc(100vw - 20px));
 `;
 
-const explanatoryText = `Hedge instrument: SPY puts
-NOTE: This calculates a 1:1 put spread, not the 1:1.1 as described in the 'Options Edge' book
 
-Note: As I am only hedging CSPX and IWDA, beta for my portfolio is 1
-Take beta of IWDA to be 0.89 for now (see 'Finance and Investing' doc)
-Beta of DPYA = IWDP = 0.99
-5yr beta of ISAC = 1
-
-Rehedge in first month ONLY if SPY has moved > 3% from the previous long put strike
-`;
 
 const formatNoDecimals = new Intl.NumberFormat(undefined, {maximumFractionDigits: 0});
 const formatDecimals = new Intl.NumberFormat(undefined, {maximumFractionDigits: 1});
@@ -97,7 +89,7 @@ export const OptionHedgeCalculator = () => {
 
 
     return <Container>
-        <StyledTypography variant={'body1'}>{explanatoryText}</StyledTypography>
+        <StyledTypography variant={'body1'} dangerouslySetInnerHTML={{__html: explanatoryText}}></StyledTypography>
 
         <Controller
             name={FIELDS.portfolioValue}
