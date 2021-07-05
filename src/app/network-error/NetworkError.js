@@ -4,6 +4,7 @@ import {AlertSnackbarWithDialog} from "../../shared/components/AlertSnackbarWith
 import {useDispatch, useSelector} from "react-redux";
 import {clearNetworkError, selectNetworkError} from "../appSlice";
 import {NETWORK_ERROR} from "../constants";
+import {format, formatISO} from 'date-fns'
 
 /*Displays appropriate snackbars informing users of network state/errors,
 * with remediation options.
@@ -15,12 +16,14 @@ export const NetworkError = () => {
     const networkError = useSelector(selectNetworkError)
     if (!networkError) return null
 
-    const {method, url, text, status, type} = networkError
+    const {method, url, text, status, type, timestamp} = networkError
 
     const message = <>
-        <p>{method}: {url}</p>
+        <p>{formatISO(timestamp)} {method}: {url}</p>
         <p>{text}</p>
     </>
+
+    const formattedTimestamp = format(timestamp, 'HH:mm')
 
     switch (type) {
         case NETWORK_ERROR.FETCH_ERROR:
@@ -32,7 +35,7 @@ export const NetworkError = () => {
                 </Button>}
                 dialogContent={message}
                 severity={'error'}
-                snackbarText={'A network error has occurred.'}
+                snackbarText={`[${formattedTimestamp}] A network error has occurred.`}
                 onClose={() => dispatch(clearNetworkError())}/>
 
         case NETWORK_ERROR.HTTP_ERROR:
@@ -56,7 +59,7 @@ export const NetworkError = () => {
                     </Button>}
                     dialogContent={message}
                     severity={'error'}
-                    snackbarText={'An HTTP error has occurred.'}
+                    snackbarText={`[${formattedTimestamp}] An HTTP error has occurred.`}
                     onClose={() => dispatch(clearNetworkError())}/>;
             }
         default:
@@ -65,7 +68,7 @@ export const NetworkError = () => {
                 dialogTitle={`Non NetworkError rejectWithValue thunk`}
                 dialogContent={message}
                 severity={'error'}
-                snackbarText={'A network error has occurred.'}
+                snackbarText={`[${formattedTimestamp}] A network error has occurred.`}
                 onClose={() => dispatch(clearNetworkError())}/>;
     }
 };

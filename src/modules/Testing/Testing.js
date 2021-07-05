@@ -9,7 +9,7 @@ const StyledDiv = styled.div`
   display: grid;
   grid-gap: 20px;
   max-width: 300px;
-  margin: 10px;
+  padding: 10px;
 `
 
 export const Testing = () => {

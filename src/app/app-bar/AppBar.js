@@ -1,4 +1,4 @@
-import { AppBar as MuiAppBar, IconButton, Slide, Toolbar, Typography, useScrollTrigger } from "@material-ui/core";
+import { AppBar as MuiAppBar, IconButton, Toolbar, Typography } from "@material-ui/core";
 import { styled as muiStyled } from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
 import React, { useLayoutEffect, useState } from "react";

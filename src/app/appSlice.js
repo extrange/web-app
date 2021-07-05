@@ -40,7 +40,8 @@ const setNetworkErrorReducer = (state, action) => {
         url = 'URL not specified',
         text = '',
         status = null, /*Must be specified if HTTP_ERROR*/
-        type
+        type,
+        timestamp,
     } = action.payload
 
     /*Type not specified:  rejected thunk with value which is NOT a NetworkError object*/
@@ -50,7 +51,8 @@ const setNetworkErrorReducer = (state, action) => {
             url,
             text: JSON.stringify(action, undefined, 2),
             status,
-            type
+            type,
+            timestamp
         }
         return
     }
@@ -64,16 +66,24 @@ const setNetworkErrorReducer = (state, action) => {
         [401, 403].includes(status)) {
         return
     }
-    state.networkError = { method, url, text, status, type }
+    state.networkError = { method, url, text, status, type, timestamp }
 }
 
 export const appSlice = createSlice({
     name: appSliceName,
     initialState,
     reducers: {
-        setNetworkError: setNetworkErrorReducer,
+        setNetworkError: {
+            reducer: setNetworkErrorReducer,
+            prepare: action => ({
+                payload: {
+                    ...action,
+                    timestamp: new Date().getTime()
+                }
+            })
+        },
         clearNetworkError: state => void (state.networkError = null),
-        setCurrentModule: (state, { payload}) => void (state.module = payload),
+        setCurrentModule: (state, { payload }) => void (state.module = payload),
         setAppBar: (state, { payload: { drawerOpen = false } }) => void (state.appBar.drawerOpen = drawerOpen),
         addNetworkAction: (state, { payload }) => {
             if (!state.pendingNetworkActions.includes(payload))
