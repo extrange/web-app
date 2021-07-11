@@ -13,6 +13,8 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.2.10",
+    "@react-three/drei": "^7.0.6",
+    "@react-three/fiber": "^7.0.4",
     "@reduxjs/toolkit": "^1.5.1",
     "cleave.js": "^1.6.0",
     "codemirror": "^5.59.2",
@@ -47,6 +49,7 @@
     "shaka-player": "^3.0.10",
     "source-map-explorer": "^2.5.2",
     "styled-components": "^5.2.1",
+    "three": "^0.130.1",
     "ua-parser-js": "^0.7.28",
     "worker-loader": "^3.0.7",
     "yup": "^0.32.8"

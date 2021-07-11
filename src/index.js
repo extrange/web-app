@@ -12,14 +12,13 @@ import { LoadServiceWorker } from "./app/load-service-worker/LoadServiceWorker";
 import { ErrorBoundary } from "./app/error-boundary/ErrorBoundary";
 import 'overlayscrollbars/css/OverlayScrollbars.css'
 import { theme } from "./app/theme";
-import { RandomBackground } from "./shared/components/randomBackground";
 import { App } from "./app/App";
 import { Provider } from 'react-redux'
 import { store } from './app/store'
 import { NetworkError } from "./app/network-error/NetworkError";
 
 /*Decide whether to run mock service worker for debugging*/
-const USE_MOCK_SERVICE_WORKER = false;
+const USE_MOCK_SERVICE_WORKER = true;
 const prepare = () => {
     if (process.env.NODE_ENV === 'development' && USE_MOCK_SERVICE_WORKER) {
         const { worker } = require('./test/mocks/browser');
@@ -33,7 +32,6 @@ prepare().then(() => {
         <StrictMode>
             <MuiThemeProvider theme={theme}> 
                 <CssBaseline />
-                <RandomBackground />
                 <ErrorBoundary>
                     <Provider store={store}>
                         <LoadServiceWorker />

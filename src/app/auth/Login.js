@@ -1,22 +1,25 @@
-import React, {useState} from 'react';
-import styled from "styled-components";
-import {Button, Checkbox, CircularProgress, FormControlLabel, TextField, Typography} from "@material-ui/core";
-import {BackgroundScreenRounded} from "../../shared/components/backgroundScreen";
-import {useInput} from "../../shared/useInput";
+import { Button, Checkbox, CircularProgress, FormControlLabel, TextField, Typography } from "@material-ui/core";
+import React, { useState } from 'react';
 import ReCAPTCHA from "react-google-recaptcha";
-import {useDispatch, useSelector} from "react-redux";
-import {selectLoginStatus, setNetworkError} from "../appSlice";
-import {NETWORK_ERROR} from "../constants";
-import {useCheckLoginQuery, useLoginMutation} from "./authApi";
-import {Loading} from "../../shared/components/Loading";
+import { useDispatch, useSelector } from "react-redux";
+import styled from "styled-components";
+import { BackgroundScreenRounded } from "../../shared/components/backgroundScreen";
+import { Loading } from "../../shared/components/Loading";
+import { useInput } from "../../shared/useInput";
+import { selectLoginStatus, setNetworkError } from "../appSlice";
+import { NETWORK_ERROR } from "../constants";
+import { Starfield } from '../starfield/Starfield';
+import { useCheckLoginQuery, useLoginMutation } from "./authApi";
 
 const StyledForm = styled.form`
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 0 auto;
   max-width: 300px;
   height: 100vh;
+  ${({$blur}) => $blur && `filter: blur(5px) opacity(25%);`}
+  transition: 0.5s;
 `;
 
 const InnerContainer = styled(BackgroundScreenRounded)`
@@ -24,6 +27,7 @@ const InnerContainer = styled(BackgroundScreenRounded)`
   flex-direction: column;
   justify-content: center;
   padding: 10px;
+  position: relative;
 `;
 
 const StyledTextField = styled(TextField)`
@@ -42,18 +46,20 @@ const StyledCircularProgress = styled(CircularProgress)`
 export const Login = () => {
 
     const dispatch = useDispatch()
-    const {recaptchaKey} = useSelector(selectLoginStatus)
+    const { recaptchaKey } = useSelector(selectLoginStatus)
 
-    const [login, {isLoading}] = useLoginMutation()
-    const {isFetching, isError, error} = useCheckLoginQuery(undefined, {refetchOnMountOrArgChange: true})
+    /* isLoading is used to determine if starfield zoom animation should be shown */
+    const [login, { isLoading }] = useLoginMutation()
+    const { isFetching, isError, error } = useCheckLoginQuery(undefined, { refetchOnMountOrArgChange: true })
 
-    const {values, bind, setValue} = useInput();
+    const { values, bind, setValue } = useInput();
     const recaptchaRef = React.useRef();
     const [loginMessage, setLoginMessage] = useState('Sign In');
     const [otpRequired, setOtpRequired] = useState(false);
 
 
     const onSubmit = event => {
+        setLoginMessage('')
         event.preventDefault();
         recaptchaRef.current
             .executeAsync()
@@ -65,6 +71,7 @@ export const Login = () => {
                 save_browser: values.saveBrowser
             }))
             .then(res => {
+                /* Handle 401/403 errors here (either OTP required or wrong password) */
                 if (res.error &&
                     res.error.type === NETWORK_ERROR.HTTP_ERROR &&
                     [401, 403].includes(res.error.status)) {
@@ -98,74 +105,77 @@ export const Login = () => {
         return <Loading
             open={true}
             message={isError ? 'HTTP Error' : 'Checking authentication...'}
-            fullscreen={true}/>;
+            fullscreen={true} />;
 
-    return <StyledForm onSubmit={onSubmit}>
-        <InnerContainer>
-            <Typography variant={'h6'} gutterBottom align={"center"}>
-                {loginMessage}
-            </Typography>
-            {!otpRequired && <>
-                <StyledTextField
-                    type='text'
-                    label={'Username'}
-                    fullWidth
-                    required
-                    autoFocus
-                    variant={'outlined'}
-                    autoComplete={'username'}
-                    {...bind('username')}
+    return <>
+        {/* Not showing glitches for now, as they look like an actual error */}
+        <Starfield hover={isLoading} error={false} />
+        <StyledForm onSubmit={onSubmit} $blur={isLoading}>
+            <InnerContainer>
+                <Typography variant={'h6'} gutterBottom align={"center"} style={{ height: '32px' }}>
+                    {loginMessage}
+                </Typography>
+                {!otpRequired && <>
+                    <StyledTextField
+                        type='text'
+                        label={'Username'}
+                        fullWidth
+                        required
+                        autoFocus
+                        variant={'outlined'}
+                        autoComplete={'username'}
+                        {...bind('username')}
+                    />
+
+                    <StyledTextField
+                        type={'password'}
+                        label={'Password'}
+                        autoComplete={'current-password'}
+                        fullWidth
+                        required
+                        variant={'outlined'}
+                        {...bind('password')}
+                    />
+                </>}
+
+                {otpRequired && <>
+                    <StyledTextField
+                        type={'password'}
+                        label={'OTP'}
+                        autoComplete={'one-time-code'}
+                        fullWidth
+                        variant={'outlined'}
+                        inputMode={"numeric"}
+                        pattern={"[0-9]*"}
+                        {...bind('otp')}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={values.saveBrowser}
+                            onChange={e => setValue({
+                                name: 'saveBrowser',
+                                value: e.target.checked
+                            })}
+                        />}
+                        label={'Remember browser'}
+                    />
+                </>}
+                <Button
+                    variant={'contained'}
+                    type={'submit'}
+                    color={'primary'}
+                    disabled={isLoading}
+                    fullWidth>
+                    <Spacer />Login{isLoading ? <StyledCircularProgress color={"inherit"} size={20} /> : <Spacer />}
+                </Button>
+                <ReCAPTCHA
+                    ref={recaptchaRef}
+                    size={'invisible'}
+                    sitekey={recaptchaKey}
+                    theme={'dark'}
                 />
 
-                <StyledTextField
-                    type={'password'}
-                    label={'Password'}
-                    autoComplete={'current-password'}
-                    fullWidth
-                    required
-                    variant={'outlined'}
-                    {...bind('password')}
-                />
-            </>}
-
-            {otpRequired && <>
-                <StyledTextField
-                    type={'password'}
-                    label={'OTP'}
-                    autoComplete={'one-time-code'}
-                    fullWidth
-                    variant={'outlined'}
-                    inputMode={"numeric"}
-                    pattern={"[0-9]*"}
-                    {...bind('otp')}
-                />
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={values.saveBrowser}
-                        onChange={e => setValue({
-                            name: 'saveBrowser',
-                            value: e.target.checked
-                        })}
-                    />}
-                    label={'Remember browser'}
-                />
-            </>}
-
-            <Button
-                variant={'contained'}
-                type={'submit'}
-                color={'primary'}
-                fullWidth
-            >
-                <Spacer/>Login{isLoading ? <StyledCircularProgress color={"inherit"} size={20}/> : <Spacer/>}
-            </Button>
-            <ReCAPTCHA
-                ref={recaptchaRef}
-                size={'invisible'}
-                sitekey={recaptchaKey}
-                theme={'dark'}
-            />
-
-        </InnerContainer>
-    </StyledForm>;
+            </InnerContainer>
+        </StyledForm>
+    </>;
 };

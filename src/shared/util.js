@@ -30,12 +30,12 @@ export const isEmpty = string => !Boolean(string?.trim());
  * Returns a seeded random number between min (inclusive) and max (exclusive)
  * @param min
  * @param max
- * @param seed
+ * @param seed optional, will use seeded RNG if present
  */
-export const getRandomInt = (min, max, seed) => {
+export const getRandomInt = (min, max, seed=undefined) => {
     min = Math.ceil(min);
     max = Math.floor(max);
-    let rng = seedrandom(seed);
+    let rng = seed ? seedrandom(seed) : Math.random;
     return Math.floor(rng() * (max - min) + min)
 };
 
@@ -161,3 +161,5 @@ export const joinUrl = (base, url) => {
 
 /* Truncate string with ellipsis after 'len' characters */
 export const truncateString = (string, len) => string.length < len ? string : `${string.slice(0, len)}...`
+
+export const tanDegrees = degrees => Math.tan(degrees * Math.PI / 180)
