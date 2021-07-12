@@ -16,6 +16,7 @@ import { App } from "./app/App";
 import { Provider } from 'react-redux'
 import { store } from './app/store'
 import { NetworkError } from "./app/network-error/NetworkError";
+import { RandomBackground } from './shared/components/randomBackground';
 
 /*Decide whether to run mock service worker for debugging*/
 const USE_MOCK_SERVICE_WORKER = true;
@@ -30,8 +31,9 @@ const prepare = () => {
 prepare().then(() => {
     ReactDOM.render(
         <StrictMode>
-            <MuiThemeProvider theme={theme}> 
+            <MuiThemeProvider theme={theme}>
                 <CssBaseline />
+                <RandomBackground />
                 <ErrorBoundary>
                     <Provider store={store}>
                         <LoadServiceWorker />

@@ -1,5 +1,5 @@
 import { Button, Checkbox, CircularProgress, FormControlLabel, TextField, Typography } from "@material-ui/core";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReCAPTCHA from "react-google-recaptcha";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -8,7 +8,7 @@ import { Loading } from "../../shared/components/Loading";
 import { useInput } from "../../shared/useInput";
 import { selectLoginStatus, setNetworkError } from "../appSlice";
 import { NETWORK_ERROR } from "../constants";
-import { Starfield } from '../starfield/Starfield';
+import { showZoom } from '../starfield/Starfield';
 import { useCheckLoginQuery, useLoginMutation } from "./authApi";
 
 const StyledForm = styled.form`
@@ -18,8 +18,12 @@ const StyledForm = styled.form`
   justify-content: center;
   max-width: 300px;
   height: 100vh;
-  ${({$blur}) => $blur && `filter: blur(5px) opacity(25%);`}
+  ${({ $blur }) => $blur && `filter: blur(5px) opacity(25%);`}
   transition: 0.5s;
+  
+  .grecaptcha-badge {
+      width: 0 !important; //This badge keeps expanding the canvas on submit
+  }
 `;
 
 const InnerContainer = styled(BackgroundScreenRounded)`
@@ -57,6 +61,8 @@ export const Login = () => {
     const [loginMessage, setLoginMessage] = useState('Sign In');
     const [otpRequired, setOtpRequired] = useState(false);
 
+     /* Control zoom effect on starfield here */
+     useEffect(() => void (showZoom.val = isLoading), [isLoading])
 
     const onSubmit = event => {
         setLoginMessage('')
@@ -108,8 +114,6 @@ export const Login = () => {
             fullscreen={true} />;
 
     return <>
-        {/* Not showing glitches for now, as they look like an actual error */}
-        <Starfield hover={isLoading} error={false} />
         <StyledForm onSubmit={onSubmit} $blur={isLoading}>
             <InnerContainer>
                 <Typography variant={'h6'} gutterBottom align={"center"} style={{ height: '32px' }}>

@@ -1,6 +1,6 @@
 import { Stats, useTexture } from '@react-three/drei'
 import { Canvas, extend, useFrame, useThree } from '@react-three/fiber'
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Color, Vector3 } from 'three'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
@@ -9,18 +9,20 @@ import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
 import { lerp } from 'three/src/math/MathUtils'
 import { getRandomInt } from '../../shared/util'
-import { GlitchPass } from './glitchPassCustom'
 import './spriteShaderMaterial'
 import { ZoomShader } from './zoomShader'
 
-extend({ UnrealBloomPass, RenderPass, GlitchPass, ShaderPass, EffectComposer })
+extend({ UnrealBloomPass, RenderPass, ShaderPass, EffectComposer })
+
+/* Used to avoid jankiness when showZoom changes */
+export const showZoom = {val: false}
 
 /* Global parameters */
 const fov = 50
 const cameraDistance = 0.1
 const starfieldSpawnZ = -150 // Has to be -150 because of the shader (not sure why)
 const starfieldZLength = 300 // Also has to be 300 because of the shader
-const POINTS_COUNT = 50_000 // Only a problem on really tiny screens
+const POINTS_COUNT = Math.floor(50_000 * Math.min(window.innerWidth / 1280, 1))// Maximum number of points to render
 const COLORS = [
     0xa70267,
     0xf10c49,
@@ -31,6 +33,11 @@ const COLORS = [
 const MAX_TIME_FACTOR = 100
 const TIME_FACTOR_CHANGE = 0.02
 const ZOOM_RATIO = 0.004 // Factor by which zoom is multiplied by the time factor - 1
+// const fieldY = 2 * totalDistance * tanDegrees(fov / 2)
+// const fieldX = fieldY * width / height
+/* 200 looks better, somehow */
+const fieldY = 200
+const fieldX = 200 * window.innerWidth / window.innerHeight
 
 const FullscreenDiv = styled.div`
   width: 100%;
@@ -38,23 +45,17 @@ const FullscreenDiv = styled.div`
   position: fixed;
 `
 
-const Main = ({ hover, error }) => {
+const Main = () => {
 
     const texture = useTexture('star.png')
     const points = useRef()
     const shaderMaterial = useRef()
-    const cameraVec = new Vector3()
+    const [cameraVec] = useState(() => new Vector3())
     const composer = useRef()
     const { scene, gl, size: {height, width}, camera } = useThree()
     const zoomShader = useRef()
     const timeFactor = useRef(1)
-    const glitchShader = useRef()
 
-    // const fieldY = 2 * totalDistance * tanDegrees(fov / 2)
-    // const fieldX = fieldY * width / height
-    /* 200 looks better, somehow */
-    const fieldY = 200
-    const fieldX = 200
 
     const { positions, sizes, colors } = useMemo(() => {
         const positionArray = new Float32Array(POINTS_COUNT * 3)
@@ -84,24 +85,22 @@ const Main = ({ hover, error }) => {
             positions: positionArray,
             sizes: sizesArray,
             colors: colorsArray
-        }
-    }, [fieldX, fieldY])
+        } 
+    }, [])
 
     useEffect(() => void composer.current.setSize(width, height), [height, width])
 
     useFrame(({ camera, mouse }, delta) => {
-        glitchShader.current.active = error
+        composer.current.render()
         camera.position.lerp(cameraVec.set(-mouse.x * 4, -mouse.y * 4, 0), 0.03)
 
-        /* This is the factor by which zoom strength and particle velocity are multipled by
+        /* This is the factor by which zoom strength and particle velocity are multiplied by
         Using lerp repeatedly results in decreasing change near endpoints, a desirable effect*/
-        timeFactor.current = lerp(timeFactor.current, hover ? MAX_TIME_FACTOR : 1, TIME_FACTOR_CHANGE)
+        timeFactor.current = lerp(timeFactor.current, showZoom.val ? MAX_TIME_FACTOR : 1, TIME_FACTOR_CHANGE)
 
         shaderMaterial.current.uTime += delta * 4 * timeFactor.current
         zoomShader.current.uniforms.strength.value = (timeFactor.current - 1) * ZOOM_RATIO
-    })
-
-    useFrame(() => composer.current.render(), 1)
+    }, 1)
 
 
     return <>
@@ -120,19 +119,17 @@ const Main = ({ hover, error }) => {
                 depthTest={false} //No sprite occlusion
             />
         </points>
-        <Stats />
         <effectComposer ref={composer} args={[gl]}>
             <renderPass attachArray="passes" scene={scene} camera={camera} />
             {/* resolution, strength, radius, threshold */}
             <unrealBloomPass attachArray="passes" args={[undefined, 2, 0, 0]} />
             <shaderPass attachArray="passes" args={[ZoomShader]} ref={zoomShader} />
-            <glitchPass attachArray="passes" ref={glitchShader}/>
         </effectComposer>
     </>
 }
 
-export const Starfield = ({ hover, error }) => <FullscreenDiv>
+export const Starfield = () => <FullscreenDiv>
     <Canvas camera={{ position: [0, 0, cameraDistance], fov }}>
-        <Main hover={hover} error={error}/>
+        <Main/>
     </Canvas>
 </FullscreenDiv>
