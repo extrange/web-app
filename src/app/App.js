@@ -1,7 +1,7 @@
+import { Loader } from '@react-three/drei';
 import React, { Suspense } from "react";
 import { useSelector } from "react-redux";
 import { Hmail } from "../modules/Hmail/Hmail";
-import { Loading } from "../shared/components/Loading";
 import { AppBar } from "./app-bar/AppBar";
 import { selectLoginStatus } from "./appSlice";
 import { Login } from "./auth/Login";
@@ -19,8 +19,11 @@ export const App = () => {
             <RefreshSession />
             <AppBar />
         </> :
-        <Suspense fallback={<Loading />}>
+        <>
+        <Suspense fallback={null}>
             <Starfield />
             <Login />
-        </Suspense>;
+        </Suspense>
+        <Loader/>
+        </>;
 };

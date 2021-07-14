@@ -1,11 +1,11 @@
-import { Stats, useTexture } from '@react-three/drei'
+import { useTexture } from '@react-three/drei'
 import { Canvas, extend, useFrame, useThree } from '@react-three/fiber'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Color, Vector3 } from 'three'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass'
-import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
 import { lerp } from 'three/src/math/MathUtils'
 import { getRandomInt } from '../../shared/util'
@@ -55,7 +55,6 @@ const Main = () => {
     const { scene, gl, size: {height, width}, camera } = useThree()
     const zoomShader = useRef()
     const timeFactor = useRef(1)
-
 
     const { positions, sizes, colors } = useMemo(() => {
         const positionArray = new Float32Array(POINTS_COUNT * 3)

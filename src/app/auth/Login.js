@@ -1,11 +1,11 @@
 import { Button, Checkbox, CircularProgress, FormControlLabel, TextField, Typography } from "@material-ui/core";
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReCAPTCHA from "react-google-recaptcha";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { BackgroundScreenRounded } from "../../shared/components/backgroundScreen";
 import { Loading } from "../../shared/components/Loading";
-import { useInput } from "../../shared/useInput";
 import { selectLoginStatus, setNetworkError } from "../appSlice";
 import { NETWORK_ERROR } from "../constants";
 import { showZoom } from '../starfield/Starfield';
@@ -46,7 +46,8 @@ const StyledCircularProgress = styled(CircularProgress)`
   margin-left: 10px;
 `;
 
-/*Will update loggedIn state*/
+/*Will update loggedIn state
+The lag on error is due to recaptcha resetting*/
 export const Login = () => {
 
     const dispatch = useDispatch()
@@ -56,25 +57,37 @@ export const Login = () => {
     const [login, { isLoading }] = useLoginMutation()
     const { isFetching, isError, error } = useCheckLoginQuery(undefined, { refetchOnMountOrArgChange: true })
 
-    const { values, bind, setValue } = useInput();
+    const { register, getValues, setValue } = useForm({
+        defaultValues: {
+            username: '',
+            password: '',
+            otp: null,
+            save_browser: false,
+        }
+    })
+
+    register('username')
+    register('password')
+    register('otp')
+    register('save_browser')
+
     const recaptchaRef = React.useRef();
     const [loginMessage, setLoginMessage] = useState('Sign In');
     const [otpRequired, setOtpRequired] = useState(false);
 
-     /* Control zoom effect on starfield here */
-     useEffect(() => void (showZoom.val = isLoading), [isLoading])
+    /* Control zoom effect on starfield here */
+    useEffect(() => void (showZoom.val = isLoading), [isLoading])
 
-    const onSubmit = event => {
-        setLoginMessage('')
+    const onSubmit = useCallback(event => {
         event.preventDefault();
+        console.log(getValues())
+
+        setLoginMessage('')
         recaptchaRef.current
             .executeAsync()
             .then(token => login({
-                username: values.username,
-                password: values.password,
                 token: token,
-                otp: values.otp,
-                save_browser: values.saveBrowser
+                ...getValues()
             }))
             .then(res => {
                 /* Handle 401/403 errors here (either OTP required or wrong password) */
@@ -103,8 +116,7 @@ export const Login = () => {
                     type: NETWORK_ERROR.FETCH_ERROR,
                 }))
             })
-
-    };
+    }, [dispatch, login, getValues])
 
     /*Show loading screen also for non-401/403 errors*/
     if (isFetching || (isError && ![401, 403].includes(error.status)))
@@ -121,45 +133,47 @@ export const Login = () => {
                 </Typography>
                 {!otpRequired && <>
                     <StyledTextField
-                        type='text'
-                        label={'Username'}
-                        fullWidth
-                        required
-                        autoFocus
-                        variant={'outlined'}
                         autoComplete={'username'}
-                        {...bind('username')}
+                        autoFocus
+                        fullWidth
+                        label={'Username'}
+                        name={'username'}
+                        onChange={e => setValue('username', e.target.value)}
+
+                        required
+                        type='text'
+                        variant={'outlined'}
                     />
 
                     <StyledTextField
-                        type={'password'}
-                        label={'Password'}
                         autoComplete={'current-password'}
                         fullWidth
+                        label={'Password'}
+                        name={'password'}
+                        onChange={e => setValue('password', e.target.value)}
                         required
+                        type={'password'}
                         variant={'outlined'}
-                        {...bind('password')}
                     />
                 </>}
 
                 {otpRequired && <>
                     <StyledTextField
-                        type={'password'}
-                        label={'OTP'}
                         autoComplete={'one-time-code'}
                         fullWidth
-                        variant={'outlined'}
                         inputMode={"numeric"}
+                        label={'OTP'}
+                        name={'otp'}
+                        onChange={e => setValue('otp', e.target.value)}
                         pattern={"[0-9]*"}
-                        {...bind('otp')}
+                        required
+                        type={'password'}
+                        variant={'outlined'}
                     />
                     <FormControlLabel
                         control={<Checkbox
-                            checked={values.saveBrowser}
-                            onChange={e => setValue({
-                                name: 'saveBrowser',
-                                value: e.target.checked
-                            })}
+                            name={'save_browser'}
+                            onChange={e => setValue('save_browser', e.target.checked)}
                         />}
                         label={'Remember browser'}
                     />
@@ -178,7 +192,6 @@ export const Login = () => {
                     sitekey={recaptchaKey}
                     theme={'dark'}
                 />
-
             </InnerContainer>
         </StyledForm>
     </>;
