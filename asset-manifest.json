@@ -1,19 +1,19 @@
 {
   "files": {
     "main.css": "/static/css/main.0701469e.chunk.css",
-    "main.js": "/static/js/main.ce298dc7.chunk.js",
-    "main.js.map": "/static/js/main.ce298dc7.chunk.js.map",
+    "main.js": "/static/js/main.3f2a8262.chunk.js",
+    "main.js.map": "/static/js/main.3f2a8262.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.9b89de3f.js",
     "runtime-main.js.map": "/static/js/runtime-main.9b89de3f.js.map",
     "static/css/2.fadb33c9.chunk.css": "/static/css/2.fadb33c9.chunk.css",
-    "static/js/2.2ae81e51.chunk.js": "/static/js/2.2ae81e51.chunk.js",
-    "static/js/2.2ae81e51.chunk.js.map": "/static/js/2.2ae81e51.chunk.js.map",
+    "static/js/2.b43622b4.chunk.js": "/static/js/2.b43622b4.chunk.js",
+    "static/js/2.b43622b4.chunk.js.map": "/static/js/2.b43622b4.chunk.js.map",
     "index.html": "/index.html",
     "service-worker.js": "/service-worker.js",
     "service-worker.js.map": "/service-worker.js.map",
     "static/css/2.fadb33c9.chunk.css.map": "/static/css/2.fadb33c9.chunk.css.map",
     "static/css/main.0701469e.chunk.css.map": "/static/css/main.0701469e.chunk.css.map",
-    "static/js/2.2ae81e51.chunk.js.LICENSE.txt": "/static/js/2.2ae81e51.chunk.js.LICENSE.txt",
+    "static/js/2.b43622b4.chunk.js.LICENSE.txt": "/static/js/2.b43622b4.chunk.js.LICENSE.txt",
     "static/media/starcraft.css": "/static/media/Starcraft-Normal.daea2a3f.woff2",
     "static/media/index.css": "/static/media/source-sans-pro-vietnamese-400-normal.6b777020.woff2",
     "static/media/300.css": "/static/media/roboto-vietnamese-300-normal.af9afdc1.woff2",
@@ -24,8 +24,8 @@
   "entrypoints": [
     "static/js/runtime-main.9b89de3f.js",
     "static/css/2.fadb33c9.chunk.css",
-    "static/js/2.2ae81e51.chunk.js",
+    "static/js/2.b43622b4.chunk.js",
     "static/css/main.0701469e.chunk.css",
-    "static/js/main.ce298dc7.chunk.js"
+    "static/js/main.3f2a8262.chunk.js"
   ]
 }
