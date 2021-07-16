@@ -1,5 +1,5 @@
-import { nanoid } from '@reduxjs/toolkit';
 import { baseApi } from "../../app/network-core/baseApi";
+import { BaseListItemSkeleton } from '../../shared/components/GenericList/BaseListItemSkeleton';
 
 baseApi.enhanceEndpoints({
     addTagTypes: ['lists', 'items']
@@ -69,22 +69,18 @@ const listApi = baseApi.injectEndpoints({
 
             onQueryStarted: ({ list }, { dispatch, queryFulfilled }) => {
                 /* Optimistically show skeleton */
-                let id = nanoid()
                 let result = dispatch(listApi.util.updateQueryData('getItems', {list}, draft => {
-                    draft.unshift({ isSkeleton: true, id })
+                    draft.unshift(BaseListItemSkeleton())
                 }))
+                queryFulfilled.then(result.undo).catch(result.undo)
 
                 /* Update getItems with the newly created item on success, and remove skeleton*/
                 queryFulfilled
                     .then(({ data }) => {
                         dispatch(listApi.util.updateQueryData('getItems', {list}, draft => {
                             draft.unshift(data);
-                            let idx = draft.findIndex(e => e.id === id)
-                            if (idx !== -1)
-                                draft.splice(idx, 1)
                         }));
                     })
-                    .catch(result.undo)
             }
         }),
 
