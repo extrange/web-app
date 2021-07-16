@@ -53,13 +53,28 @@ export const books = [
             let newAuthor = { id: id++, name, notes: '' };
             authors.push(newAuthor);
             return res(
-                context.delay(),
+                context.delay(3000),
                 context.status(201),
                 context.json(newAuthor),
             );
         } else return res(
             context.status(400),
             context.text('Bad request')
+        )
+    }),
+    rest.delete(urls.AUTHORS + ':id/', (req, res, context) => {
+        let {id} = req.params
+        let idx = authors.findIndex(e => e.id.toString() === id)
+        if (idx === -1)
+            return res(
+                context.delay(),
+                context.status(404),
+                context.json({message: 'Author not found'})
+            )
+        authors.splice(idx, 1)
+        return res(
+            context.delay(),
+            context.status(200)
         )
     }),
 

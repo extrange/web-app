@@ -80,13 +80,12 @@ export const Login = () => {
 
     const onSubmit = useCallback(event => {
         event.preventDefault();
-        console.log(getValues())
 
         setLoginMessage('')
         recaptchaRef.current
             .executeAsync()
             .then(token => login({
-                token: token,
+                token,
                 ...getValues()
             }))
             .then(res => {

@@ -22,7 +22,7 @@ const BOOK_SCHEMA = {
             .ensure(),
         defaultValue: [],
         transformToServer: val => val.map(e => e.id),
-        transformFromServer: (val, {authors}) => val.map(id => authors.find(e => e.id === id))
+        transformFromServer: (val, {authors}) => val.map(id => id._name ? id : authors.find(e => e.id === id))
     },
     genres: {
         yupSchema: yup.array(

@@ -150,10 +150,10 @@ export const stripUndefined = obj => {
  * Joins 2 URLs. Will not modify/add trailing slashes if present/absent
  * */
 export const joinUrl = (base, url) => {
-    if (!base) {
+    if (base === undefined) { // can't use !base because '0' is false
         return url
     }
-    if (!url) {
+    if (url === undefined) {
         return base
     }
     return String(base).replace(/\/$/, '') + '/' + String(url).replace(/^\//)

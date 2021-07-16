@@ -13,11 +13,13 @@ export const login = [
 
     rest.get(API_URL + '/account/login/', (req, res, context) => {
         return res(
-            context.delay(1000),
-            context.status(401),
+            context.delay(),
+            context.status(200),
             context.json({
-                message: 'Not logged in',
-                recaptcha_key: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                "user": "nicholaslyz",
+                "is_superuser": true,
+                "expiry": addHours(new Date(), 4).toISOString(),
+                "recaptcha_key": "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
             })
         )
     }),

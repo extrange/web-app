@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { DialogBlurResponsive } from "../../shared/components/DialogBlurResponsive";
 import { sanitizeString } from "../../shared/util";
 import { BookResult } from "./BookResult";
-import { useCreateAuthorMutation, useGetAuthorsQuery, useGetBooksQuery, useGoodreadsBookInfoMutation, useGoogleBookInfoMutation, useSearchBookMutation } from './literatureApi';
+import { useGetAuthorsQuery, useGetBooksQuery, useGoodreadsBookInfoMutation, useGoogleBookInfoMutation, useSearchBookMutation } from './literatureApi';
 import { BOOK_FIELDS, DEFAULT_BOOK_VALUES } from "./schema";
 
 const BookResults = styled.div`
@@ -38,7 +38,6 @@ export const SearchBooks = ({ closeSearch, setBookData }) => {
     // These methods get 'published', 'series_name', 'series_position', 'description'
     const [getGoogleBookInfo, { isLoading: googleBookInfoLoading }] = useGoogleBookInfoMutation()
     const [getGoodreadsBookInfo, { isLoading: goodreadsBookInfoLoading }] = useGoodreadsBookInfoMutation()
-    const [createAuthor] = useCreateAuthorMutation()
 
     /* Get book description from results, and add new authors 
     Returns filled book template for use in AddBooks*/
@@ -77,8 +76,6 @@ export const SearchBooks = ({ closeSearch, setBookData }) => {
             }
         });
 
-        const createdAuthors = await Promise.all(authorsToCreate.map(name => createAuthor({ name }).unwrap()))
-
         /* Generate a book template from default values */
         const bookTemplate = Object.assign({}, DEFAULT_BOOK_VALUES);
 
@@ -94,7 +91,8 @@ export const SearchBooks = ({ closeSearch, setBookData }) => {
             BOOK_FIELDS.series_position
         ].forEach(e => mergedBook[e] && (bookTemplate[e] = mergedBook[e]));
 
-        bookTemplate[BOOK_FIELDS.authors] = [...existingAuthors, ...createdAuthors].map(e => e.id);
+        /* authorsToCreate is made in a format which will trigger creation upon passing to AutocompleteWithCreate */
+        bookTemplate[BOOK_FIELDS.authors] = [...existingAuthors, ...authorsToCreate.map(author => ({_justAdded: true, _name: author, _isNew: true}))];
         return bookTemplate
     }
 
