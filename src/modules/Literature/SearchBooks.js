@@ -68,11 +68,12 @@ export const SearchBooks = ({ closeSearch, setBookData }) => {
             /* Check if authors in the book result already exist */
             const author = authors.find(existingAuthor => sanitizeString(existingAuthor.name) === sanitizeString(mergedBookAuthor));
             if (author) {
-                // Author already exists
-                existingAuthors.push(author)
+                // Author already exists, push id
+                existingAuthors.push(author.id)
             } else {
                 // Author doesn't exist, to create
-                authorsToCreate.push(mergedBookAuthor)
+                /* authorsToCreate is made in a format which will trigger creation upon passing to AutocompleteWithCreate */
+                authorsToCreate.push({_justAdded: true, _name: mergedBookAuthor, _isNew: true})
             }
         });
 
@@ -90,9 +91,9 @@ export const SearchBooks = ({ closeSearch, setBookData }) => {
             BOOK_FIELDS.series,
             BOOK_FIELDS.series_position
         ].forEach(e => mergedBook[e] && (bookTemplate[e] = mergedBook[e]));
-
-        /* authorsToCreate is made in a format which will trigger creation upon passing to AutocompleteWithCreate */
-        bookTemplate[BOOK_FIELDS.authors] = [...existingAuthors, ...authorsToCreate.map(author => ({_justAdded: true, _name: author, _isNew: true}))];
+        
+        bookTemplate[BOOK_FIELDS.authors] = [...existingAuthors, ...authorsToCreate];
+        console.log(bookTemplate)
         return bookTemplate
     }
 

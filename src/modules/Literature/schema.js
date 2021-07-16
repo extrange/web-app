@@ -3,8 +3,8 @@
  */
 
 import * as yup from "yup";
-import {formatISO, parseISO} from "date-fns";
-import {trim, isNumber, isEqual, pick} from 'lodash'
+import { formatISO, parseISO } from "date-fns";
+import { trim, isNumber, isEqual, pick } from 'lodash'
 
 /*
 This is the schema AFTER hydrating to user-viewable input (id, date_added etc are stripped).
@@ -44,7 +44,7 @@ const BOOK_SCHEMA = {
         }).typeError('Required'),
         defaultValue: null,
         transformToServer: val => val.id,
-        transformFromServer: (val, {types}) => types.find(e => e.id === val)
+        transformFromServer: (val, { types }) => types.find(e => e.id === val)
     },
     title: {
         yupSchema: yup.string().required(),
@@ -65,7 +65,7 @@ const BOOK_SCHEMA = {
         * Necessary to check if validated date is not null prior to modifying to ISO8601*/
         yupSchema: yup.date().nullable().typeError('Date must be in dd/mm/yyyy format'),
         defaultValue: null,
-        transformToServer: val => val ? formatISO(val, {representation: "date"}) : null,
+        transformToServer: val => val ? formatISO(val, { representation: "date" }) : null,
         transformFromServer: val => val ? parseISO(val) : null // date could be null
     },
     image_url: {

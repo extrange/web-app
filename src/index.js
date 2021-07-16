@@ -19,7 +19,7 @@ import { NetworkError } from "./app/network-error/NetworkError";
 import { RandomBackground } from './shared/components/randomBackground';
 
 /*Decide whether to run mock service worker for debugging*/
-const USE_MOCK_SERVICE_WORKER = true;
+const USE_MOCK_SERVICE_WORKER = false;
 const prepare = () => {
     if (process.env.NODE_ENV === 'development' && USE_MOCK_SERVICE_WORKER) {
         const { worker } = require('./test/mocks/browser');
