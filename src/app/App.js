@@ -1,7 +1,6 @@
 import { Loader } from '@react-three/drei';
 import React, { Suspense } from "react";
 import { useSelector } from "react-redux";
-import { Hmail } from "../modules/Hmail/Hmail";
 import { AppBar } from "./app-bar/AppBar";
 import { selectLoginStatus } from "./appSlice";
 import { Login } from "./auth/Login";
@@ -11,11 +10,10 @@ import { Starfield } from "./starfield/Starfield";
 /*Checks for login then displays appropriate component*/
 export const App = () => {
 
-    const { loggedIn, isSuperUser } = useSelector(selectLoginStatus)
+    const { loggedIn } = useSelector(selectLoginStatus)
 
     return loggedIn ?
         <>
-            {isSuperUser && <Hmail />}
             <RefreshSession />
             <AppBar />
         </> :
