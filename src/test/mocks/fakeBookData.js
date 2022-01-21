@@ -1,4 +1,4 @@
-import faker from "faker";
+import faker from "@faker-js/faker";
 import {sample, sampleSize} from "lodash";
 import {getRandomInt} from "../../shared/util";
 import {formatISO} from 'date-fns'

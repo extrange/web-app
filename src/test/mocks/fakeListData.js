@@ -1,5 +1,5 @@
 import { nanoid } from "@reduxjs/toolkit";
-import faker from "faker";
+import faker from "@faker-js/faker";
 
 export const fakeLists = [...Array(10)].map((_, idx) => ({
     id: nanoid(),
