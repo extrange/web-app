@@ -43,7 +43,7 @@ export const Loading = ({
 
     let content = <FlexContainer>
         {showSpinner ? <CircularProgress color="inherit" size={30}/> : null}
-        <Typography variant={'body1'} display={"block"}>{message}</Typography>
+        <Typography variant={'body1'} display={"block"} style={{whiteSpace: 'pre-line', textAlign: 'center'}}>{message}</Typography>
     </FlexContainer>;
 
     if (!open) return null;
