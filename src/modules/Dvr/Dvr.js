@@ -6,8 +6,6 @@ import styled from 'styled-components';
 import { getChannelUrl, useGetOrRefreshChannelQuery } from "./dvrApi";
 
 const CHANNELS = [
-    'CAM_1',
-    'CAM_2',
     'CAM_5',
 ];
 
