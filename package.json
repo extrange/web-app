@@ -15,7 +15,7 @@
     "@material-ui/pickers": "^3.3.10",
     "@react-three/drei": "^7.27.5",
     "@react-three/fiber": "^7.0.26",
-    "@reduxjs/toolkit": "^1.7.1",
+    "@reduxjs/toolkit": "^1.7.2",
     "cleave.js": "^1.6.0",
     "codemirror": "^5.65.1",
     "country-list": "^2.2.0",

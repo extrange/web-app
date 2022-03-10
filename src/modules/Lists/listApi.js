@@ -9,13 +9,13 @@ baseApi.enhanceEndpoints({
 const listApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getLists: build.query({
-      query: () => `tasks/tasklists/`,
+      query: () => `lists/lists/`,
       providesTags: ["lists"],
     }),
 
     createList: build.mutation({
       query: ({ title }) => ({
-        url: `tasks/tasklists/`,
+        url: `lists/lists/`,
         method: "POST",
         body: { title },
       }),
@@ -27,7 +27,7 @@ const listApi = baseApi.injectEndpoints({
 
     updateList: build.mutation({
       query: ({ id, title }) => ({
-        url: `tasks/tasklists/${id}/`,
+        url: `lists/lists/${id}/`,
         method: "PUT",
         body: { id, title },
       }),
@@ -46,7 +46,7 @@ const listApi = baseApi.injectEndpoints({
 
     deleteList: build.mutation({
       query: ({ id }) => ({
-        url: `tasks/tasklists/${id}/`,
+        url: `lists/lists/${id}/`,
         method: "DELETE",
       }),
 
@@ -62,14 +62,14 @@ const listApi = baseApi.injectEndpoints({
     }),
 
     getItems: build.query({
-      query: ({ list }) => `tasks/tasklists/${list}/tasks/`,
+      query: ({ list }) => `lists/lists/${list}/items/`,
     }),
 
     createItem: build.mutation({
       query: ({ list, title, notes }) => ({
-        url: `tasks/tasklists/${list}/tasks/`,
+        url: `lists/lists/${list}/items/`,
         method: "POST",
-        body: { title, notes, tasklist: list },
+        body: { title, notes, list },
       }),
 
       onQueryStarted: ({ list }, { dispatch, queryFulfilled }) => {
@@ -94,9 +94,9 @@ const listApi = baseApi.injectEndpoints({
 
     updateItem: build.mutation({
       query: ({ list, id, title, notes }) => ({
-        url: `tasks/tasklists/${list}/tasks/${id}/`,
+        url: `lists/lists/${list}/items/${id}/`,
         method: "PUT",
-        body: { title, notes, tasklist: list },
+        body: { title, notes, list },
       }),
 
       /* Optimistically update the item (it will exist in cache IF createItem
@@ -114,7 +114,7 @@ const listApi = baseApi.injectEndpoints({
 
     deleteItem: build.mutation({
       query: ({ list, id }) => ({
-        url: `tasks/tasklists/${list}/tasks/${id}/`,
+        url: `lists/lists/${list}/items/${id}/`,
         method: "DELETE",
       }),
 
