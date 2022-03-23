@@ -66,10 +66,10 @@ const listApi = baseApi.injectEndpoints({
     }),
 
     createItem: build.mutation({
-      query: ({ list, title, notes }) => ({
+      query: ({ list, title, notes, due_date, pinned }) => ({
         url: `lists/lists/${list}/items/`,
         method: "POST",
-        body: { title, notes, list },
+        body: { title, notes, list, due_date, pinned},
       }),
 
       onQueryStarted: ({ list }, { dispatch, queryFulfilled }) => {
@@ -93,10 +93,10 @@ const listApi = baseApi.injectEndpoints({
     }),
 
     updateItem: build.mutation({
-      query: ({ list, id, title, notes }) => ({
+      query: ({ list, id, title, notes, due_date, pinned }) => ({
         url: `lists/lists/${list}/items/${id}/`,
-        method: "PUT",
-        body: { title, notes, list },
+        method: "PATCH",
+        body: { title, notes, list, due_date, pinned },
       }),
 
       /* Optimistically update the item (it will exist in cache IF createItem
@@ -108,7 +108,16 @@ const listApi = baseApi.injectEndpoints({
             Object.assign(obj, data);
           })
         );
-        queryFulfilled.catch(result.undo);
+        queryFulfilled
+          .then(({ data: successData }) =>
+            dispatch(
+              listApi.util.updateQueryData("getItems", { list }, (draft) => {
+                let obj = draft.find((e) => e.id === id);
+                Object.assign(obj, successData);
+              })
+            )
+          )
+          .catch(result.undo);
       },
     }),
 

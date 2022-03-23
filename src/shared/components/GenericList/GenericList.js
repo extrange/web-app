@@ -1,28 +1,28 @@
-import { useState } from 'react';
-import { AddButton } from './../AddButton';
-import { BaseItemEdit } from './BaseItemEdit';
-import { BaseList } from './BaseList';
+import { useState } from "react";
+import { AddButton } from "./../AddButton";
+import { BaseItemEdit } from "./BaseItemEdit";
+import { BaseList } from "./BaseList";
 
 /* Can't be passed as a default option, otherwise it will continuously trigger re-renders */
-const DefaultItemEdit = BaseItemEdit({ name: '', notes: '' })
-const DefaultList = BaseList()
+const DefaultItemEdit = BaseItemEdit({ name: "", notes: "" });
+const DefaultList = BaseList();
 
 /**
  * Note: assumes API endpoints take objects as arguments
- * 
+ *
  * context: argument passed (via spread) to all query/mutation requests
  * defaultItemValues: Object containing all fields (except id) and their default values.
- * Received as a prop on new item addition, and 
+ * Received as a prop on new item addition, and
  * used by BaseItemEdit to determine how many fields to render.
- * 
+ *
  * List: renderer for list and items.
- * ItemEdit: renderer for editing items. 
+ * ItemEdit: renderer for editing items.
  * isItemEmpty: used by BaseItemEdit's useAutosave to determine if item should be deleted on close
  * itemIdField: field used by objects and api submission for id
  * isSkeleton: whether temporary object returned by api should be marked as a skeleton.
- * Passed to List 
- * 
- * 
+ * Passed to List
+ *
+ *
  * */
 export const GenericList = ({
   getItemsQuery,
@@ -32,40 +32,52 @@ export const GenericList = ({
 
   defaultItemValues,
   context,
+  sortBy = () => 0,
 
   List = DefaultList,
   ItemEdit = DefaultItemEdit,
-  isItemEmpty = e => !e.name && !e.notes,
-  itemIdField = 'id',
-  isSkeleton = e => !!e.isSkeleton,
+  isItemEmpty = (e) => !e.name && !e.notes,
+  itemIdField = "id",
+  isSkeleton = (e) => !!e.isSkeleton,
 }) => {
+  const { data: items, isFetching } = getItemsQuery(context);
+  const [editingItem, setEditingItem] = useState(null);
+  const loading = isFetching || !items;
 
-  const { data: items, isFetching } = getItemsQuery(context)
-  const [editingItem, setEditingItem] = useState(null)
-  const loading = isFetching || !items
+  return (
+    <>
+      {!loading && (
+        <AddButton onClick={() => setEditingItem(defaultItemValues)} />
+      )}
 
-  return <>
-    {!loading && <AddButton
-      onClick={() => setEditingItem(defaultItemValues)} />}
+      {editingItem && (
+        <ItemEdit
+          editingItem={
+            editingItem[itemIdField]
+              ? items.find((e) => e[itemIdField] === editingItem[itemIdField])
+              : editingItem
+          }
+          closeEdit={() => void setEditingItem(null)}
+          context={context}
+          isItemEmpty={isItemEmpty}
+          itemIdField={itemIdField}
+          createItemMutation={createItemMutation}
+          updateItemMutation={updateItemMutation}
+          deleteItemMutation={deleteItemMutation}
+        />
+      )}
 
-    {editingItem && <ItemEdit
-      editingItem={editingItem}
-      closeEdit={() => void setEditingItem(null)}
-      context={context}
-      isItemEmpty={isItemEmpty}
-      itemIdField={itemIdField}
-      createItemMutation={createItemMutation}
-      updateItemMutation={updateItemMutation}
-      deleteItemMutation={deleteItemMutation} />}
-
-    <List
-      context={context}
-      updateItemMutation={updateItemMutation}
-      deleteItemMutation={deleteItemMutation}
-      items={items}
-      itemIdField={itemIdField}
-      isSkeleton={isSkeleton}
-      loading={loading}
-      setEditingItem={setEditingItem}/>
-  </>
-}
+      <List
+        context={context}
+        updateItemMutation={updateItemMutation}
+        deleteItemMutation={deleteItemMutation}
+        items={items}
+        itemIdField={itemIdField}
+        isSkeleton={isSkeleton}
+        loading={loading}
+        setEditingItem={setEditingItem}
+        sortBy={sortBy}
+      />
+    </>
+  );
+};
