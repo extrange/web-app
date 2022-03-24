@@ -78,7 +78,6 @@ export const ListItemEdit = ({
       updateItem,
     ]
   );
-  console.log(editingItem);
 
   const { onChange, flush } = useAutosave(useAutosaveOptions);
 

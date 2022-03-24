@@ -93,7 +93,6 @@ export const SearchBooks = ({ closeSearch, setBookData }) => {
         ].forEach(e => mergedBook[e] && (bookTemplate[e] = mergedBook[e]));
         
         bookTemplate[BOOK_FIELDS.authors] = [...existingAuthors, ...authorsToCreate];
-        console.log(bookTemplate)
         return bookTemplate
     }
 

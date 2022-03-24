@@ -22,8 +22,10 @@ const fov = 50
 const cameraDistance = 0.1
 const starfieldSpawnZ = -150 // Has to be -150 because of the shader (not sure why)
 const starfieldZLength = 300 // Also has to be 300 because of the shader
-const POINTS_COUNT = Math.floor(300_000 * Math.min(window.innerWidth / 1280, 1))// Maximum number of points to render
-console.log('points count', POINTS_COUNT)
+
+// Maximum number of points to render
+const POINTS_COUNT = Math.floor(300_000 * Math.min(window.innerWidth / 1280, 1))
+
 const COLORS = [
     0xa70267,
     0xf10c49,
