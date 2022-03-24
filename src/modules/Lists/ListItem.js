@@ -15,7 +15,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import ScheduleIcon from "@material-ui/icons/Schedule";
 import StarIcon from "@material-ui/icons/Star";
 import { differenceInCalendarDays, parseISO } from "date-fns";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ItemSkeleton } from "../../shared/components/GenericList/ItemSkeleton";
 import { StyledListItem } from "../../shared/components/GenericList/StyledListItem";
 import { StyledListItemSecondaryAction } from "../../shared/components/GenericList/StyledListItemSecondaryAction";
@@ -46,6 +46,29 @@ export const ListItem = ({
   }) {
     const [deleteItem] = deleteItemMutation();
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [daysToDueText, setDaysToDueText] = useState("");
+
+    const daysToDue = isSkeleton(item)
+      ? null
+      : differenceInCalendarDays(parseISO(item.due_date), new Date());
+
+    useEffect(() => {
+      const refreshFn = () =>
+        setDaysToDueText(
+          daysToDue === 0
+            ? "Today"
+            : daysToDue === 1
+            ? "Tomorrow"
+            : daysToDue < 1
+            ? `${Math.abs(daysToDue)} day${
+                Math.abs(daysToDue) > 1 ? "s" : ""
+              } ago`
+            : `In ${daysToDue} days`
+        );
+      refreshFn();
+      window.addEventListener("focus", refreshFn);
+      return () => window.removeEventListener("focus", refreshFn);
+    }, [daysToDue]);
 
     /* Avoid destructuring item if it's a skeleton */
     if (isSkeleton(item)) {
@@ -59,18 +82,6 @@ export const ListItem = ({
     const { [primaryTextKey]: primaryText, [secondaryTextKey]: secondaryText } =
       item;
     const closeDialog = () => setDialogOpen(false);
-    const daysToDue = differenceInCalendarDays(
-      parseISO(item.due_date),
-      new Date()
-    );
-    const daysToDueText =
-      daysToDue === 0
-        ? "Today"
-        : daysToDue === 1
-        ? "Tomorrow"
-        : daysToDue < 1
-        ? `${Math.abs(daysToDue)} day${Math.abs(daysToDue) > 1 ? "s" : ""} ago`
-        : `In ${daysToDue} days`;
 
     return (
       <>
