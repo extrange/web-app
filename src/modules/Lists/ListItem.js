@@ -20,17 +20,34 @@ import { ItemSkeleton } from "../../shared/components/GenericList/ItemSkeleton";
 import { StyledListItem } from "../../shared/components/GenericList/StyledListItem";
 import { StyledListItemSecondaryAction } from "../../shared/components/GenericList/StyledListItemSecondaryAction";
 import { truncateString } from "../../shared/util";
+import RepeatIcon from "@material-ui/icons/Repeat";
+import DoneIcon from "@material-ui/icons/Done";
+import { theme } from "../../app/theme";
+import styled from "styled-components";
+import UndoIcon from "@material-ui/icons/Undo";
 
-const theme = createTheme({
+const itemTheme = createTheme({
   palette: {
     primary: red,
     secondary: orange,
   },
 });
 
+/* A ListItemIcon which will appear on hover for desktops,
+and always appear for mobile screens. */
+export const StyledListItemIcon = styled(ListItemIcon)`
+  ${theme.breakpoints.up("md")} {
+    visibility: hidden;
+  }
+
+  .MuiListItem-container:hover & {
+    visibility: inherit;
+  }
+`;
+
 /**
- * A ListItem component which can show title, notes and a delete button on hover.
- * Will ask for confirmation on delete.
+ * An item in a list, which has a title, notes, pinned indicator,
+ * complete button, and menu to pin/unpin/delete.
  */
 export const ListItem = ({
   primaryTextKey = "title",
@@ -38,6 +55,7 @@ export const ListItem = ({
 }) =>
   function GeneratedBaseListItem({
     context,
+    updateItemMutation,
     deleteItemMutation,
     itemIdField,
     isSkeleton,
@@ -45,6 +63,7 @@ export const ListItem = ({
     setEditingItem,
   }) {
     const [deleteItem] = deleteItemMutation();
+    const [updateItem] = updateItemMutation();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [daysToDueText, setDaysToDueText] = useState("");
 
@@ -90,12 +109,7 @@ export const ListItem = ({
             Delete '{truncateString(primaryText, 30)}' ?
           </DialogTitle>
           <DialogActions>
-            <Button
-              onClick={() =>
-                deleteItem({ [itemIdField]: item[itemIdField], ...context })
-              }
-              color={"primary"}
-            >
+            <Button onClick={() => deleteItem(item)} color={"primary"}>
               Delete
             </Button>
             <Button onClick={closeDialog}>Cancel</Button>
@@ -106,10 +120,42 @@ export const ListItem = ({
           onClick={() => setEditingItem(item)}
           $reserveSpace={true}
         >
-          {item.pinned && (
+          {item.completed ? (
+            <StyledListItemIcon>
+              <IconButton
+                edge={"start"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateItem({
+                    ...item,
+                    completeChanged: true,
+                    completed: null,
+                  });
+                }}
+              >
+                <UndoIcon />
+              </IconButton>
+            </StyledListItemIcon>
+          ) : item.pinned ? (
             <ListItemIcon>
               <StarIcon />
             </ListItemIcon>
+          ) : (
+            <StyledListItemIcon>
+              <IconButton
+                edge={"start"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateItem({
+                    ...item,
+                    completeChanged: true,
+                    completed: new Date().toISOString(),
+                  });
+                }}
+              >
+                <DoneIcon />
+              </IconButton>
+            </StyledListItemIcon>
           )}
           <ListItemText
             primary={primaryText}
@@ -117,9 +163,9 @@ export const ListItem = ({
             secondary={
               <div>
                 <div>{secondaryText}</div>
-                {item.due_date && (
-                  <div>
-                    <ThemeProvider theme={theme}>
+                <div style={{ display: "flex" }}>
+                  {item.due_date && (
+                    <ThemeProvider theme={itemTheme}>
                       <Chip
                         label={daysToDueText}
                         icon={<ScheduleIcon />}
@@ -140,8 +186,22 @@ export const ListItem = ({
                         size={"small"}
                       />
                     </ThemeProvider>
-                  </div>
-                )}
+                  )}
+                  {Boolean(item.repeat_days) && (
+                    <Chip
+                      label={`${item.repeat_days} day${
+                        item.repeat_days === 1 ? "" : "s"
+                      }`}
+                      icon={<RepeatIcon />}
+                      style={{
+                        color: "inherit",
+                        border: "1px solid rgba(128,128,128,0.6)",
+                      }}
+                      variant={"outlined"}
+                      size={"small"}
+                    />
+                  )}
+                </div>
               </div>
             }
           />

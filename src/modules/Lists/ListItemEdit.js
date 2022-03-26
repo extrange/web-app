@@ -39,6 +39,7 @@ const StyledTextField = styled(TextField)`
   margin: 5px 0;
 `;
 
+/* The popup dialog when editing an item. */
 export const ListItemEdit = ({
   editingItem,
   closeEdit,
@@ -88,8 +89,9 @@ export const ListItemEdit = ({
     defaultValues: {
       title: initialTitle,
       notes: initialNotes,
-      due_date: editingItem.due_date || null,
+      due_date: editingItem.due_date ?? null,
       pinned: editingItem.pinned,
+      completed: editingItem.completed ?? null,
     },
   });
 
@@ -97,6 +99,7 @@ export const ListItemEdit = ({
   register("notes");
   register("due_date");
   register("pinned");
+  register("completed")
 
   const onClose = () => {
     flush();
@@ -212,6 +215,7 @@ export const ListItemEdit = ({
             }}
           />
         }
+        label={'Pinned'}
       />
     </DialogBlurResponsive>
   );

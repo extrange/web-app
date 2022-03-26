@@ -62,59 +62,85 @@ const listApi = baseApi.injectEndpoints({
     }),
 
     getItems: build.query({
-      query: ({ list }) => `lists/lists/${list}/items/`,
+      query: ({ list, showCompleted = false }) =>
+        `lists/lists/${list}/items/?show_completed=${showCompleted ? "1" : ""}`,
     }),
 
     createItem: build.mutation({
-      query: ({ list, title, notes, due_date, pinned }) => ({
+      query: ({ list, ...rest }) => ({
         url: `lists/lists/${list}/items/`,
         method: "POST",
-        body: { title, notes, list, due_date, pinned},
+        body: { list, ...rest },
       }),
 
-      onQueryStarted: ({ list }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: ({ list, ...data }, { dispatch, queryFulfilled }) => {
         /* Optimistically show skeleton */
         let result = dispatch(
-          listApi.util.updateQueryData("getItems", { list }, (draft) => {
-            draft.unshift(BaseListItemSkeleton());
-          })
+          listApi.util.updateQueryData(
+            "getItems",
+            { list, showCompleted: !!data.completed },
+            (draft) => {
+              draft.unshift(BaseListItemSkeleton());
+            }
+          )
         );
         queryFulfilled.then(result.undo).catch(result.undo);
 
         /* Update getItems with the newly created item on success, and remove skeleton*/
-        queryFulfilled.then(({ data }) => {
+        queryFulfilled.then(({ data: successData }) => {
           dispatch(
-            listApi.util.updateQueryData("getItems", { list }, (draft) => {
-              draft.unshift(data);
-            })
+            listApi.util.updateQueryData(
+              "getItems",
+              { list, showCompleted: !!successData.completed },
+              (draft) => {
+                draft.unshift(successData);
+              }
+            )
           );
         });
       },
     }),
 
     updateItem: build.mutation({
-      query: ({ list, id, title, notes, due_date, pinned }) => ({
+      query: ({ list, id, completeChanged, ...rest }) => ({
         url: `lists/lists/${list}/items/${id}/`,
         method: "PATCH",
-        body: { title, notes, list, due_date, pinned },
+        body: { list, id, ...rest },
       }),
 
-      /* Optimistically update the item (it will exist in cache IF createItem
-         was successful, due to onQueryStarted in createItem) */
-      onQueryStarted: ({ list, id, ...data }, { dispatch, queryFulfilled }) => {
+      /* Optimistically update*/
+      onQueryStarted: (
+        { list, id, completeChanged, ...data },
+        { dispatch, queryFulfilled }
+      ) => {
         let result = dispatch(
-          listApi.util.updateQueryData("getItems", { list }, (draft) => {
-            let obj = draft.find((e) => e.id === id);
-            Object.assign(obj, data);
-          })
+          listApi.util.updateQueryData(
+            "getItems",
+            {
+              list,
+              showCompleted: completeChanged
+                ? !data.completed
+                : !!data.completed,
+            },
+            (draft) => {
+              if (completeChanged) return draft.filter((e) => e.id !== id);
+              let obj = draft.find((e) => e.id === id);
+              Object.assign(obj, data);
+            }
+          )
         );
         queryFulfilled
           .then(({ data: successData }) =>
             dispatch(
-              listApi.util.updateQueryData("getItems", { list }, (draft) => {
-                let obj = draft.find((e) => e.id === id);
-                Object.assign(obj, successData);
-              })
+              listApi.util.updateQueryData(
+                "getItems",
+                { list, showCompleted: !!successData.completed },
+                (draft) => {
+                  if (completeChanged) return [successData, ...draft];
+                  let obj = draft.find((e) => e.id === id);
+                  Object.assign(obj, successData);
+                }
+              )
             )
           )
           .catch(result.undo);
@@ -128,10 +154,15 @@ const listApi = baseApi.injectEndpoints({
       }),
 
       /* Optimistically delete item */
-      onQueryStarted: ({ list, id }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: (
+        { list, id, completed },
+        { dispatch, queryFulfilled }
+      ) => {
         let result = dispatch(
-          listApi.util.updateQueryData("getItems", { list }, (draft) =>
-            draft.filter((e) => e.id !== id)
+          listApi.util.updateQueryData(
+            "getItems",
+            { list, showCompleted: !!completed },
+            (draft) => draft.filter((e) => e.id !== id)
           )
         );
         queryFulfilled.catch(result.undo);

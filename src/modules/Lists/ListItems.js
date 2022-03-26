@@ -3,10 +3,10 @@ import { useSelector } from "react-redux";
 import { BaseList } from "../../shared/components/GenericList/BaseList";
 import { GenericList } from "../../shared/components/GenericList/GenericList";
 import {
-    useCreateItemMutation,
-    useDeleteItemMutation,
-    useGetItemsQuery,
-    useUpdateItemMutation
+  useCreateItemMutation,
+  useDeleteItemMutation,
+  useGetItemsQuery,
+  useUpdateItemMutation,
 } from "./listApi";
 import { ListItem } from "./ListItem";
 import { ListItemEdit } from "./ListItemEdit";
@@ -19,19 +19,9 @@ const List = BaseList({
   }),
 });
 
-/* List of items, for a particular List. */
-export const ListItems = () => {
+/* The list of items for a particular List. */
+export const ListItems = ({ showCompleted }) => {
   const currentList = useSelector(selectCurrentList);
-
-  // useEffect(() => {
-  //     if (!currentList) return;
-
-  //     // Prevent virtuoso from remembering the scroll position of the previously viewed list
-  //     if (virtuosoRef.current) {
-  //         virtuosoRef.current.scrollToIndex({ align: 'top', behavior: 'smooth' })
-  //     }
-  //     // eslint-disable-next-line
-  // }, [currentList]);
 
   return (
     <GenericList
@@ -40,7 +30,7 @@ export const ListItems = () => {
       updateItemMutation={useUpdateItemMutation}
       deleteItemMutation={useDeleteItemMutation}
       defaultItemValues={{ title: "", notes: "" }}
-      context={{ list: currentList.id }}
+      context={{ list: currentList.id, showCompleted }}
       itemIdField={"id"}
       List={List}
       ItemEdit={ListItemEdit}

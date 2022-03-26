@@ -1,21 +1,23 @@
-import {createSlice} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
-export const listsPath = 'lists'
+export const listsPath = "lists";
 
 const initialState = {
-    currentList: null
-}
+  currentList: null,
+  showCompleted: false,
+};
 
 export const listsSlice = createSlice({
-    name: listsPath,
-    initialState,
-    reducers: {
-        setCurrentList: (state, {payload}) => void (state.currentList = payload)
-    }
-})
+  name: listsPath,
+  initialState,
+  reducers: {
+    setCurrentList: (state, { payload }) => void (state.currentList = payload),
+    setShowCompleted: (state, { payload }) =>
+      void (state.showCompleted = payload),
+  },
+});
 
-export const {
-    setCurrentList
-} = listsSlice.actions
+export const { setCurrentList, setShowCompleted } = listsSlice.actions;
 
-export const selectCurrentList = state => state[listsPath].currentList
+export const selectCurrentList = (state) => state[listsPath].currentList;
+export const selectShowCompleted = (state) => state[listsPath].showCompleted;

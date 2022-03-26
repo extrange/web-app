@@ -18,6 +18,7 @@ export const BaseList =
   ({ Item = DefaultItem } = {}) =>
   ({
     context,
+    updateItemMutation,
     deleteItemMutation,
     items,
     itemIdField,
@@ -32,6 +33,7 @@ export const BaseList =
           {[...Array(3)].map((_, idx) => (
             <Item
               context={context}
+              updateItemMutation={updateItemMutation}
               deleteItemMutation={deleteItemMutation}
               itemIdField={itemIdField}
               key={idx}
@@ -48,6 +50,7 @@ export const BaseList =
         <Item
           context={context}
           deleteItemMutation={deleteItemMutation}
+          updateItemMutation={updateItemMutation}
           itemIdField={itemIdField}
           key={e[itemIdField]}
           isSkeleton={isSkeleton}

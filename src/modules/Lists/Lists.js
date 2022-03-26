@@ -1,78 +1,139 @@
-import { Button, CircularProgress, IconButton, List as MuiList, Typography } from "@material-ui/core";
-import SyncIcon from '@material-ui/icons/Sync';
-import { useEffect } from "react";
+import {
+  Button,
+  Checkbox,
+  CircularProgress,
+  FormControlLabel,
+  IconButton,
+  List as MuiList,
+  Typography,
+} from "@material-ui/core";
+import SyncIcon from "@material-ui/icons/Sync";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { Loading } from "../../shared/components/Loading";
 import { List } from "./List";
-import { useCreateListMutation, useGetItemsQuery, useGetListsQuery } from "./listApi";
+import {
+  useCreateListMutation,
+  useGetItemsQuery,
+  useGetListsQuery,
+} from "./listApi";
 import { ListItems } from "./ListItems";
 import { selectCurrentList, setCurrentList } from "./listsSlice";
 
 const StyledButton = styled(Button)({
-    margin: '10px',
+  margin: "10px",
 });
 
 export const Lists = ({ setDrawerContent, setTitleContent }) => {
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch()
+  // There is a chance the listId stored is invalid - useEffect below checks for this
+  const currentList = useSelector(selectCurrentList);
 
-    // There is a chance the listId stored is invalid - useEffect below checks for this
-    const currentList = useSelector(selectCurrentList)
+  const [showCompleted, setShowCompleted] = useState(false);
 
-    const { data: lists, isFetching: isLoadingLists, refetch: refetchLists } = useGetListsQuery()
-    const { isFetching: isFetchingGetItems, refetch: refetchItems } = useGetItemsQuery({list: currentList?.id}, { skip: !currentList })
-    const [createList] = useCreateListMutation()
+  const {
+    data: lists,
+    isFetching: isLoadingLists,
+    refetch: refetchLists,
+  } = useGetListsQuery();
 
-    /*Show Lists in app-bar drawer*/
+  const { isFetching: isFetchingGetItems, refetch: refetchItems } =
+    useGetItemsQuery(
+      { list: currentList?.id, showCompleted },
+      { skip: !currentList  }
+    );
 
-    useEffect(() => void setDrawerContent(<MuiList disablePadding dense>
-        {isLoadingLists ?
-            <div style={{ display: 'flex', 'justifyContent': 'center' }}>
-                <CircularProgress size={20} />
-            </div> :
+  const [createList] = useCreateListMutation();
+
+  /*Show Lists in app-bar drawer*/
+
+  useEffect(
+    () =>
+      void setDrawerContent(
+        <MuiList disablePadding dense>
+          {isLoadingLists ? (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <CircularProgress size={20} />
+            </div>
+          ) : (
             [
-                <StyledButton
-                    key={'CREATE_LIST'}
-                    variant={'contained'}
-                    color={'secondary'}
-                    onClick={() => {
-                        let title = prompt('Enter title:');
-                        if (title) {
-                            createList({ title })
-                        }
-                    }}>
-                    Create new Tasklist
-                </StyledButton>,
+              <StyledButton
+                key={"CREATE_LIST"}
+                variant={"contained"}
+                color={"secondary"}
+                onClick={() => {
+                  let title = prompt("Enter title:");
+                  if (title) {
+                    createList({ title });
+                  }
+                }}
+              >
+                Create new Tasklist
+              </StyledButton>,
 
-                lists?.map(list => <List
-                    key={list.id}
-                    list={list}
-                    onClick={() => dispatch(setCurrentList(list))} />)
-            ]}
-    </MuiList>),
-        [createList, dispatch, isLoadingLists, lists, setDrawerContent])
+              lists?.map((list) => (
+                <List
+                  key={list.id}
+                  list={list}
+                  onClick={() => dispatch(setCurrentList(list))}
+                />
+              )),
+            ]
+          )}
+        </MuiList>
+      ),
+    [createList, dispatch, isLoadingLists, lists, setDrawerContent]
+  );
 
-    useEffect(() => void setTitleContent(<>
-        <Typography variant={"h6"} noWrap>
+  useEffect(
+    () =>
+      void setTitleContent(
+        <>
+          <Typography variant={"h6"} noWrap>
             {currentList?.title}
-        </Typography>
-        <IconButton
+          </Typography>
+          <IconButton
             onClick={() => {
-                refetchLists()
-                refetchItems()
+              refetchLists();
+              refetchItems();
             }}
-            disabled={isFetchingGetItems}>
+            disabled={isFetchingGetItems}
+          >
             <SyncIcon />
-        </IconButton>
-    </>), [currentList, isFetchingGetItems, refetchItems, refetchLists, setTitleContent])
+          </IconButton>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={showCompleted}
+                onChange={({ target: { checked } }) =>
+                  setShowCompleted(checked)
+                }
+              />
+            }
+            label={"Completed"}
+          />
+        </>
+      ),
+    [
+      currentList,
+      isFetchingGetItems,
+      refetchItems,
+      refetchLists,
+      setTitleContent,
+      showCompleted,
+    ]
+  );
 
-    if (!currentList) return <Loading
+  if (!currentList)
+    return (
+      <Loading
         fullscreen={false}
         showSpinner={false}
-        message={'Select a list'} />
+        message={"Select a list"}
+      />
+    );
 
-
-    return <ListItems />
-}
-    ;
+  return <ListItems showCompleted={showCompleted} />;
+};
