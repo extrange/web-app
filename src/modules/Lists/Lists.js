@@ -74,6 +74,7 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
                 Create new Tasklist
               </StyledButton>,
               <FormControlLabel
+                key={"SHOW_COMPLETED"}
                 control={
                   <Checkbox
                     checked={showCompleted}
@@ -86,6 +87,7 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
                 label={"Completed"}
               />,
               <FormControlLabel
+                key={"SHOW_REPEATING"}
                 control={
                   <Checkbox
                     checked={showRepeating}

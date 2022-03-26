@@ -1,8 +1,6 @@
 import DateFns from "@date-io/date-fns";
 import {
   Button,
-  Checkbox,
-  FormControlLabel,
   TextField,
   Tooltip,
   Typography,
@@ -42,6 +40,7 @@ const StyledTextField = styled(TextField)`
 /* The popup dialog when editing an item. */
 export const ListItemEdit = ({
   editingItem,
+  setEditingItem,
   closeEdit,
   context,
   isItemEmpty,
@@ -65,7 +64,10 @@ export const ListItemEdit = ({
       createItem: (data) =>
         createItem({ ...context, ...data })
           .unwrap()
-          .then((res) => res.id),
+          .then((res) => {
+            setEditingItem(res);
+            return res.id;
+          }),
       deleteItem: (id) => deleteItem({ ...context, [itemIdField]: id }),
       itemIsEmpty: isItemEmpty,
     }),
@@ -74,6 +76,7 @@ export const ListItemEdit = ({
       createItem,
       deleteItem,
       editingItem,
+      setEditingItem,
       isItemEmpty,
       itemIdField,
       updateItem,
@@ -91,7 +94,6 @@ export const ListItemEdit = ({
       title: initialTitle,
       notes: initialNotes,
       due_date: editingItem.due_date ?? null,
-      pinned: editingItem.pinned,
       completed: editingItem.completed ?? null,
       repeat_days: initialRepeatDays,
     },
@@ -100,9 +102,8 @@ export const ListItemEdit = ({
   register("title");
   register("notes");
   register("due_date");
-  register("pinned");
-  register("completed")
-  register('repeat_days')
+  register("completed");
+  register("repeat_days");
 
   const onClose = () => {
     flush();
@@ -206,25 +207,11 @@ export const ListItemEdit = ({
           inputVariant={"outlined"}
         />
       </MuiPickersUtilsProvider>
-      <FormControlLabel
-        control={
-          <Checkbox
-            name={"pinned"}
-            checked={editingItem.pinned}
-            onChange={({ target: { checked } }) => {
-              setValue("pinned", checked);
-              onChange(getValues());
-              flush();
-            }}
-          />
-        }
-        label={'Pinned'}
-      />
       <StyledTextField
         label="Repeat Days"
         name={"repeat_days"}
         defaultValue={initialRepeatDays}
-        type={'number'}
+        type={"number"}
         variant={"outlined"}
         onChange={(e) => {
           setValue("repeat_days", e.target.value);

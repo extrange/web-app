@@ -43,6 +43,7 @@ export const ListItems = ({ showCompleted, showRepeating }) => {
       List={List}
       ItemEdit={ListItemEdit}
       isItemEmpty={(e) => !e.title && !e.notes}
+      refreshOnFocus
       filterBy={filterRepeating}
       sortBy={(a, b) =>
         a.pinned !== b.pinned

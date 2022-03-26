@@ -34,6 +34,7 @@ export const GenericList = ({
   context,
   filterBy = () => true,
   sortBy = () => 0,
+  refreshOnFocus = false,
 
   List = DefaultList,
   ItemEdit = DefaultItemEdit,
@@ -59,6 +60,7 @@ export const GenericList = ({
               : editingItem
           }
           closeEdit={() => void setEditingItem(null)}
+          setEditingItem={setEditingItem}
           context={context}
           isItemEmpty={isItemEmpty}
           itemIdField={itemIdField}
@@ -72,6 +74,7 @@ export const GenericList = ({
         context={context}
         updateItemMutation={updateItemMutation}
         deleteItemMutation={deleteItemMutation}
+        refreshOnFocus={refreshOnFocus}
         filterBy={filterBy}
         items={items}
         itemIdField={itemIdField}

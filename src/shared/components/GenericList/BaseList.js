@@ -1,5 +1,5 @@
 import { List } from "@material-ui/core";
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { Virtuoso } from "react-virtuoso/dist";
 import styled from "styled-components";
 import { BaseListItem } from "./BaseListItem";
@@ -14,10 +14,10 @@ const DefaultItem = BaseListItem({
   secondaryTextKey: "notes",
 });
 
-export const BaseList =
-  ({ Item = DefaultItem } = {}) =>
-  ({
+export const BaseList = ({ Item = DefaultItem } = {}) =>
+  function GeneratedList({
     context,
+    refreshOnFocus,
     updateItemMutation,
     deleteItemMutation,
     filterBy,
@@ -27,7 +27,17 @@ export const BaseList =
     loading,
     setEditingItem,
     sortBy,
-  }) => {
+  }) {
+    const [, setUpdate] = useState(0);
+
+    useEffect(() => {
+      const refreshFn = () => setUpdate((e) => e + 1);
+      if (refreshOnFocus) {
+        window.addEventListener("focus", refreshFn);
+        return () => window.removeEventListener("focus", refreshFn);
+      }
+    }, [setUpdate, refreshOnFocus]);
+
     if (loading)
       return (
         <List disablePadding dense>
