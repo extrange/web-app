@@ -32,6 +32,7 @@ export const GenericList = ({
 
   defaultItemValues,
   context,
+  filterBy = () => true,
   sortBy = () => 0,
 
   List = DefaultList,
@@ -71,6 +72,7 @@ export const GenericList = ({
         context={context}
         updateItemMutation={updateItemMutation}
         deleteItemMutation={deleteItemMutation}
+        filterBy={filterBy}
         items={items}
         itemIdField={itemIdField}
         isSkeleton={isSkeleton}

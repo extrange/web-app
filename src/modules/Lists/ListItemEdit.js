@@ -84,6 +84,7 @@ export const ListItemEdit = ({
 
   const initialTitle = editingItem.title || "";
   const initialNotes = editingItem.notes || "";
+  const initialRepeatDays = editingItem.repeat_days ?? 0;
 
   const { register, getValues, setValue } = useForm({
     defaultValues: {
@@ -92,6 +93,7 @@ export const ListItemEdit = ({
       due_date: editingItem.due_date ?? null,
       pinned: editingItem.pinned,
       completed: editingItem.completed ?? null,
+      repeat_days: initialRepeatDays,
     },
   });
 
@@ -100,6 +102,7 @@ export const ListItemEdit = ({
   register("due_date");
   register("pinned");
   register("completed")
+  register('repeat_days')
 
   const onClose = () => {
     flush();
@@ -216,6 +219,17 @@ export const ListItemEdit = ({
           />
         }
         label={'Pinned'}
+      />
+      <StyledTextField
+        label="Repeat Days"
+        name={"repeat_days"}
+        defaultValue={initialRepeatDays}
+        type={'number'}
+        variant={"outlined"}
+        onChange={(e) => {
+          setValue("repeat_days", e.target.value);
+          onChange(getValues());
+        }}
       />
     </DialogBlurResponsive>
   );

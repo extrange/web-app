@@ -20,6 +20,7 @@ export const BaseList =
     context,
     updateItemMutation,
     deleteItemMutation,
+    filterBy,
     items,
     itemIdField,
     isSkeleton,
@@ -45,6 +46,7 @@ export const BaseList =
       );
 
     const itemsArray = [...items]
+      .filter(filterBy)
       .sort(sortBy)
       .map((e) => (
         <Item
@@ -62,7 +64,7 @@ export const BaseList =
     return (
       <StyledDiv>
         <Virtuoso
-          totalCount={items.length}
+          totalCount={itemsArray.length}
           itemContent={(idx) => itemsArray[idx]}
           components={{
             List: forwardRef(({ children, ...props }, ref) => (

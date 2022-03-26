@@ -32,6 +32,7 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
   const currentList = useSelector(selectCurrentList);
 
   const [showCompleted, setShowCompleted] = useState(false);
+  const [showRepeating, setShowRepeating] = useState(false);
 
   const {
     data: lists,
@@ -42,7 +43,7 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
   const { isFetching: isFetchingGetItems, refetch: refetchItems } =
     useGetItemsQuery(
       { list: currentList?.id, showCompleted },
-      { skip: !currentList  }
+      { skip: !currentList }
     );
 
   const [createList] = useCreateListMutation();
@@ -72,7 +73,30 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
               >
                 Create new Tasklist
               </StyledButton>,
-
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showCompleted}
+                    onChange={({ target: { checked } }) =>
+                      setShowCompleted(checked)
+                    }
+                  />
+                }
+                style={{ paddingLeft: 16 }}
+                label={"Completed"}
+              />,
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showRepeating}
+                    onChange={({ target: { checked } }) =>
+                      setShowRepeating(checked)
+                    }
+                  />
+                }
+                style={{ paddingLeft: 16 }}
+                label={"Repeating"}
+              />,
               lists?.map((list) => (
                 <List
                   key={list.id}
@@ -84,7 +108,15 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
           )}
         </MuiList>
       ),
-    [createList, dispatch, isLoadingLists, lists, setDrawerContent]
+    [
+      createList,
+      showCompleted,
+      showRepeating,
+      dispatch,
+      isLoadingLists,
+      lists,
+      setDrawerContent,
+    ]
   );
 
   useEffect(
@@ -103,17 +135,6 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
           >
             <SyncIcon />
           </IconButton>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={showCompleted}
-                onChange={({ target: { checked } }) =>
-                  setShowCompleted(checked)
-                }
-              />
-            }
-            label={"Completed"}
-          />
         </>
       ),
     [
@@ -122,7 +143,6 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
       refetchItems,
       refetchLists,
       setTitleContent,
-      showCompleted,
     ]
   );
 
@@ -135,5 +155,7 @@ export const Lists = ({ setDrawerContent, setTitleContent }) => {
       />
     );
 
-  return <ListItems showCompleted={showCompleted} />;
+  return (
+    <ListItems showCompleted={showCompleted} showRepeating={showRepeating} />
+  );
 };

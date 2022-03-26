@@ -20,8 +20,16 @@ const List = BaseList({
 });
 
 /* The list of items for a particular List. */
-export const ListItems = ({ showCompleted }) => {
+export const ListItems = ({ showCompleted, showRepeating }) => {
   const currentList = useSelector(selectCurrentList);
+
+  /* By default, hide repeating tasks which are not due/overdue */
+  const filterRepeating = showRepeating
+    ? () => true
+    : (e) =>
+        !e.repeat_days ||
+        (e.due_date &&
+          differenceInCalendarDays(parseISO(e.due_date), new Date()) < 1);
 
   return (
     <GenericList
@@ -35,6 +43,7 @@ export const ListItems = ({ showCompleted }) => {
       List={List}
       ItemEdit={ListItemEdit}
       isItemEmpty={(e) => !e.title && !e.notes}
+      filterBy={filterRepeating}
       sortBy={(a, b) =>
         a.pinned !== b.pinned
           ? b.pinned - a.pinned
