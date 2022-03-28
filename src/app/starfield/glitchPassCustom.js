@@ -1,119 +1,103 @@
 import {
-    DataTexture,
-    FloatType,
-    MathUtils,
-    RGBFormat,
-    ShaderMaterial,
-    UniformsUtils
-} from 'three';
-import { FullScreenQuad, Pass } from 'three/examples/jsm/postprocessing/Pass.js';
-import { DigitalGlitch } from 'three/examples/jsm/shaders/DigitalGlitch';
+  DataTexture,
+  FloatType,
+  MathUtils,
+  RGBFormat,
+  ShaderMaterial,
+  UniformsUtils,
+} from "three";
+import {
+  FullScreenQuad,
+  Pass,
+} from "three/examples/jsm/postprocessing/Pass.js";
+import { DigitalGlitch } from "three/examples/jsm/shaders/DigitalGlitch";
 
 /* Controllable glitchPass with this.active */
 export class GlitchPass extends Pass {
+  constructor(dt_size = 64) {
+    super();
 
-	constructor( dt_size = 64 ) {
+    if (DigitalGlitch === undefined)
+      console.error("THREE.GlitchPass relies on DigitalGlitch");
 
-		super();
+    const shader = DigitalGlitch;
 
-		if ( DigitalGlitch === undefined ) console.error( 'THREE.GlitchPass relies on DigitalGlitch' );
+    this.uniforms = UniformsUtils.clone(shader.uniforms);
 
-		const shader = DigitalGlitch;
+    this.uniforms["tDisp"].value = this.generateHeightmap(dt_size);
 
-		this.uniforms = UniformsUtils.clone( shader.uniforms );
+    this.material = new ShaderMaterial({
+      uniforms: this.uniforms,
+      vertexShader: shader.vertexShader,
+      fragmentShader: shader.fragmentShader,
+    });
 
-		this.uniforms[ 'tDisp' ].value = this.generateHeightmap( dt_size );
+    this.fsQuad = new FullScreenQuad(this.material);
 
-		this.material = new ShaderMaterial( {
-			uniforms: this.uniforms,
-			vertexShader: shader.vertexShader,
-			fragmentShader: shader.fragmentShader
-		} );
+    this.goWild = false;
+    this.curF = 0;
 
-		this.fsQuad = new FullScreenQuad( this.material );
+    /* Control whether the effect should show or not */
+    this.active = false;
 
-		this.goWild = false;
-		this.curF = 0;
+    this.generateTrigger();
+  }
 
-        /* Control whether the effect should show or not */
-        this.active = false
+  render(renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */) {
+    this.uniforms["tDiffuse"].value = readBuffer.texture;
+    this.uniforms["seed"].value = Math.random(); //default seeding
+    this.uniforms["byp"].value = 0;
 
-		this.generateTrigger();
+    // if ( (this.active && this.curF % this.randX === 0) || this.goWild ) {
 
-	}
+    // 	this.uniforms[ 'amount' ].value = Math.random() / 30;
+    // 	this.uniforms[ 'angle' ].value = MathUtils.randFloat( - Math.PI, Math.PI );
+    // 	this.uniforms[ 'seed_x' ].value = MathUtils.randFloat( - 1, 1 );
+    // 	this.uniforms[ 'seed_y' ].value = MathUtils.randFloat( - 1, 1 );
+    // 	this.uniforms[ 'distortion_x' ].value = MathUtils.randFloat( 0, 1 );
+    // 	this.uniforms[ 'distortion_y' ].value = MathUtils.randFloat( 0, 1 );
+    // 	this.curF = 0;
+    // 	this.generateTrigger();
 
-	render( renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */ ) {
+    // } else
+    if (this.active) {
+      this.uniforms["amount"].value = 0.001;
+      this.uniforms["angle"].value = MathUtils.randFloat(-Math.PI, Math.PI);
+      this.uniforms["distortion_x"].value = MathUtils.randFloat(0, 1);
+      this.uniforms["distortion_y"].value = MathUtils.randFloat(0, 1);
+      this.uniforms["seed_x"].value = MathUtils.randFloat(-0.5, 0.5);
+      this.uniforms["seed_y"].value = MathUtils.randFloat(-0.5, 0.5);
+    } else if (!this.active) {
+      this.uniforms["byp"].value = 1;
+    }
 
-		this.uniforms[ 'tDiffuse' ].value = readBuffer.texture;
-		this.uniforms[ 'seed' ].value = Math.random();//default seeding
-		this.uniforms[ 'byp' ].value = 0;
+    this.curF++;
 
-		// if ( (this.active && this.curF % this.randX === 0) || this.goWild ) {
+    if (this.renderToScreen) {
+      renderer.setRenderTarget(null);
+      this.fsQuad.render(renderer);
+    } else {
+      renderer.setRenderTarget(writeBuffer);
+      if (this.clear) renderer.clear();
+      this.fsQuad.render(renderer);
+    }
+  }
 
-		// 	this.uniforms[ 'amount' ].value = Math.random() / 30;
-		// 	this.uniforms[ 'angle' ].value = MathUtils.randFloat( - Math.PI, Math.PI );
-		// 	this.uniforms[ 'seed_x' ].value = MathUtils.randFloat( - 1, 1 );
-		// 	this.uniforms[ 'seed_y' ].value = MathUtils.randFloat( - 1, 1 );
-		// 	this.uniforms[ 'distortion_x' ].value = MathUtils.randFloat( 0, 1 );
-		// 	this.uniforms[ 'distortion_y' ].value = MathUtils.randFloat( 0, 1 );
-		// 	this.curF = 0;
-		// 	this.generateTrigger();
+  generateTrigger() {
+    this.randX = MathUtils.randInt(120, 240);
+  }
 
-		// } else 
-        if ( this.active ) {
+  generateHeightmap(dt_size) {
+    const data_arr = new Float32Array(dt_size * dt_size * 3);
+    const length = dt_size * dt_size;
 
-			this.uniforms[ 'amount' ].value = 0.001;
-			this.uniforms[ 'angle' ].value = MathUtils.randFloat( - Math.PI, Math.PI );
-			this.uniforms[ 'distortion_x' ].value = MathUtils.randFloat( 0, 1 );
-			this.uniforms[ 'distortion_y' ].value = MathUtils.randFloat( 0, 1 );
-			this.uniforms[ 'seed_x' ].value = MathUtils.randFloat( - 0.5, 0.5 );
-			this.uniforms[ 'seed_y' ].value = MathUtils.randFloat( - 0.5, 0.5 );
+    for (let i = 0; i < length; i++) {
+      const val = MathUtils.randFloat(0, 1);
+      data_arr[i * 3 + 0] = val;
+      data_arr[i * 3 + 1] = val;
+      data_arr[i * 3 + 2] = val;
+    }
 
-		} else if ( !this.active) {
-
-			this.uniforms[ 'byp' ].value = 1;
-
-		}
-
-		this.curF ++;
-
-		if ( this.renderToScreen ) {
-
-			renderer.setRenderTarget( null );
-			this.fsQuad.render( renderer );
-
-		} else {
-
-			renderer.setRenderTarget( writeBuffer );
-			if ( this.clear ) renderer.clear();
-			this.fsQuad.render( renderer );
-
-		}
-
-	}
-
-	generateTrigger() {
-
-		this.randX = MathUtils.randInt( 120, 240 );
-
-	}
-
-	generateHeightmap( dt_size ) {
-
-		const data_arr = new Float32Array( dt_size * dt_size * 3 );
-		const length = dt_size * dt_size;
-
-		for ( let i = 0; i < length; i ++ ) {
-
-			const val = MathUtils.randFloat( 0, 1 );
-			data_arr[ i * 3 + 0 ] = val;
-			data_arr[ i * 3 + 1 ] = val;
-			data_arr[ i * 3 + 2 ] = val;
-
-		}
-
-		return new DataTexture( data_arr, dt_size, dt_size, RGBFormat, FloatType );
-
-	}
-
+    return new DataTexture(data_arr, dt_size, dt_size, RGBFormat, FloatType);
+  }
 }

@@ -1,6 +1,13 @@
 import { DialogBlurResponsive } from "../../shared/components/DialogBlurResponsive";
 import React, { useMemo, useState } from "react";
-import { Button, Dialog, DialogActions, DialogTitle, TextField, Typography } from "@material-ui/core";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import styled from "styled-components";
 import { Controller, useForm } from "react-hook-form";
 import { Autocomplete } from "@material-ui/lab";
@@ -23,151 +30,165 @@ const StyledTextField = styled(TextField)`
 `;
 
 const StyledDiv = styled.div`
-  flex: 1
+  flex: 1;
 `;
 /*Todo consider using 'genres' as an object instead of array for improved performance*/
 export const GenreEdit = ({
-    editingItem: { id, name, notes, parent },
-    closeEdit,
-    isItemEmpty,
-    itemIdField,
-    createItemMutation,
-    updateItemMutation,
-    deleteItemMutation,
+  editingItem: { id, name, notes, parent },
+  closeEdit,
+  isItemEmpty,
+  itemIdField,
+  createItemMutation,
+  updateItemMutation,
+  deleteItemMutation,
 }) => {
+  const { data: genres } = useGetGenresQuery();
+  const [createGenre] = createItemMutation();
+  const [updateGenre] = updateItemMutation();
+  const [deleteGenre] = deleteItemMutation();
 
-    const { data: genres } = useGetGenresQuery()
-    const [createGenre] = createItemMutation()
-    const [updateGenre] = updateItemMutation()
-    const [deleteGenre] = deleteItemMutation()
+  const [deleteDialog, setDeleteDialog] = useState(false);
+  const [saveDialog, setSaveDialog] = useState(false);
 
-    const [deleteDialog, setDeleteDialog] = useState(false)
-    const [saveDialog, setSaveDialog] = useState(false)
+  const genresWithNull = useMemo(() => {
+    let arr = [
+      {
+        ancestors: [],
+        fullName: "<Top Level>",
+        id: null,
+        name: "<Top Level>",
+        parent: null,
+      },
+      ...genres.map((e) => mapGenres(e, genres)),
+    ].sort((a, b) => a.fullName.localeCompare(b.fullName));
 
-    const genresWithNull = useMemo(() => {
-        let arr = [
-            {
-                ancestors: [],
-                fullName: '<Top Level>',
-                id: null,
-                name: '<Top Level>',
-                parent: null
-            },
-            ...genres.map(e => mapGenres(e, genres)),
-        ].sort((a, b) => a.fullName.localeCompare(b.fullName))
+    /* Don't allow a genre to have itself as the parent */
+    let ownIdx = arr.findIndex((e) => e.id === id);
+    if (ownIdx !== -1) arr.splice(ownIdx, 1);
+    return arr;
+  }, [genres, id]);
 
-        /* Don't allow a genre to have itself as the parent */
-        let ownIdx = arr.findIndex(e => e.id === id)
-        if (ownIdx !== -1) arr.splice(ownIdx, 1)
-        return arr
-    }, [genres, id])
+  const {
+    control,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm({
+    defaultValues: {
+      name,
+      notes,
+      parent: genresWithNull.find((e) => e.id === parent) || genresWithNull[0],
+    },
+  });
 
-    const {
-        control,
-        handleSubmit,
-        formState: {
-            isDirty
-        },
-    } = useForm({
-        defaultValues: {
-            name,
-            notes,
-            parent: genresWithNull.find(e => e.id === parent) || genresWithNull[0],
-        }
-    });
+  const onCloseCheckDirty = () => (isDirty ? setSaveDialog(true) : closeEdit());
+  const parseData = ({ parent, ...data }) => ({ parent: parent.id, ...data });
+  const onSubmit = () => {
+    handleSubmit((data) =>
+      id
+        ? updateGenre({ id, ...parseData(data) })
+        : createGenre(parseData(data))
+    )();
+    closeEdit();
+  };
 
+  const footer = (
+    <StyledFooter>
+      <StyledDiv />
+      {id && <Button onClick={() => setDeleteDialog(true)}>Delete</Button>}
+      <Button onClick={onSubmit} color={"primary"}>
+        Submit
+      </Button>
+    </StyledFooter>
+  );
 
+  return (
+    <>
+      <Dialog open={saveDialog} onClose={() => setSaveDialog(false)}>
+        <DialogTitle>Discard changes?</DialogTitle>
+        <DialogActions>
+          <Button onClick={closeEdit} color={"primary"}>
+            Discard
+          </Button>
+          <Button onClick={() => setSaveDialog(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)}>
+        <DialogTitle>Delete '{name}'?</DialogTitle>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              deleteGenre({ id });
+              closeEdit();
+            }}
+            color={"primary"}
+          >
+            Delete
+          </Button>
+          <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+      <DialogBlurResponsive open onClose={onCloseCheckDirty} footer={footer}>
+        <FormContainer>
+          <Controller
+            name={"name"}
+            control={control}
+            render={({ field: { ref, ...field } }) => (
+              <StyledTextField
+                {...field}
+                autoFocus
+                label={"Name"}
+                variant={"outlined"}
+              />
+            )}
+          />
 
-    const onCloseCheckDirty = () => isDirty ? setSaveDialog(true) : closeEdit()
-    const parseData = ({ parent, ...data }) => ({ parent: parent.id, ...data })
-    const onSubmit = () => {
-        handleSubmit(data => id ?
-            updateGenre({ id, ...parseData(data) }) :
-            createGenre(parseData(data))
-        )()
-        closeEdit()
-    }
+          <Controller
+            name={"notes"}
+            control={control}
+            render={({ field: { ref, ...field } }) => (
+              <StyledTextField
+                {...field}
+                label={"Notes"}
+                variant={"outlined"}
+              />
+            )}
+          />
 
-    const footer = (
-        <StyledFooter>
-            <StyledDiv />
-            {id && <Button onClick={() => setDeleteDialog(true)}>Delete</Button>}
-            <Button onClick={onSubmit} color={'primary'}>Submit</Button>
-        </StyledFooter>
-    )
-
-
-    return <>
-        <Dialog
-            open={saveDialog}
-            onClose={() => setSaveDialog(false)}>
-            <DialogTitle>Discard changes?</DialogTitle>
-            <DialogActions>
-                <Button onClick={closeEdit} color={'primary'}>Discard</Button>
-                <Button onClick={() => setSaveDialog(false)}>Cancel</Button>
-            </DialogActions>
-        </Dialog>
-        <Dialog
-            open={deleteDialog}
-            onClose={() => setDeleteDialog(false)}>
-            <DialogTitle>Delete '{name}'?</DialogTitle>
-            <DialogActions>
-                <Button
-                    onClick={() => {
-                        deleteGenre({ id })
-                        closeEdit()
-                    }}
-                    color={'primary'}>
-                    Delete
-                </Button>
-                <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
-            </DialogActions>
-        </Dialog>
-        <DialogBlurResponsive
-            open
-            onClose={onCloseCheckDirty}
-            footer={footer}>
-
-            <FormContainer>
-
-                <Controller
-                    name={'name'}
-                    control={control}
-                    render={({ field: { ref, ...field } }) =>
-                        <StyledTextField
-                            {...field}
-                            autoFocus
-                            label={'Name'}
-                            variant={'outlined'} />} />
-
-                <Controller
-                    name={'notes'}
-                    control={control}
-                    render={({ field: { ref, ...field } }) =>
-                        <StyledTextField
-                            {...field}
-                            label={'Notes'}
-                            variant={'outlined'} />} />
-
-                <Controller
-                    name={'parent'}
-                    control={control}
-                    render={({ field: { ref, onChange, ...field } }) =>
-                        <Autocomplete
-                            {...field}
-                            disableClearable
-                            getOptionLabel={e => e.name}
-                            getOptionSelected={(opt, val) => opt.id === val.id}
-                            groupBy={e => e.ancestors.length ? e.ancestors.join(' > ') : ''}
-                            onChange={(event, value) => onChange(value)}
-                            options={genresWithNull}
-                            renderInput={params => <TextField label={'Parent'} {...params} variant={'outlined'} />}
-                            renderOption={e => e.ancestors.length ?
-                                <Typography style={{ marginLeft: '20px' }}>{e.name}</Typography> : e.name}
-                        />} />
-
-            </FormContainer>
-
-        </DialogBlurResponsive>
+          <Controller
+            name={"parent"}
+            control={control}
+            render={({ field: { ref, onChange, ...field } }) => (
+              <Autocomplete
+                {...field}
+                disableClearable
+                getOptionLabel={(e) => e.name}
+                getOptionSelected={(opt, val) => opt.id === val.id}
+                groupBy={(e) =>
+                  e.ancestors.length ? e.ancestors.join(" > ") : ""
+                }
+                onChange={(event, value) => onChange(value)}
+                options={genresWithNull}
+                renderInput={(params) => (
+                  <TextField
+                    label={"Parent"}
+                    {...params}
+                    variant={"outlined"}
+                  />
+                )}
+                renderOption={(e) =>
+                  e.ancestors.length ? (
+                    <Typography style={{ marginLeft: "20px" }}>
+                      {e.name}
+                    </Typography>
+                  ) : (
+                    e.name
+                  )
+                }
+              />
+            )}
+          />
+        </FormContainer>
+      </DialogBlurResponsive>
     </>
+  );
 };

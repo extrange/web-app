@@ -9,7 +9,6 @@ Tax Savings vs Total Income
 Total Tax saved by year vs Age
 - SRS contribution amount yearly*/
 
-export const SrsCalculator = ({}) =>{
-
-    return null
-}
+export const SrsCalculator = ({}) => {
+  return null;
+};

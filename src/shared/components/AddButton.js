@@ -1,6 +1,6 @@
-import styled from 'styled-components'
-import { Fab } from '@material-ui/core'
-import AddIcon from '@material-ui/icons/Add';
+import styled from "styled-components";
+import { Fab } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
 
 const StyledFab = styled(Fab)`
   position: fixed;
@@ -9,8 +9,8 @@ const StyledFab = styled(Fab)`
   right: 20px;
 `;
 
-export const AddButton = props => (
-  <StyledFab color={'primary'} {...props}>
+export const AddButton = (props) => (
+  <StyledFab color={"primary"} {...props}>
     <AddIcon />
   </StyledFab>
-)
+);

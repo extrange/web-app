@@ -1,10 +1,10 @@
 import { shaderMaterial } from "@react-three/drei";
-import { extend } from '@react-three/fiber'
+import { extend } from "@react-three/fiber";
 
 const SpriteShaderMaterial = shaderMaterial(
-    { uTime: { value: 0 }, uTexture: null },
+  { uTime: { value: 0 }, uTexture: null },
   //Vertex shader
-    `
+  `
   uniform float uTime;
   attribute vec3 color;
   attribute float size;
@@ -19,14 +19,14 @@ const SpriteShaderMaterial = shaderMaterial(
     gl_Position = projectionMatrix * mvPosition;
   }
 `,
-//Fragment shader
-`
+  //Fragment shader
+  `
   uniform sampler2D uTexture;
   varying vec4 vColor;
   void main() {
     gl_FragColor = vColor * texture2D(uTexture, gl_PointCoord);
   }
-`,
-)
+`
+);
 
-extend({SpriteShaderMaterial})
+extend({ SpriteShaderMaterial });

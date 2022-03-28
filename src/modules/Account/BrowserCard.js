@@ -1,20 +1,29 @@
-import { Button, Card, CardActionArea, CardActions, CardContent, Chip, Typography } from "@material-ui/core";
+import {
+  Button,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  Chip,
+  Typography,
+} from "@material-ui/core";
 import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
 import PhoneIphoneIcon from "@material-ui/icons/PhoneIphone";
-import PublicIcon from '@material-ui/icons/Public';
+import PublicIcon from "@material-ui/icons/Public";
 import { getName } from "country-list";
 import { format, parseJSON } from "date-fns";
 import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "../../app/theme";
-import ChromeLogo from '../../shared/static/browserLogos/chrome.png';
-import EdgeLogo from '../../shared/static/browserLogos/edge.png';
-import FirefoxLogo from '../../shared/static/browserLogos/firefox.png';
-import SafariLogo from '../../shared/static/browserLogos/safari.png';
+import ChromeLogo from "../../shared/static/browserLogos/chrome.png";
+import EdgeLogo from "../../shared/static/browserLogos/edge.png";
+import FirefoxLogo from "../../shared/static/browserLogos/firefox.png";
+import SafariLogo from "../../shared/static/browserLogos/safari.png";
 import { formatDistanceToNowPretty, prettifyUAString } from "../../shared/util";
 
 const StyledCard = styled(Card)`
-  outline: ${props => props.$thisDevice ? '2px solid ' + theme.palette.primary.main : 'none'};
+  outline: ${(props) =>
+    props.$thisDevice ? "2px solid " + theme.palette.primary.main : "none"};
 `;
 
 const StyledTypography = styled(Typography)`
@@ -35,10 +44,10 @@ const SavedBrowserDiv = styled.div`
 `;
 
 const BrowserLogoDiv = styled.div`
-  background: no-repeat url(${props => props.$image}) center/contain;
+  background: no-repeat url(${(props) => props.$image}) center/contain;
   margin: 0 6px;
   width: 32px;
-  height: 32px
+  height: 32px;
 `;
 
 const CardContainer = styled.div`
@@ -49,76 +58,100 @@ const CardContainer = styled.div`
 `;
 
 const BrowserLogo = {
-    Chrome: ChromeLogo,
-    Firefox: FirefoxLogo,
-    Edge: EdgeLogo,
-    Safari: SafariLogo,
+  Chrome: ChromeLogo,
+  Firefox: FirefoxLogo,
+  Edge: EdgeLogo,
+  Safari: SafariLogo,
 };
 
 export const BrowserCard = ({
-                                browser: {
-                                    id,
-                                    is_active,
-                                    is_current_session,
-                                    is_saved,
-                                    first_login,
-                                    last_activity,
-                                    ip,
-                                    country_code,
-                                    user_agent,
-                                },
-                                forgetAndLogoutBrowser,
-                            }) => {
+  browser: {
+    id,
+    is_active,
+    is_current_session,
+    is_saved,
+    first_login,
+    last_activity,
+    ip,
+    country_code,
+    user_agent,
+  },
+  forgetAndLogoutBrowser,
+}) => {
+  const prettifiedUserAgent = prettifyUAString(user_agent);
+  const browserName = prettifiedUserAgent.browserName;
+  const [detailView, setDetailView] = useState(false);
 
-    const prettifiedUserAgent = prettifyUAString(user_agent);
-    const browserName = prettifiedUserAgent.browserName;
-    const [detailView, setDetailView] = useState(false);
+  return (
+    <>
+      <StyledCard $thisDevice={is_current_session} key={id}>
+        <CardContainer>
+          <CardActionArea onClick={() => setDetailView(!detailView)}>
+            <CardContent>
+              {detailView ? (
+                <>
+                  <Typography variant={"body1"}>First Login</Typography>
+                  <Typography variant={"body2"} color={"textSecondary"}>
+                    {format(parseJSON(first_login), "PPpp")}
+                  </Typography>
+                  <Typography variant={"body1"}>Last Activity</Typography>
+                  <Typography variant={"body2"} color={"textSecondary"}>
+                    {format(parseJSON(last_activity), "PPpp")}
+                  </Typography>
+                  <Typography variant={"body1"}>User-Agent</Typography>
+                  <Typography variant={"body2"} color={"textSecondary"}>
+                    {user_agent}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <ImageDiv>
+                    {prettifiedUserAgent.isMobile ? (
+                      <PhoneIphoneIcon />
+                    ) : (
+                      <DesktopWindowsIcon />
+                    )}
+                    {browserName in BrowserLogo ? (
+                      <BrowserLogoDiv $image={BrowserLogo[browserName]} />
+                    ) : (
+                      <PublicIcon />
+                    )}
+                    <SavedBrowserDiv>
+                      {is_saved && <Chip label={"Saved"} color={"primary"} />}
+                    </SavedBrowserDiv>
+                  </ImageDiv>
 
-    return <>
-        <StyledCard $thisDevice={is_current_session} key={id}>
-            <CardContainer>
-                <CardActionArea onClick={() => setDetailView(!detailView)}>
-                    <CardContent>
-                        {detailView ?
-                            <>
-                                <Typography variant={'body1'}>First Login</Typography>
-                                <Typography variant={'body2'}
-                                            color={'textSecondary'}>{format(parseJSON(first_login), 'PPpp')}</Typography>
-                                <Typography variant={'body1'}>Last Activity</Typography>
-                                <Typography variant={'body2'}
-                                            color={'textSecondary'}>{format(parseJSON(last_activity), 'PPpp')}</Typography>
-                                <Typography variant={'body1'}>User-Agent</Typography>
-                                <Typography variant={'body2'} color={'textSecondary'}>{user_agent}</Typography>
-
-                            </> :
-                            <>
-                                <ImageDiv>
-                                    {prettifiedUserAgent.isMobile ? <PhoneIphoneIcon/> : <DesktopWindowsIcon/>}
-                                    {browserName in BrowserLogo ? <BrowserLogoDiv $image={BrowserLogo[browserName]}/> :
-                                        <PublicIcon/>}
-                                    <SavedBrowserDiv>
-                                        {is_saved && <Chip label={'Saved'} color={'primary'}/>}
-                                    </SavedBrowserDiv>
-                                </ImageDiv>
-
-                                <StyledTypography variant={'body1'}>{prettifiedUserAgent.name}</StyledTypography>
-                                <Typography variant={'body2'}>{getName(country_code)}</Typography>
-                                <Typography variant={'body2'} style={{overflowWrap: 'break-word'}}>{ip}</Typography>
-                                <StyledTypography variant={'body2'}
-                                                  color={'textSecondary'}>{formatDistanceToNowPretty(parseJSON(last_activity))}</StyledTypography>
-                            </>
-                        }
-                    </CardContent>
-                </CardActionArea>
-                <CardActions>
-                    {(is_active || is_saved) ?
-                        <Button color={'primary'}
-                                onClick={() => forgetAndLogoutBrowser(id)}>
-                            {is_active ? 'Logout' : 'Forget'}
-                        </Button> :
-                        null}
-                </CardActions>
-            </CardContainer>
-        </StyledCard>
+                  <StyledTypography variant={"body1"}>
+                    {prettifiedUserAgent.name}
+                  </StyledTypography>
+                  <Typography variant={"body2"}>
+                    {getName(country_code)}
+                  </Typography>
+                  <Typography
+                    variant={"body2"}
+                    style={{ overflowWrap: "break-word" }}
+                  >
+                    {ip}
+                  </Typography>
+                  <StyledTypography variant={"body2"} color={"textSecondary"}>
+                    {formatDistanceToNowPretty(parseJSON(last_activity))}
+                  </StyledTypography>
+                </>
+              )}
+            </CardContent>
+          </CardActionArea>
+          <CardActions>
+            {is_active || is_saved ? (
+              <Button
+                color={"primary"}
+                onClick={() => forgetAndLogoutBrowser(id)}
+              >
+                {is_active ? "Logout" : "Forget"}
+              </Button>
+            ) : null}
+          </CardActions>
+        </CardContainer>
+      </StyledCard>
     </>
+  );
 };

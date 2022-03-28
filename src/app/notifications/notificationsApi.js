@@ -3,7 +3,6 @@ import { parseISO } from "date-fns";
 
 const notificationsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-
     /**
      * Fetch notifications, converting ISO8601 dates
      * to milliseconds since epoch (timestamps), the same used

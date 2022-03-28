@@ -5,7 +5,7 @@ import { theme } from "../../../app/theme";
 /* A ListItemSecondaryAction which will appear on hover for desktops,
 and always appear for mobile screens. */
 export const StyledListItemSecondaryAction = styled(ListItemSecondaryAction)`
-  ${theme.breakpoints.up('md')}  {
+  ${theme.breakpoints.up("md")} {
     display: none;
   }
 

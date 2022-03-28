@@ -1,18 +1,19 @@
-import {isRejected, isRejectedWithValue} from "@reduxjs/toolkit";
-import {setNetworkError} from "../appSlice";
+import { isRejected, isRejectedWithValue } from "@reduxjs/toolkit";
+import { setNetworkError } from "../appSlice";
 
 /*Show network errors for rejected thunk actions*/
-export const networkErrorMiddleware = ({dispatch}) => next => action => {
-
+export const networkErrorMiddleware =
+  ({ dispatch }) =>
+  (next) =>
+  (action) => {
     if (isRejectedWithValue(action)) {
-        /*Payload has been formatted by baseQuery.
-        * Reducer will filter out 401/403s while not logged in*/
-        dispatch(setNetworkError(action.payload));
-
+      /*Payload has been formatted by baseQuery.
+       * Reducer will filter out 401/403s while not logged in*/
+      dispatch(setNetworkError(action.payload));
     } else if (isRejected(action) && !action.meta.condition) {
-        /*Ignore thunks cancelled due to condition being true*/
-        console.warn(`Rejected thunk:`, action)
+      /*Ignore thunks cancelled due to condition being true*/
+      console.warn(`Rejected thunk:`, action);
     }
 
-    return next(action)
-}
+    return next(action);
+  };

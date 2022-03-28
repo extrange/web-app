@@ -1,4 +1,4 @@
-import {useReducer} from "react";
+import { useReducer } from "react";
 
 /**
  * Uses useReducer (setValue is dispatch({name, value})
@@ -8,32 +8,32 @@ import {useReducer} from "react";
  * @returns {{bind: (function(*=): {onChange: function(*): *, name: *, value}), onChange: (function(*): *), setValues: *, values: React.ReducerStateWithoutAction<function(*=, *): (*)>}}
  */
 export const useInput = (initialValues = {}) => {
-    const reducer = (state, action) => {
-        if (typeof action.value === 'function') {
-            return {
-                ...state,
-                [action.name]: action.value(state[action.name])
-            }
-        } else
-            return {
-                ...state,
-                [action.name]: action.value
-            };
-    };
+  const reducer = (state, action) => {
+    if (typeof action.value === "function") {
+      return {
+        ...state,
+        [action.name]: action.value(state[action.name]),
+      };
+    } else
+      return {
+        ...state,
+        [action.name]: action.value,
+      };
+  };
 
-    const [values, setValue] = useReducer(reducer, initialValues);
+  const [values, setValue] = useReducer(reducer, initialValues);
 
-    const onChange = e => setValue({
-        name: e.target.name,
-        value: e.target.value
+  const onChange = (e) =>
+    setValue({
+      name: e.target.name,
+      value: e.target.value,
     });
 
-    const bind = name => ({
-        onChange,
-        name: name,
-        value: values[name] || ''
-    });
+  const bind = (name) => ({
+    onChange,
+    name: name,
+    value: values[name] || "",
+  });
 
-    return {values, setValue, onChange, bind}
-
+  return { values, setValue, onChange, bind };
 };

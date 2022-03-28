@@ -1,21 +1,21 @@
 import { Vector2 } from "three";
 
 export const ZoomShader = {
-	uniforms: {
-		tDiffuse: { value: null },
-		center: { value: new Vector2(0.5, 0.5) },
-		strength: { value: 0 },
-	},
-	//Vertex shader
-	vertexShader: `
+  uniforms: {
+    tDiffuse: { value: null },
+    center: { value: new Vector2(0.5, 0.5) },
+    strength: { value: 0 },
+  },
+  //Vertex shader
+  vertexShader: `
     varying vec2 vUv;
     void main() {
       vUv = uv;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `,
-	//Fragment shader
-	fragmentShader: `
+  //Fragment shader
+  fragmentShader: `
     uniform sampler2D tDiffuse;
     uniform vec2 center;
     uniform float strength;
@@ -47,4 +47,4 @@ export const ZoomShader = {
       gl_FragColor.rgb /= gl_FragColor.a + 0.00001;
     }
   `,
-}
+};

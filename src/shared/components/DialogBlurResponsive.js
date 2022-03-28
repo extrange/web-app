@@ -4,21 +4,20 @@ import { Dialog } from "@material-ui/core";
 import { OverlayScrollbarOptions, theme } from "../../app/theme";
 
 const StyledDialog = styled(Dialog)`
-
   .MuiDialog-paper {
     width: min(100vw, 600px);
-    box-shadow: 0px 0px 17px 12px rgba(0,0,0,0.71);
+    box-shadow: 0px 0px 17px 12px rgba(0, 0, 0, 0.71);
   }
 
   // Start from top of screen regardless of content height
   .MuiDialog-container {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
   }
 
   .MuiDialog-paper {
-      background: black;
+    background: black;
   }
 
   @supports (backdrop-filter: blur(5px)) {
@@ -29,8 +28,7 @@ const StyledDialog = styled(Dialog)`
   }
 
   // Reduce margins when on mobile
-  ${theme.breakpoints.down('sm')} {
-
+  ${theme.breakpoints.down("sm")} {
     // Extend width
     .MuiDialog-paperWidthFalse {
       max-width: calc(100% - 32px);
@@ -48,7 +46,6 @@ const StyledDialog = styled(Dialog)`
       // Fill up screen
       max-height: initial;
     }
-
   }
 `;
 
@@ -63,21 +60,22 @@ export const DialogBlurResponsive = ({
   children,
   footer,
   fullscreen = false,
-  ...props }) =>
-
+  ...props
+}) => (
   <StyledDialog
     maxWidth={false}
     disableScrollLock
     disablePortal
     $fullscreen={fullscreen}
-    {...props}>
-
+    {...props}
+  >
     <StyledOverlayScrollbarsComponent
       options={OverlayScrollbarOptions}
-      className={'os-host-flexbox'}>
+      className={"os-host-flexbox"}
+    >
       {children}
     </StyledOverlayScrollbarsComponent>
 
     {footer}
-
-  </StyledDialog>;
+  </StyledDialog>
+);

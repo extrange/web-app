@@ -45,11 +45,13 @@ const formatTime = (date) =>
     : format(date, "d MMM, h:mmaaa");
 
 export const NotificationMenu = () => {
-  const { data: serverNotifications = [] } =
-    useGetNotificationsQuery(undefined, {
+  const { data: serverNotifications = [] } = useGetNotificationsQuery(
+    undefined,
+    {
       pollingInterval: REFRESH_INTERVAL_MS,
       refetchOnReconnect: true,
-    });
+    }
+  );
   const [dismissNotification] = useDismissNotificationMutation();
 
   const appNotifications = useSelector(selectAppNotifications);
