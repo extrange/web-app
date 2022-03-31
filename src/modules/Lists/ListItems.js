@@ -1,4 +1,5 @@
 import { differenceInCalendarDays, parseISO } from "date-fns";
+import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { BaseList } from "../../shared/components/GenericList/BaseList";
 import { GenericList } from "../../shared/components/GenericList/GenericList";
@@ -31,6 +32,13 @@ export const ListItems = ({ showCompleted, showRepeating }) => {
         (e.due_date &&
           differenceInCalendarDays(parseISO(e.due_date), new Date()) < 1);
 
+  const context = useMemo(
+    () => ({ list: currentList.id, showCompleted }),
+    [currentList, showCompleted]
+  );
+
+  const isItemEmpty = useCallback((e) => !e.title && !e.notes, []);
+
   return (
     <GenericList
       getItemsQuery={useGetItemsQuery}
@@ -38,11 +46,11 @@ export const ListItems = ({ showCompleted, showRepeating }) => {
       updateItemMutation={useUpdateItemMutation}
       deleteItemMutation={useDeleteItemMutation}
       defaultItemValues={{ title: "", notes: "" }}
-      context={{ list: currentList.id, showCompleted }}
+      context={context}
       itemIdField={"id"}
       List={List}
       ItemEdit={ListItemEdit}
-      isItemEmpty={(e) => !e.title && !e.notes}
+      isItemEmpty={isItemEmpty}
       refreshOnFocus
       filterBy={filterRepeating}
       sortBy={(a, b) =>

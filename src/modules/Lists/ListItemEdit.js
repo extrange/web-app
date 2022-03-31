@@ -55,17 +55,20 @@ export const ListItemEdit = ({
   const [createItem] = createItemMutation();
   const [updateItem] = updateItemMutation();
   const [deleteItem] = deleteItemMutation();
+  const editingItemId = editingItem.id;
 
   const useAutosaveOptions = useMemo(
     () => ({
-      id: editingItem[itemIdField],
+      id: editingItemId,
       updateItem: (id, data) =>
         updateItem({ ...context, [itemIdField]: id, ...data }),
       createItem: (data) =>
         createItem({ ...context, ...data })
           .unwrap()
           .then((res) => {
-            setEditingItem(res);
+            // Only update editing item if it is set,
+            // to prevent the create dialog from re-opening.
+            setEditingItem((e) => e && res);
             return res.id;
           }),
       deleteItem: (id) => deleteItem({ ...context, [itemIdField]: id }),
@@ -75,10 +78,10 @@ export const ListItemEdit = ({
       context,
       createItem,
       deleteItem,
-      editingItem,
-      setEditingItem,
+      editingItemId,
       isItemEmpty,
       itemIdField,
+      setEditingItem,
       updateItem,
     ]
   );

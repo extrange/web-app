@@ -7,7 +7,7 @@ import { useCallback, useRef } from "react";
  * Calls `createItem` if id is not provided.
  * Optionally deletes item on flush.
  *
- * Note: provided functions must be memoized, otherwise
+ * Note: **All provided props must be memoized**, otherwise
  * the debounced onChange function will not be referentially stable,
  * and cause unnecessary re-renders
  *
@@ -34,7 +34,7 @@ export const useAutosave = ({
   deleteItem,
   itemIsEmpty = () => false,
   wait = 1000,
-  maxWait,
+  maxWait = 5000,
 }) => {
   /* Validate arguments */
   if (typeof updateItem !== "function") {
