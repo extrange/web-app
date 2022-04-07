@@ -206,6 +206,7 @@ export const ListItemEdit = ({
             }
           }}
           format={"dd/MM/yyyy"}
+          size={'small'}
           placeholder={"dd/mm/yyyy"}
           inputVariant={"outlined"}
         />
@@ -216,6 +217,7 @@ export const ListItemEdit = ({
         defaultValue={initialRepeatDays}
         type={"number"}
         variant={"outlined"}
+        size={"small"}
         onChange={(e) => {
           setValue("repeat_days", e.target.value);
           onChange(getValues());
