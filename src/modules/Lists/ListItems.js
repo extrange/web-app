@@ -1,5 +1,7 @@
-import { differenceInCalendarDays, parseISO } from "date-fns";
-import { useCallback, useMemo } from "react";
+import { Button, IconButton, Snackbar } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
+import { compareAsc, differenceInCalendarDays, parseISO } from "date-fns";
+import { useCallback, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { BaseList } from "../../shared/components/GenericList/BaseList";
 import { GenericList } from "../../shared/components/GenericList/GenericList";
@@ -7,7 +9,7 @@ import {
   useCreateItemMutation,
   useDeleteItemMutation,
   useGetItemsQuery,
-  useUpdateItemMutation,
+  useUpdateItemMutation
 } from "./listApi";
 import { ListItem } from "./ListItem";
 import { ListItemEdit } from "./ListItemEdit";
@@ -23,6 +25,8 @@ const List = BaseList({
 /* The list of items for a particular List. */
 export const ListItems = ({ showCompleted, showRepeating }) => {
   const currentList = useSelector(selectCurrentList);
+  const [completedItem, setCompletedItem] = useState();
+  const [updateItem] = useUpdateItemMutation();
 
   /* By default, hide repeating tasks which are not due/overdue */
   const filterRepeating = showRepeating
@@ -39,27 +43,61 @@ export const ListItems = ({ showCompleted, showRepeating }) => {
 
   const isItemEmpty = useCallback((e) => !e.title && !e.notes, []);
 
+  const handleClose = () => setCompletedItem(null);
+  const undoCompletedItem = () => {
+    updateItem({ ...completedItem, completeChanged: true });
+    setCompletedItem(null);
+  };
+
   return (
-    <GenericList
-      getItemsQuery={useGetItemsQuery}
-      createItemMutation={useCreateItemMutation}
-      updateItemMutation={useUpdateItemMutation}
-      deleteItemMutation={useDeleteItemMutation}
-      defaultItemValues={{ title: "", notes: "" }}
-      context={context}
-      itemIdField={"id"}
-      List={List}
-      ItemEdit={ListItemEdit}
-      isItemEmpty={isItemEmpty}
-      refreshOnFocus
-      filterBy={filterRepeating}
-      sortBy={(a, b) =>
-        a.pinned !== b.pinned
-          ? b.pinned - a.pinned
-          : !(a.due_date && b.due_date)
-          ? Boolean(b.due_date) - Boolean(a.due_date)
-          : differenceInCalendarDays(parseISO(a.due_date), parseISO(b.due_date))
-      }
-    />
+    <>
+      <Snackbar
+        // autoHideDuration={5000}
+        open={!!completedItem}
+        onClose={handleClose}
+        message={"Item completed"}
+        action={
+          <>
+            <Button
+              color={"secondary"}
+              size={"small"}
+              onClick={undoCompletedItem}
+            >
+              Undo
+            </Button>
+            <IconButton size={"small"} color={"inherit"} onClose={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </>
+        }
+      />
+      <GenericList
+        getItemsQuery={useGetItemsQuery}
+        createItemMutation={useCreateItemMutation}
+        updateItemMutation={useUpdateItemMutation}
+        deleteItemMutation={useDeleteItemMutation}
+        defaultItemValues={{ title: "", notes: "" }}
+        context={context}
+        itemIdField={"id"}
+        itemProps={{ setCompletedItem }}
+        List={List}
+        ItemEdit={ListItemEdit}
+        isItemEmpty={isItemEmpty}
+        refreshOnFocus
+        filterBy={filterRepeating}
+        sortBy={(a, b) =>
+          showCompleted
+            ? compareAsc(a, b)
+            : a.pinned !== b.pinned
+            ? b.pinned - a.pinned
+            : !(a.due_date && b.due_date)
+            ? Boolean(b.due_date) - Boolean(a.due_date)
+            : differenceInCalendarDays(
+                parseISO(a.due_date),
+                parseISO(b.due_date)
+              )
+        }
+      />
+    </>
   );
 };

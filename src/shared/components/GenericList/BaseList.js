@@ -23,6 +23,7 @@ export const BaseList = ({ Item = DefaultItem } = {}) =>
     filterBy,
     items,
     itemIdField,
+    itemProps,
     isSkeleton,
     loading,
     setEditingItem,
@@ -68,6 +69,7 @@ export const BaseList = ({ Item = DefaultItem } = {}) =>
           isSkeleton={isSkeleton}
           item={e}
           setEditingItem={setEditingItem}
+          {...itemProps}
         />
       ));
 

@@ -35,6 +35,7 @@ export const GenericList = ({
   filterBy = () => true,
   sortBy = () => 0,
   refreshOnFocus = false,
+  itemProps,
 
   List = DefaultList,
   ItemEdit = DefaultItemEdit,
@@ -78,6 +79,7 @@ export const GenericList = ({
         filterBy={filterBy}
         items={items}
         itemIdField={itemIdField}
+        itemProps={itemProps}
         isSkeleton={isSkeleton}
         loading={loading}
         setEditingItem={setEditingItem}

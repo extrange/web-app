@@ -61,6 +61,7 @@ export const ListItem = ({
     deleteItemMutation,
     itemIdField,
     isSkeleton,
+    setCompletedItem,
     item,
     setEditingItem,
   }) {
@@ -132,13 +133,14 @@ export const ListItem = ({
             <StyledListItemIcon>
               <IconButton
                 edge={"start"}
-                onClick={stopPropagation(() =>
+                onClick={stopPropagation(() => {
+                  setCompletedItem(item);
                   updateItem({
                     ...item,
                     completeChanged: true,
                     completed: new Date().toISOString(),
-                  })
-                )}
+                  });
+                })}
               >
                 <DoneIcon />
               </IconButton>
