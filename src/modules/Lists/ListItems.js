@@ -52,7 +52,7 @@ export const ListItems = ({ showCompleted, showRepeating }) => {
   return (
     <>
       <Snackbar
-        // autoHideDuration={5000}
+        autoHideDuration={3000}
         open={!!completedItem}
         onClose={handleClose}
         message={"Item completed"}
@@ -65,7 +65,7 @@ export const ListItems = ({ showCompleted, showRepeating }) => {
             >
               Undo
             </Button>
-            <IconButton size={"small"} color={"inherit"} onClose={handleClose}>
+            <IconButton size={"small"} color={"inherit"} onClick={handleClose}>
               <CloseIcon />
             </IconButton>
           </>
