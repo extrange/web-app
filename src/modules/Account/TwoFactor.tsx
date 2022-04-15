@@ -1,6 +1,6 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { parseJSON } from "date-fns";
-import QRCode from "qrcode.react";
+import {QRCodeSVG} from "qrcode.react";
 import { useState } from "react";
 import { formatDistanceToNowPretty } from "../../shared/util";
 import { useModify2FaMutation, useGetOtpStatusQuery } from "./accountApi";
@@ -27,7 +27,7 @@ export const TwoFactor = () => {
     <>
       {secret && (
         <a href={secret}>
-          <QRCode value={secret} />
+          <QRCodeSVG value={secret} />
         </a>
       )}
       <Typography variant={"body1"}>

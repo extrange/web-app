@@ -21,7 +21,7 @@ const NoServiceWorker = () => {
       onClose={() => setSbOpen(false)}
       autoHideDuration={3000}
     >
-      <Alert severity={"Info"} onClose={() => setSbOpen(false)}>
+      <Alert severity={"info"} onClose={() => setSbOpen(false)}>
         {"Service Workers are not supported in your browser"}
       </Alert>
     </Snackbar>
