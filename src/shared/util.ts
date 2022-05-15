@@ -14,16 +14,17 @@ import {
 } from "date-fns";
 import UAParser from "ua-parser-js";
 import { isPlainObject } from "@reduxjs/toolkit";
+import { Url } from "url";
 
 /**
  * Strip accents, empty spaces and lowercase a string (for comparison purposes)
  * undefined/null returns an empty string
  * @param {String} string
  */
-export const sanitizeString = (string) =>
+export const sanitizeString = (string: string) =>
   string ? removeAccents(string).trim().toLowerCase() : "";
 
-export const isEmpty = (string) => !Boolean(string?.trim());
+export const isEmpty = (string: string) => !Boolean(string?.trim());
 
 /**
  * Returns a seeded random number between min (inclusive) and max (exclusive)
@@ -31,7 +32,7 @@ export const isEmpty = (string) => !Boolean(string?.trim());
  * @param max
  * @param seed optional, will use seeded RNG if present
  */
-export const getRandomInt = (min, max, seed = undefined) => {
+export const getRandomInt = (min: number, max: number, seed = undefined) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   let rng = seed ? seedrandom(seed) : Math.random;
@@ -53,7 +54,7 @@ export const getDaysSinceEpoch = () =>
  * otherwise like Apr 2021
  * @param date
  */
-export const formatDistanceToNowPretty = (date) => {
+export const formatDistanceToNowPretty = (date: number | Date) => {
   if (differenceInMinutes(new Date(), date) < 1)
     return formatDistanceToNow(date, { addSuffix: true });
   if (differenceInCalendarDays(new Date(), date) < 1)
@@ -87,21 +88,21 @@ export const getSecureRandom = () => {
 
   /*Will generate random numbers between 0 and 1 (exclusive) with 32 bit maximum precision
    * Rejection sampling.*/
-  const random = () => {
+  const random = (): number => {
     let val = crypto.getRandomValues(arr)[0] / max;
     if (val >= 1) return random();
     return val;
   };
 
   /*Random integer between min (inclusive) and max (exclusive)*/
-  const randint = (min, max) => {
+  const randint = (min: number, max: number) => {
     let floor_min = Math.floor(min);
     let floor_max = Math.floor(max);
     return Math.floor(random() * (floor_max - floor_min)) + floor_min;
   };
 
   /*Select random element of an array*/
-  const choice = (arr) => arr[randint(0, arr.length)];
+  const choice = <T>(arr: T[]): T => arr[randint(0, arr.length)];
 
   return {
     random,
@@ -110,7 +111,7 @@ export const getSecureRandom = () => {
   };
 };
 
-export const prettifyUAString = (uaString) => {
+export const prettifyUAString = (uaString: string) => {
   let ua = UAParser(uaString);
   let {
     browser: { name: browserName },
@@ -128,18 +129,18 @@ export const prettifyUAString = (uaString) => {
   };
 };
 
-export const stripHtml = (html) => {
+export const stripHtml = (html: string) => {
   let doc = new DOMParser().parseFromString(html, "text/html");
   return doc.body.textContent || "";
 };
 
 /*Copied from RTKQ's fetchBaseQuery.
  * Will not affect non-objects such as classes.*/
-export const stripUndefined = (obj) => {
+export const stripUndefined = (obj: any) => {
   if (!isPlainObject(obj)) {
     return obj;
   }
-  const copy = { ...obj };
+  const copy: Record<string, any> = { ...obj };
   for (const [k, v] of Object.entries(copy)) {
     if (typeof v === "undefined") delete copy[k];
   }
@@ -149,7 +150,7 @@ export const stripUndefined = (obj) => {
 /**
  * Joins 2 URLs. Will not modify/add trailing slashes if present/absent
  * */
-export const joinUrl = (base, url) => {
+export const joinUrl = (base: string | Url, url: string | Url) => {
   if (base === undefined) {
     // can't use !base because '0' is false
     return url;
@@ -157,11 +158,12 @@ export const joinUrl = (base, url) => {
   if (url === undefined) {
     return base;
   }
-  return String(base).replace(/\/$/, "") + "/" + String(url).replace(/^\//);
+  return String(base).replace(/\/$/, "") + "/" + String(url).replace(/^\//, "");
 };
 
 /* Truncate string with ellipsis after 'len' characters */
-export const truncateString = (string, len) =>
+export const truncateString = (string: string, len: number) =>
   string.length < len ? string : `${string.slice(0, len)}...`;
 
-export const tanDegrees = (degrees) => Math.tan((degrees * Math.PI) / 180);
+export const tanDegrees = (degrees: number) =>
+  Math.tan((degrees * Math.PI) / 180);

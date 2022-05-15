@@ -14,11 +14,15 @@ import styled from "styled-components";
 import { BackgroundScreenRounded } from "../../shared/components/backgroundScreen";
 import { Loading } from "../../shared/components/Loading";
 import { selectLoginStatus, setNetworkError } from "../appSlice";
-import { NETWORK_ERROR } from "../constants";
 import { showZoom } from "../starfield/Starfield";
-import { useCheckLoginQuery, useLoginMutation } from "./authApi";
+import {
+  LoginCredentials,
+  LoginFail,
+  useCheckLoginQuery,
+  useLoginMutation,
+} from "./authApi";
 
-const StyledForm = styled.form`
+const StyledForm = styled.form<{ $blur: boolean }>`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -65,7 +69,7 @@ export const Login = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  const { register, getValues, setValue } = useForm({
+  const { register, getValues, setValue } = useForm<LoginCredentials>({
     defaultValues: {
       username: "",
       password: "",
@@ -79,34 +83,40 @@ export const Login = () => {
   register("otp");
   register("save_browser");
 
-  const recaptchaRef = React.useRef();
+  const recaptchaRef = React.useRef<ReCAPTCHA>(null);
   const [loginMessage, setLoginMessage] = useState("Sign In");
   const [otpRequired, setOtpRequired] = useState(false);
 
   /* Control zoom effect on starfield here */
   useEffect(() => void (showZoom.val = isLoading), [isLoading]);
 
-  const onSubmit = useCallback(
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
     (event) => {
       event.preventDefault();
 
       setLoginMessage("");
       recaptchaRef.current
-        .executeAsync()
-        .then((token) =>
-          login({
-            token,
-            ...getValues(),
-          })
-        )
+        ?.executeAsync()
+        .then((token) => {
+          if (token) {
+            return login({
+              token,
+              ...getValues(),
+            });
+          } else {
+            throw new Error("gRecaptcha token is null");
+          }
+        })
         .then((res) => {
           /* Handle 401/403 errors here (either OTP required or wrong password) */
+
           if (
-            res.error &&
-            res.error.type === NETWORK_ERROR.HTTP_ERROR &&
+            "error" in res &&
+            "status" in res.error &&
+            typeof res.error.status === "number" &&
             [401, 403].includes(res.error.status)
           ) {
-            let data = res.error.data;
+            let data = res.error.data as LoginFail;
 
             if (data.otp_required) setOtpRequired(true);
 
@@ -116,7 +126,7 @@ export const Login = () => {
             recaptchaRef.current?.reset();
           }
         })
-        .catch((e) => {
+        .catch((e: Error) => {
           /*Since thunks do not throw if not unwrapped,
            * only gRecaptcha errors are caught here.
            * networkErrorMiddleware handles the rest.
@@ -125,7 +135,7 @@ export const Login = () => {
           dispatch(
             setNetworkError({
               text: `gRecaptcha request failed: ${e?.message}`,
-              type: NETWORK_ERROR.FETCH_ERROR,
+              type: "misc",
             })
           );
         });
@@ -134,7 +144,13 @@ export const Login = () => {
   );
 
   /*Show loading screen also for non-401/403 errors*/
-  if (isFetching || (isError && ![401, 403].includes(error.status)))
+  if (
+    isFetching ||
+    (isError &&
+      "status" in error &&
+      typeof error.status === "number" &&
+      ![401, 403].includes(error.status))
+  )
     return (
       <Loading
         open={true}
@@ -191,11 +207,10 @@ export const Login = () => {
               <StyledTextField
                 autoComplete={"one-time-code"}
                 fullWidth
-                inputMode={"numeric"}
+                inputProps={{inputMode: 'numeric'}}
                 label={"OTP"}
                 name={"otp"}
                 onChange={(e) => setValue("otp", e.target.value)}
-                pattern={"[0-9]*"}
                 required
                 type={"password"}
                 variant={"outlined"}
@@ -226,12 +241,14 @@ export const Login = () => {
               <Spacer />
             )}
           </Button>
-          <ReCAPTCHA
-            ref={recaptchaRef}
-            size={"invisible"}
-            sitekey={recaptchaKey}
-            theme={"dark"}
-          />
+          {recaptchaKey && (
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              size={"invisible"}
+              sitekey={recaptchaKey}
+              theme={"dark"}
+            />
+          )}
         </InnerContainer>
       </StyledForm>
     </>

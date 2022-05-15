@@ -1,5 +1,5 @@
+import { fetchBaseQuery } from "@reduxjs/toolkit/dist/query";
 import { baseApi } from "../../app/network-core/baseApi";
-import { baseQueryWithRetry } from "../../app/network-core/baseQuery";
 
 export const testingApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -10,11 +10,11 @@ export const testingApi = baseApi.injectEndpoints({
       }),
     }),
     throwFetchError: build.mutation({
-      queryFn: (arg, api, extraOptions) =>
-        baseQueryWithRetry({
+      queryFn: (args, api, extraOptions) =>
+        fetchBaseQuery({
           baseUrl: "https://dummy.nicholaslyz.com",
           credentials: "include",
-        })(arg, api, extraOptions),
+        })(args, api, extraOptions),
     }),
     mutationTest: build.mutation({
       query: () => "test/mutationTest/",

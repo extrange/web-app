@@ -10,17 +10,15 @@ export const BackendSnackbar = () => {
   const [sbOpen, setSbOpen] = useState(true);
   const alternateBackend = window.location.hash.slice(1);
 
-  return (
-    alternateBackend && (
-      <Snackbar
-        open={sbOpen}
-        onClose={() => setSbOpen(false)}
-        autoHideDuration={3000}
-      >
-        <Alert severity={"info"} onClose={() => setSbOpen(false)}>
-          {`Using alternate backend at ${alternateBackend}`}
-        </Alert>
-      </Snackbar>
-    )
-  );
+  return alternateBackend ? (
+    <Snackbar
+      open={sbOpen}
+      onClose={() => setSbOpen(false)}
+      autoHideDuration={3000}
+    >
+      <Alert severity={"info"} onClose={() => setSbOpen(false)}>
+        {`Using alternate backend at ${alternateBackend}`}
+      </Alert>
+    </Snackbar>
+  ) : null;
 };

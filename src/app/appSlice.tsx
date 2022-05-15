@@ -1,10 +1,61 @@
-import { createSlice, isAllOf, isRejectedWithValue } from "@reduxjs/toolkit";
-import { NETWORK_ERROR } from "./constants";
-import { authApi } from "./auth/authApi";
+import {
+  createSlice,
+  isAllOf,
+  isAnyOf,
+  isRejectedWithValue,
+  PayloadAction,
+} from "@reduxjs/toolkit";
+import {
+  authApi,
+  CheckLoginFail,
+  isLoginSuccess,
+  LoginFail,
+  LoginSuccess,
+} from "./auth/authApi";
+import { RootState } from "./store";
 
 export const appSliceName = "app";
+export interface MiscError {
+  type: "misc";
+  text: string;
+}
+export interface FetchError {
+  type: "fetch";
+  text: string;
+  url: string;
+  method: string;
+}
 
-const initialState = {
+export interface HttpError {
+  type: "http";
+  text: string;
+  url: string;
+  method: string;
+  status: number;
+}
+
+export type NetworkErrorBase = MiscError | FetchError | HttpError;
+
+export type NetworkError = NetworkErrorBase & {
+  timestamp: number;
+};
+
+export type NetworkAction = string;
+
+interface AppState {
+  module: string | null;
+  loginStatus: {
+    user: string | null;
+    expiry: string | null;
+    isSuperUser: boolean;
+    recaptchaKey: string | null;
+    loggedIn: boolean;
+  };
+  networkError: NetworkError | null;
+  pendingNetworkActions: NetworkAction[];
+}
+
+const initialState: AppState = {
   module: null,
   loginStatus: {
     user: null,
@@ -17,76 +68,30 @@ const initialState = {
   pendingNetworkActions: [],
 };
 
-const handleLoginFulfilled = (
-  state,
-  {
-    payload: {
-      user,
-      expiry,
-      is_superuser: isSuperUser,
-      recaptcha_key: recaptchaKey,
-    },
-  }
-) =>
-  void (state.loginStatus = {
-    user,
-    expiry,
-    isSuperUser,
-    recaptchaKey,
-    loggedIn: true,
-  });
-
-const setNetworkErrorReducer = (state, action) => {
-  let {
-    method = "Method not specified",
-    url = "URL not specified",
-    text = "",
-    status = null /*Must be specified if HTTP_ERROR*/,
-    type,
-    timestamp,
-  } = action.payload;
-
-  /*Type not specified:  rejected thunk with value which is NOT a NetworkError object*/
-  if (!type) {
-    state.networkError = {
-      method,
-      url,
-      text: JSON.stringify(action, undefined, 2),
-      status,
-      type,
-      timestamp,
-    };
-    return;
-  }
-
-  if (type === NETWORK_ERROR.HTTP_ERROR && typeof status !== "number")
-    throw new Error(`NetworkError: 'status' must be a number if 
-            'type' === HTTP_ERROR, but got ${status} instead`);
-
-  /*Ignore 401/403 errors if not logged in*/
-  if (!state.loginStatus.loggedIn && [401, 403].includes(status)) {
-    return;
-  }
-  state.networkError = { method, url, text, status, type, timestamp };
-};
-
 export const appSlice = createSlice({
   name: appSliceName,
   initialState,
   reducers: {
     setNetworkError: {
-      reducer: setNetworkErrorReducer,
-      prepare: (action) => ({
+      reducer: (state, { payload }: PayloadAction<NetworkError, string>) => {
+        /*Ignore 401/403 errors if not logged in*/
+        if (
+          !state.loginStatus.loggedIn &&
+          payload.type === 'http' &&
+          [401, 403].includes(payload.status)
+        )
+          return;
+        state.networkError = payload;
+      },
+      prepare: (networkError: NetworkErrorBase) => ({
         payload: {
-          ...action,
+          ...networkError,
           timestamp: new Date().getTime(),
         },
       }),
     },
     clearNetworkError: (state) => void (state.networkError = null),
     setCurrentModule: (state, { payload }) => void (state.module = payload),
-    setAppBar: (state, { payload: { drawerOpen = false } }) =>
-      void (state.appBar.drawerOpen = drawerOpen),
     addNetworkAction: (state, { payload }) => {
       if (!state.pendingNetworkActions.includes(payload))
         state.pendingNetworkActions.push(payload);
@@ -102,24 +107,40 @@ export const appSlice = createSlice({
   extraReducers: (builder) =>
     builder
       .addMatcher(
-        authApi.endpoints.checkLogin.matchFulfilled,
-        handleLoginFulfilled
+        isAnyOf(
+          authApi.endpoints.checkLogin.matchFulfilled,
+          authApi.endpoints.login.matchFulfilled
+        ),
+        (
+          state: AppState,
+          { payload }: { payload: LoginSuccess | LoginFail | CheckLoginFail }
+        ) => {
+          if (isLoginSuccess(payload)) {
+            state.loginStatus = {
+              user: payload.user,
+              expiry: payload.expiry,
+              isSuperUser: payload.is_superuser,
+              recaptchaKey: payload.recaptcha_key,
+              loggedIn: true,
+            };
+          }
+        }
       )
       .addMatcher(
         isAllOf(
           authApi.endpoints.checkLogin.matchRejected,
           isRejectedWithValue
         ),
-        (state, action) => {
-          let payload = action.payload;
+        (state, { payload }) => {
           if (
-            payload.type === NETWORK_ERROR.HTTP_ERROR &&
+            typeof payload?.status === "number" &&
             [401, 403].includes(payload.status)
-          )
-            state.loginStatus.recaptchaKey = payload.data.recaptcha_key;
+          ) {
+            let data = payload.data as CheckLoginFail;
+            state.loginStatus.recaptchaKey = data.recaptcha_key;
+          }
         }
       )
-      .addMatcher(authApi.endpoints.login.matchFulfilled, handleLoginFulfilled)
       .addMatcher(authApi.endpoints.logout.matchFulfilled, () => {
         /*Not pure, but an exception here as I want to clear everything*/
         localStorage.clear();
@@ -132,13 +153,15 @@ export const {
   setNetworkError,
   clearNetworkError,
   setCurrentModule,
-  setAppBar,
   addNetworkAction,
   removeNetworkAction,
 } = appSlice.actions;
 
-export const selectLoginStatus = (state) => state[appSliceName].loginStatus;
-export const selectNetworkError = (state) => state[appSliceName].networkError;
-export const selectCurrentModule = (state) => state[appSliceName].module;
-export const selectPendingNetworkActions = (state) =>
+export const selectLoginStatus = (state: RootState) =>
+  state[appSliceName].loginStatus;
+export const selectNetworkError = (state: RootState) =>
+  state[appSliceName].networkError;
+export const selectCurrentModule = (state: RootState) =>
+  state[appSliceName].module;
+export const selectPendingNetworkActions = (state: RootState) =>
   state[appSliceName].pendingNetworkActions;

@@ -1,36 +1,58 @@
 import { Button } from "@material-ui/core";
-import React from "react";
+import { format, formatDistanceToNowStrict, formatISO } from "date-fns";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { AlertSnackbarWithDialog } from "../../shared/components/AlertSnackbarWithDialog";
-import { useDispatch, useSelector } from "react-redux";
 import { clearNetworkError, selectNetworkError } from "../appSlice";
-import { NETWORK_ERROR } from "../constants";
-import { format, formatISO } from "date-fns";
+import { useAppSelector } from "../hooks";
 
 /*Displays appropriate snackbars informing users of network state/errors,
  * with remediation options.
  *
  * Accepts both Responses and Errors.*/
-export const NetworkError = () => {
+export const NetworkErrorAlert = () => {
   const dispatch = useDispatch();
-  const networkError = useSelector(selectNetworkError);
+  const networkError = useAppSelector(selectNetworkError);
+  const [formattedTimestamp, setFormattedTimestamp] = useState<
+    string | undefined
+  >();
+
+  useEffect(() => {
+    if (networkError) {
+      const update = () =>
+        setFormattedTimestamp(
+          formatDistanceToNowStrict(networkError.timestamp, { addSuffix: true })
+        );
+      const interval = setInterval(update, 5000);
+      return () => clearInterval(interval);
+    }
+    return undefined;
+  }, [networkError]);
+
   if (!networkError) return null;
 
-  const { method, url, text, status, type, timestamp } = networkError;
+  const getSnackbarText = (msg: string) => `${msg} (${formattedTimestamp})`;
+  const message =
+    networkError.type === "misc" ? (
+      <>
+        <p>
+          {formatISO(networkError.timestamp)}
+          <p>{networkError.text}</p>
+        </p>
+      </>
+    ) : (
+      <>
+        <p>
+          {formatISO(networkError.timestamp)}: {networkError.method}:
+          {networkError.url}
+          <p>{networkError.text}</p>
+        </p>
+      </>
+    );
 
-  const message = (
-    <>
-      <p>
-        {formatISO(timestamp)} {method}: {url}
-      </p>
-      <p>{text}</p>
-    </>
-  );
-
-  const formattedTimestamp = format(timestamp, "HH:mm");
-
-  switch (type) {
-    case NETWORK_ERROR.FETCH_ERROR:
-      /*Fetch error. Allow user to close snackbar*/
+  switch (networkError.type) {
+    case "fetch":
+      /*Allow user to close snackbar*/
       return (
         <AlertSnackbarWithDialog
           dialogTitle={"Fetch Error"}
@@ -41,13 +63,13 @@ export const NetworkError = () => {
           }
           dialogContent={message}
           severity={"error"}
-          snackbarText={`[${formattedTimestamp}] A network error has occurred.`}
+          snackbarText={getSnackbarText("A network error has occurred.")}
           onClose={() => dispatch(clearNetworkError())}
         />
       );
 
-    case NETWORK_ERROR.HTTP_ERROR:
-      if ([401, 403].includes(status)) {
+    case "http":
+      if ([401, 403].includes(networkError.status)) {
         /*Authentication errors. Don't allow user to close snackbar*/
         return (
           <AlertSnackbarWithDialog
@@ -57,19 +79,20 @@ export const NetworkError = () => {
                 color={"primary"}
                 onClick={() => window.location.reload()}
               >
-                Login{" "}
+                Login
               </Button>
             }
             dialogContent={message}
+            onClose={() => {}}
             severity={"warning"}
-            snackbarText={"You are logged out."}
+            snackbarText={getSnackbarText("Authentication failure.")}
           />
         );
       } else {
         /*Other HTTP errors (4xx/5xx). Allow user to close snackbar*/
         return (
           <AlertSnackbarWithDialog
-            dialogTitle={`Error ${status}`}
+            dialogTitle={`Error ${networkError.status}`}
             actions={
               <Button
                 color={"primary"}
@@ -80,21 +103,25 @@ export const NetworkError = () => {
             }
             dialogContent={message}
             severity={"error"}
-            snackbarText={`[${formattedTimestamp}] An HTTP error has occurred.`}
+            snackbarText={getSnackbarText("An HTTP error has occured.")}
             onClose={() => dispatch(clearNetworkError())}
           />
         );
       }
-    default:
+    case "misc":
       /*Catch non NetworkError rejectedWithValue thunks*/
       return (
         <AlertSnackbarWithDialog
           dialogTitle={`Non NetworkError rejectWithValue thunk`}
           dialogContent={message}
           severity={"error"}
-          snackbarText={`[${formattedTimestamp}] A network error has occurred.`}
+          snackbarText={getSnackbarText("A non-network error has occured.")}
           onClose={() => dispatch(clearNetworkError())}
+          actions={undefined}
         />
       );
+    default:
+      const _exhaustiveCheck: never = networkError;
+      return _exhaustiveCheck;
   }
 };

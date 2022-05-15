@@ -7,6 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 import { addNetworkAction, removeNetworkAction } from "../appSlice";
 
+// Will show loading for ANY pending thunks
 export const networkLoadingMiddleware =
   ({ dispatch }) =>
   (next) =>
