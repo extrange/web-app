@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.nicholaslyz.app.twa",
+        "sha256_cert_fingerprints": ["34:73:E4:14:B0:A9:53:66:47:37:39:0E:E7:F1:01:C4:03:9C:D4:01:80:5D:88:F6:69:D7:F9:24:33:21:63:41"]
+      }
+    }]
