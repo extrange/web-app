@@ -1,7 +1,6 @@
 // /*Add new modules here*/
 import { Literature } from "../../modules/Literature/Literature";
 import { Account } from "../../modules/Account/Account";
-import { Dvr } from "../../modules/Dvr/Dvr";
 import { Testing } from "../../modules/Testing/Testing";
 import { PasswordTools } from "../../modules/PasswordTools/PasswordTools";
 import { HomeAutomation } from "../../modules/HomeAutomation/HomeAutomation";
@@ -33,11 +32,6 @@ export const MODULES = {
     menuName: "Home Automation",
     onlySuperUser: true,
     element: HomeAutomation,
-  },
-  DVR: {
-    menuName: "Dvr",
-    onlySuperUser: true,
-    element: Dvr,
   },
   OPTION_HEDGE_CALCULATOR: {
     menuName: "Option Hedge Calculator",

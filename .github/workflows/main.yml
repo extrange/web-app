@@ -4,19 +4,34 @@ on:
     branches:
       - master
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
-
-      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-        run: |
-          npm i --force
-          npm run build
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.3
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: pnpm/action-setup@v4
         with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: build # The folder the action should deploy.
+          cache: true
+
+      - name: Install and build packages
+        run: |
+          pnpm i
+          pnpm build
+
+      - name: Upload static files as artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/
+
+  deploy:
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
