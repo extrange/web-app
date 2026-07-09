@@ -60,8 +60,8 @@ importers:
         specifier: ^2.30.0
         version: 2.30.0
       dompurify:
-        specifier: ^2.5.9
-        version: 2.5.9
+        specifier: ^3.0.0
+        version: 3.4.11
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -2839,8 +2839,8 @@ packages:
     resolution: {integrity: sha512-GrwoxYN+uWlzO8uhUXRl0P+kHE4GtVPfYzVLcUxPL7KNdHKj66vvlhiweIHqYYXWlw+T8iLMp42Lm67ghw4WMQ==}
     engines: {node: '>= 4'}
 
-  dompurify@2.5.9:
-    resolution: {integrity: sha512-i6mvVmWN4xo9LrhCOZrDgSs9noW6nOahbrmzjRbPF36YPyj5Ue5lgok0MHDWkG7xzpWFO2OYttXdzM7rJxHvNA==}
+  dompurify@3.4.11:
+    resolution: {integrity: sha512-zhlUV12GsaRzMsf9q5M254YhA4+VuF0fG+QFqu6aYpoGlKtz+w8//jBcGVYBgQkR5GHjUomejY84AV+/uPbWdw==}
 
   domutils@1.7.0:
     resolution: {integrity: sha512-Lgd2XcJ/NjEw+7tFvfKxOzCYKZsdct5lczQ2ZaQY8Djz7pfAD3Gbp8ySJWtreII/vDlMVmxwa6pHmdxIYgttDg==}
@@ -9933,7 +9933,9 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
-  dompurify@2.5.9: {}
+  dompurify@3.4.11:
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
 
   domutils@1.7.0:
     dependencies:
